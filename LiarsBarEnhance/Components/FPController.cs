@@ -547,21 +547,25 @@ namespace LiarsBarEnhance.Components
                 var yes = "<color=#00FF00>是</color>";
                 var no = "<color=#FF0000>否</color>";
                 GUI.Label(new Rect(Screen.width - 240, 60, 240, 300),
-                    $"按 {HintKey(Plugin.KeyCustomShowHint)} 显示提示\n" +
+                    $"按住 {HintKey(Plugin.KeyCustomShowHint)} 显示提示\n" +
+                    $"按住 {HintKey(Plugin.KeyViewCrazyShakeHead)} 疯狂转头\n" +
+                    $"按住 {HintKey(Plugin.KeyCustomBigMouth)} 张嘴\n" +
                     $"按 {HintKey(Plugin.KeyMoveResetPosition)} 重置位置\n" +
                     $"    重置位置时重置视角: {(Plugin.BooleanResetView.Value ? yes : no)}\n" +
                     $"按 {HintKey(Plugin.KeyViewRemoveRotationLimit)} 切换解除视角限制\n" +
                     $"    解除视角限制: {(Plugin.BooleanViewRemoveRotationLimit.Value ? yes : no)}\n" +
-                    $"按住 {HintKey(Plugin.KeyViewCrazyShakeHead)} 疯狂转头\n" +
-                    $"按住 {HintKey(Plugin.KeyCustomBigMouth)} 张嘴\n" +
-                    "(默认)854671头部移动\n" +
-                    "(默认)↑↓←→身体移动\n" +
+                    "默认↑↓←→身体移动\n" +
+                    $"    移动方向跟随视角: {(Plugin.BooleanMoveFollowHead.Value ? yes : no)}\n" +
+                    "默认小键盘数字头部移动\n" +
+                    $"按 {HintKey(Plugin.KeyRotateAuto)} 自动旋转\n" +
+                    $"按住 {HintKey(Plugin.KeyRotateYaw)} 水平转动身体\n" +
+                    $"按住 {HintKey(Plugin.KeyRotatePitch)} 垂直(前后)转动身体\n" +
+                    $"按住 {HintKey(Plugin.KeyRotateRoll)} 垂直(左右)转动身体\n" +
                     $"按 {HintKey(Plugin.KeyMoveJump)} 跳跃\n" +
                     $"按 {HintKey(Plugin.KeyMoveSquat)} 蹲下\n" +
                     $"按 {HintKey(Plugin.KeyMoveRun)} 奔跑\n" +
-                    $"按住 {HintKey(Plugin.KeyRotateYaw)} 水平转动身体\n" +
-                    $"按住 {HintKey(Plugin.KeyRotatePitch)} 垂直(前后)转动身体\n" +
-                    $"按住 {HintKey(Plugin.KeyRotateRoll)} 垂直(左右)转动身体",
+                    "默认 <color=#FFFF00>1-4</color> 传送到不同座位\n" +
+                    "使用 <color=#FFFF00>鼠标滚轮</color> 调整视野",
                     new GUIStyle
                     {
                         fontSize = 15,
