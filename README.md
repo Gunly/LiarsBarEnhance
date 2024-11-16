@@ -36,7 +36,7 @@
 - 玩家缩放(仅自己可见)
 
 #### 按键列表
-按键可配置，建议使用[ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)
+按键可配置，建议使用[ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)  
 如果无法打开ConfigurationManager窗口，可以尝试编辑`BepInEx/config/BepInEx.cfg`，将`HideManagerGameObject = false`更改为`true`
 
 | 按键                | 功能         |
@@ -48,9 +48,10 @@
 | `小键盘数字键`      | 头部移动     |
 | `鼠标滚轮`          | 视野大小     |
 | `鼠标按键` + `转动` | 身体转动     |
-| `H`                 | 启用提示     |
+| `Tab`               | 启用提示     |
 | `R`                 | 重置身体     |
 | `U`                 | 切换视角限制 |
+| `P`                 | 自动旋转     |
 
 ### 做不到
 

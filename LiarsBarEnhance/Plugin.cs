@@ -81,7 +81,7 @@ public class Plugin : BaseUnityPlugin
         KeyCheatDiceShow = Config.Bind("Cheat", "DiceShow", new KeyboardShortcut(KeyCode.LeftControl), "显示其他玩家骰子");
 #endif
 
-        KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.O), "大嘴");
+        KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.O), "张嘴");
         KeyCustomShowHint = Config.Bind("Custom", "ShowHint", new KeyboardShortcut(KeyCode.Tab), "启用提示");
         StringCustomName = Config.Bind("Custom", "CustomName", "", "自定义名称");
         StringCustomNameColor = Config.Bind("Custom", "NameColor", "FDE2AA", "聊天名字颜色");
@@ -132,25 +132,25 @@ public class Plugin : BaseUnityPlugin
             VectorRotation = new ConfigEntry<Vector3>[intPositionNum.Value];
             Vector3[] DefaultPositions = [
                 new(0.36f, 0.3f, -9.79f),
-            new(1.69f, 0.3f, -8.46f),
-            new(0.36f, 0.3f, -7.13f),
-            new(-0.97f, 0.3f, -8.46f),
-            new(0.36f, 0.3f, -8.46f),
-            new(0f, 0f, 0f),
-            new(0f, 0f, 0f),
-            new(0f, 0f, 0f),
-            new(0f, 0f, 0f)
+                new(1.69f, 0.3f, -8.46f),
+                new(0.36f, 0.3f, -7.13f),
+                new(-0.97f, 0.3f, -8.46f),
+                new(0.36f, 0.3f, -8.46f),
+                new(0f, 0f, 0f),
+                new(0f, 0f, 0f),
+                new(0f, 0f, 0f),
+                new(0f, 0f, 0f)
             ];
             Vector3[] DefaultRotations = [
                 new(0f, 0f, 0f),
-            new(0f, 270f, 0f),
-            new(0f, 180f, 0f),
-            new(0f, 90f, 0f),
-            new(0f, 0f, 0f),
-            new(0f, 0f, 0f),
-            new(0f, 0f, 0f),
-            new(0f, 0f, 0f),
-            new(0f, 0f, 0f)
+                new(0f, 270f, 0f),
+                new(0f, 180f, 0f),
+                new(0f, 90f, 0f),
+                new(0f, 0f, 0f),
+                new(0f, 0f, 0f),
+                new(0f, 0f, 0f),
+                new(0f, 0f, 0f),
+                new(0f, 0f, 0f)
             ];
             for (var i = 0; i < intPositionNum.Value; i++)
             {
