@@ -1,4 +1,4 @@
-# English README
+﻿# English README
 
 ## Open-source License
 
@@ -25,25 +25,31 @@
 - Head Movement  
 - Body Movement  
 - Body Rotation  
-- Head Forward/Backward  
-- Up/Down Movement  
+- Auto Rotate
+- Jump
+- Change Level
+- Change Name
+- Adjust Field Of View
+- Free Camera In Death
+- Player Scale(only visible to self)
 
 #### Key Bindings
+Key Bindings is configurable. Suggest using [ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)
+If ConfigurationManager window cannot be opened, you can try editing `BepInEx/config/BepInEx.cfg` to change `HideManagerGameObject = false` to `true`
 
-| Key                    | Function              |
-| :--------------------: | :-------------------: |
-| `I`                    | Spin Crazy            |
-| `O`                    | Open Mouth            |
-| `↑` `↓` `←` `→`        | Head Movement         |
-| `Mouse Wheel`          | Head Forward/Backward |
-| `W` `S` `A` `D`        | Body Movement         |
-| `Mouse Right` + `Turn` | Body Rotation         |
-| `LeftShift`            | Move Up               |
-| `LeftCtrl`             | Move Down             |
-| `Insert`               | Enable Movement       |
-| `Delete`               | Enable Hint           |
-| `Home`                 | Reset Head            |
-| `End`                  | Reset Body            |
+| Key                     | Function           |
+| :---------------------: | :----------------: |
+| `I`                     | Spin Crazy         |
+| `O`                     | Open Mouth         |
+| `↑` `↓` `←` `→`     | Body Movement      |
+| `Numpad 0`              | Jump               |
+| `Numpad 1-9`            | Head Movement      |
+| `Mouse Wheel`           | Fiwld Of View      |
+| `W` `S` `A` `D`         | Body Movement      |
+| `Mouse Button` + `Turn` | Body Rotation      |
+| `H`                     | Enable Hint        |
+| `R`                     | Reset Body         |
+| `U`                     | Change Free Camrea |
 
 ### You cannot
 
@@ -55,8 +61,8 @@
 
 1. Download [BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x64_5.4.23.2.zip)  
 2. Extract `BepInEx` to the game root directory ([official installation tutorial](https://docs.bepinex.dev/articles/user_guide/installation/index.html))  
-3. Download the latest DLL from [Release](https://github.com/dogdie233/LiarsBarEnhance/releases)[latest DLL](https://github.com/dogdie233/LiarsBarEnhance/releases/download/1.0.0/com.github.dogdie233.LiarsBarEnhance.dll)  
-4. Place the plugin DLL (`com.github.dogdie233.LiarsBarEnhance.dll`) in the plugin folder (i.e., `<game root directory>/BepInEx/plugins`), create the `plugins` folder if it doesn't exist  
+3. Download the latest DLL from [Release](https://github.com/gunly/LiarsBarEnhance/releases)[latest DLL](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.3/com.github.gunly.LiarsBarEnhance.dll)  
+4. Place the plugin DLL (`com.github.gunly.LiarsBarEnhance.dll`) in the plugin folder (i.e., `<game root directory>/BepInEx/plugins`), create the `plugins` folder if it doesn't exist  
 
 ## Building the Plugin Yourself
 

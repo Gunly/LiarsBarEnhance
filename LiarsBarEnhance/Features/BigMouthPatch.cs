@@ -1,4 +1,7 @@
 ﻿using HarmonyLib;
+
+using LiarsBarEnhance.Utils;
+
 using UnityEngine;
 
 namespace LiarsBarEnhance.Features;
@@ -13,8 +16,10 @@ public class BigMouthPatch
         if (!__instance.isOwned)
             return;
 
-        Vector3 pos = __instance.Mouth.transform.localPosition;
-        if (Input.GetKey(KeyCode.O))
+        if (ShortcutInput.IsPressed(Plugin.KeyCustomBigMouth))
+        {
+            var pos = __instance.Mouth.transform.localPosition;
             __instance.Mouth.transform.localEulerAngles = new Vector3(pos.x, pos.y, 300f);
+        }
     }
 }

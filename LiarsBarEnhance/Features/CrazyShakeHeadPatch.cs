@@ -1,4 +1,7 @@
 ﻿using HarmonyLib;
+
+using LiarsBarEnhance.Utils;
+
 using UnityEngine;
 using CharControllerFloatMemberAccessor = LiarsBarEnhance.Utils.FastMemberAccessor<CharController, float>;
 
@@ -39,13 +42,13 @@ public class CrazyShakeHeadPatch
     [HarmonyPostfix]
     private static void RotateInFramePostfix(CharController __instance, float ___MinX, float ___MaxX, float ___MinY, float ___MaxY)
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (ShortcutInput.IsDown(Plugin.KeyViewCrazyShakeHead))
             ToggleEnabled(__instance);
 
         if (!IsEnabled)
             return;
 
-        var limited = Input.GetKey(KeyCode.I);
+        var limited = ShortcutInput.IsPressed(Plugin.KeyViewCrazyShakeHead);
         var x = Random.Range(limited ? ___MinX : 0, limited ? ___MaxX : 360);
         var y = Random.Range(limited ? ___MinY : 0, limited ? ___MaxY : 360);
 

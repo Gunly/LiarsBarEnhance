@@ -1,4 +1,4 @@
-# 中文说明文档
+﻿# 中文说明文档
 
 ***English README is in [README_EN.md](README_EN.md)***
 
@@ -27,25 +27,30 @@
 - 头部移动
 - 身体移动
 - 身体转动
-- 头部前后移动
-- 上下移动
+- 自动旋转
+- 跳跃
+- 等级修改
+- 游戏名修改
+- 视野大小调整
+- 死亡后自由视角
+- 玩家缩放(仅自己可见)
 
 #### 按键列表
+按键可配置，建议使用[ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)
+如果无法打开ConfigurationManager窗口，可以尝试编辑`BepInEx/config/BepInEx.cfg`，将`HideManagerGameObject = false`更改为`true`
 
-| 按键               | 功能         |
-| :----------------: | :---------: |
-| `I`                | 疯狂转头     |
-| `O`                | 张嘴         |
-| `↑` `↓` `←` `→`    | 头部移动     |
-| `鼠标滚轮`          | 头部前后移动 |
-| `W` `S` `A` `D`    | 身体移动     |
-| `鼠标右键` + `转动` | 身体转动     |
-| `LeftShift`        | 上移动       |
-| `LeftCtrl`         | 下移动       |
-| `Insert`           | 启用移动     |
-| `Delete`           | 启用提示     |
-| `Home`             | 重置头部     |
-| `End`              | 重置身体     |
+| 按键                | 功能         |
+| :-----------------: | :----------: |
+| `I`                 | 疯狂转头     |
+| `O`                 | 张嘴         |
+| `↑` `↓` `←` `→` | 身体移动     |
+| `小键盘0`           | 跳跃         |
+| `小键盘数字键`      | 头部移动     |
+| `鼠标滚轮`          | 视野大小     |
+| `鼠标按键` + `转动` | 身体转动     |
+| `H`                 | 启用提示     |
+| `R`                 | 重置身体     |
+| `U`                 | 切换视角限制 |
 
 ### 做不到
 
@@ -55,12 +60,10 @@
 
 ## 安装
 
-***如果觉得麻烦，可以尝试一键安装工具[LiarsBarEnhanceInstaller](https://github.com/TianMengLucky/LiarsBarEnhanceInstaller)***
-
 1. 下载[BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x64_5.4.23.2.zip)
 2. 将`BepInEx`解压至游戏根目录（[官方安装教程](https://docs.bepinex.dev/articles/user_guide/installation/index.html)）
-3. 从[Release](https://github.com/dogdie233/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/dogdie233/LiarsBarEnhance/releases/download/1.0.0/com.github.dogdie233.LiarsBarEnhance.dll)
-4. 将插件本体(`com.github.dogdie233.LiarsBarEnhance.dll`)放置在插件文件夹（即`<游戏根目录>/BepInEx/plugins`）（没有`plugins`文件夹请手动创建）
+3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.3/com.github.gunly.LiarsBarEnhance.dll)
+4. 将插件本体(`com.github.gunly.LiarsBarEnhance.dll`)放置在插件文件夹（即`<游戏根目录>/BepInEx/plugins`）（没有`plugins`文件夹请手动创建）
 
 ## 自行构建插件
 
@@ -70,7 +73,7 @@
 2. `cmd` 或者 `powershell` 等终端输入 `git clone https://github.com/dogdie233/LiarsBarEnhance.git`克隆本仓库到本地(前提安装`Git`网上教程一堆)或点击绿色`code`按钮后点击`Download Zip`下载解压  
 3. 设置环境变量`LiarsBarManaged`为`<游戏根目录>/Liar's Bar_Data/Managed/`或者从`<游戏根目录>/Liar's Bar_Data/Managed/`中复制所有dll文件复制到`lib`文件夹  
 4. 在项目根目录执行`dotnet build -c Release`  
-5. 插件本体`com.github.dogdie233.LiarsBarEnhance.dll`将会生成在`Output`目录下  
+5. 插件本体`com.github.gunly.LiarsBarEnhance.dll`将会生成在`Output`目录下  
 
 ***按照[安装](#安装)继续进行下一步操作***  
 

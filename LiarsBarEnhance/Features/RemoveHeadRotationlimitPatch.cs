@@ -13,10 +13,10 @@ public class RemoveHeadRotationlimitPatch
         
         var newAngle = lfAngle;
         
-        if (newAngle < -360.0)
+        if (newAngle < -180.0f)
             newAngle += 360f;
         
-        if (newAngle > 360.0)
+        if (newAngle > 180.0f)
             newAngle -= 360f;
         
         __result = newAngle;

@@ -19,4 +19,11 @@ public class ChineseNameFixPatch
     {
         __instance.LastBidName1.gameObject.AddComponentIfNotExist<FontChanger>();
     }
+
+    [HarmonyPatch(typeof(VoiceChatPrefab), "Start")]
+    [HarmonyPostfix]
+    public static void VoiceChatPrefabStartPostfix(VoiceChatPrefab __instance)
+    {
+        __instance.NameText.gameObject.AddComponentIfNotExist<FontChanger>();
+    }
 }
