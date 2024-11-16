@@ -45,11 +45,11 @@ If ConfigurationManager window cannot be opened, you can try editing `BepInEx/co
 | `Numpad 0`              | Jump               |
 | `Numpad 1-9`            | Head Movement      |
 | `Mouse Wheel`           | Fiwld Of View      |
-| `W` `S` `A` `D`         | Body Movement      |
 | `Mouse Button` + `Turn` | Body Rotation      |
 | `Tab`                   | Enable Hint        |
 | `R`                     | Reset Body         |
 | `U`                     | Change Free Camrea |
+| `P`                     | Auto Rotate        |
 
 ### You cannot
 
