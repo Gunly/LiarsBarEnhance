@@ -47,7 +47,7 @@ If ConfigurationManager window cannot be opened, you can try editing `BepInEx/co
 | `Mouse Wheel`           | Fiwld Of View      |
 | `W` `S` `A` `D`         | Body Movement      |
 | `Mouse Button` + `Turn` | Body Rotation      |
-| `H`                     | Enable Hint        |
+| `Tab`                   | Enable Hint        |
 | `R`                     | Reset Body         |
 | `U`                     | Change Free Camrea |
 
