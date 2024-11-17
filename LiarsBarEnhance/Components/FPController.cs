@@ -87,7 +87,7 @@ namespace LiarsBarEnhance.Components
                 MouseViewFieldControl();
                 newPos = PositionControl();
                 KeyFrameAnimControl();
-                if (ShortcutInput.IsDown(Plugin.KeyViewRemoveRotationLimit))
+                if (Plugin.KeyViewRemoveRotationLimit.IsDown())
                 {
                     Plugin.BooleanViewRemoveRotationLimit.Value = !Plugin.BooleanViewRemoveRotationLimit.Value;
                 }
@@ -96,7 +96,7 @@ namespace LiarsBarEnhance.Components
             AutoRotate();
             MouseViewField();
             KeyFrameAnim();
-            if (newPos || ShortcutInput.IsDown(Plugin.KeyMoveResetPosition))
+            if (newPos || Plugin.KeyMoveResetPosition.IsDown())
             {
                 charController.HeadPivot.transform.localPosition = initHeadPosition;
                 CharMoveablePatch.CinemachineTargetRoll = 0f;
@@ -139,43 +139,43 @@ namespace LiarsBarEnhance.Components
         {
             if (!playerStats.Dead)
             {
-                if (ShortcutInput.IsPressed(Plugin.KeyViewForward))
+                if (Plugin.KeyViewForward.IsPressed())
                     charController.HeadPivot.transform.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.up, Space.Self);//Y+
-                if (ShortcutInput.IsPressed(Plugin.KeyViewBack))
+                if (Plugin.KeyViewBack.IsPressed())
                     charController.HeadPivot.transform.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.down, Space.Self);//Y-
-                if (ShortcutInput.IsPressed(Plugin.KeyViewLeft))
+                if (Plugin.KeyViewLeft.IsPressed())
                     charController.HeadPivot.transform.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.forward, Space.Self);//Z+
-                if (ShortcutInput.IsPressed(Plugin.KeyViewRight))
+                if (Plugin.KeyViewRight.IsPressed())
                     charController.HeadPivot.transform.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.back, Space.Self);//Z-
-                if (ShortcutInput.IsPressed(Plugin.KeyViewUp))
+                if (Plugin.KeyViewUp.IsPressed())
                     charController.HeadPivot.transform.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.left, Space.Self);//X-
-                if (ShortcutInput.IsPressed(Plugin.KeyViewDown))
+                if (Plugin.KeyViewDown.IsPressed())
                     charController.HeadPivot.transform.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.right, Space.Self);//X+
             }
             else
             {
                 var speccamindex = FastMemberAccessor<CharController, int>.Get(charController, "speccamindex");
                 var trans = manager.SpectatorCameraParrent.transform.GetChild(speccamindex);
-                if (ShortcutInput.IsPressed(Plugin.KeyViewForward))
+                if (Plugin.KeyViewForward.IsPressed())
                     trans.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.forward, Space.Self);
-                if (ShortcutInput.IsPressed(Plugin.KeyViewBack))
+                if (Plugin.KeyViewBack.IsPressed())
                     trans.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.back, Space.Self);
-                if (ShortcutInput.IsPressed(Plugin.KeyViewLeft))
+                if (Plugin.KeyViewLeft.IsPressed())
                     trans.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.left, Space.Self);
-                if (ShortcutInput.IsPressed(Plugin.KeyViewRight))
+                if (Plugin.KeyViewRight.IsPressed())
                     trans.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.right, Space.Self);
-                if (ShortcutInput.IsPressed(Plugin.KeyViewUp))
+                if (Plugin.KeyViewUp.IsPressed())
                     trans.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.up, Space.Self);
-                if (ShortcutInput.IsPressed(Plugin.KeyViewDown))
+                if (Plugin.KeyViewDown.IsPressed())
                     trans.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.down, Space.Self);
             }
         }
 
         private void MouseRotate()
         {
-            var RotateYaw = ShortcutInput.IsPressed(Plugin.KeyRotateYaw);
-            var RotatePitch = ShortcutInput.IsPressed(Plugin.KeyRotatePitch);
-            var RotateRoll = ShortcutInput.IsPressed(Plugin.KeyRotateRoll);
+            var RotateYaw = Plugin.KeyRotateYaw.IsPressed();
+            var RotatePitch = Plugin.KeyRotatePitch.IsPressed();
+            var RotateRoll = Plugin.KeyRotateRoll.IsPressed();
             var sensivty = PlayerPrefs.GetFloat("MouseSensivity", 50f);
             var x = Input.GetAxis("Mouse X") * Time.deltaTime * sensivty;
             var y = Input.GetAxis("Mouse Y") * Time.deltaTime * sensivty;
@@ -206,7 +206,7 @@ namespace LiarsBarEnhance.Components
             var trans = manager.SpectatorCameraParrent.transform.GetChild(speccamindex);
             if (playerStats.Dead && Plugin.BooleanViewRemoveRotationLimit.Value)
             {
-                var rz = (ShortcutInput.IsPressed(Plugin.KeyViewAnticlockwise) ? 1f : 0f) + (ShortcutInput.IsPressed(Plugin.KeyViewClockwise) ? -1f : 0f);
+                var rz = (Plugin.KeyViewAnticlockwise.IsPressed() ? 1f : 0f) + (Plugin.KeyViewClockwise.IsPressed() ? -1f : 0f);
                 trans.Rotate(new Vector3(-y, x, rz), Space.Self);
             }
             if (!Plugin.BooleanViewRemoveRotationLimit.Value) return;
@@ -256,7 +256,7 @@ namespace LiarsBarEnhance.Components
 
         private void AutoRotate()
         {
-            if (ShortcutInput.IsDown(Plugin.KeyRotateAuto)) rotating = !rotating;
+            if (Plugin.KeyRotateAuto.IsDown()) rotating = !rotating;
             if (!rotating || manager.GamePaused) return;
             var rotateSpeed = Plugin.FloatAutoRotateSpeed.Value * 6;
             if ((Plugin.DirectionRotateState.Value & RotateDirection.Pitch) != RotateDirection.None)
@@ -277,9 +277,9 @@ namespace LiarsBarEnhance.Components
 
         private void Move()
         {
-            var run = ShortcutInput.IsPressed(Plugin.KeyMoveRun);
-            var squat = ShortcutInput.IsPressed(Plugin.KeyMoveSquat);
-            var jump = ShortcutInput.IsPressed(Plugin.KeyMoveJump);
+            var run = Plugin.KeyMoveRun.IsPressed();
+            var squat = Plugin.KeyMoveSquat.IsPressed();
+            var jump = Plugin.KeyMoveJump.IsPressed();
             var moveSpeed = Plugin.FloatMoveSpeed.Value * (run ? 1.5f : 1f) * (squat ? 0.5f : 1f);
 
             if (isFling)
@@ -313,7 +313,7 @@ namespace LiarsBarEnhance.Components
             }
             else
             {
-                if (ShortcutInput.IsDown(Plugin.KeyMoveSquat))
+                if (Plugin.KeyMoveSquat.IsDown())
                 {
                     groundY -= 0.3f;
                     if (inGround && groundY < playerY)
@@ -321,7 +321,7 @@ namespace LiarsBarEnhance.Components
                         inGround = false;
                     }
                 }
-                if (ShortcutInput.IsUp(Plugin.KeyMoveSquat))
+                if (Plugin.KeyMoveSquat.IsUp())
                 {
                     groundY += 0.3f;
                     if (groundY > playerY)
@@ -342,7 +342,7 @@ namespace LiarsBarEnhance.Components
                 }
                 else
                 {
-                    if (fullV > 1f && ShortcutInput.IsDown(Plugin.KeyMoveJump))
+                    if (fullV > 1f && Plugin.KeyMoveJump.IsDown())
                     {
                         isFling = true;
                     }
@@ -362,19 +362,19 @@ namespace LiarsBarEnhance.Components
                     }
                 }
             }
-            if (ShortcutInput.IsPressed(Plugin.KeyMoveForward))
+            if (Plugin.KeyMoveForward.IsPressed())
             {
                 charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.forward, 0f), Space.Self);
             }
-            if (ShortcutInput.IsPressed(Plugin.KeyMoveBack))
+            if (Plugin.KeyMoveBack.IsPressed())
             {
                 charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.back, 0f), Space.Self);
             }
-            if (ShortcutInput.IsPressed(Plugin.KeyMoveLeft))
+            if (Plugin.KeyMoveLeft.IsPressed())
             {
                 charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.left, 0f), Space.Self);
             }
-            if (ShortcutInput.IsPressed(Plugin.KeyMoveRight))
+            if (Plugin.KeyMoveRight.IsPressed())
             {
                 charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.right, 0f), Space.Self);
             }
@@ -411,7 +411,7 @@ namespace LiarsBarEnhance.Components
             var newPos = false;
             for (var i = 0; i < Plugin.InitPositionNumValue; i++)
             {
-                if (ShortcutInput.IsDown(Plugin.KeyPosition[i]))
+                if (Plugin.KeyPosition[i].IsDown())
                 {
                     charController.transform.localPosition = Plugin.VectorPosition[i].Value;
                     charController.transform.localRotation = Quaternion.Euler(
@@ -426,7 +426,7 @@ namespace LiarsBarEnhance.Components
         {
             for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
             {
-                if (ShortcutInput.IsDown(Plugin.KeyAnims[i]))
+                if (Plugin.KeyAnims[i].IsDown())
                 {
                     ReadAnim(i);
                     if (usingAnim.Count > 1)

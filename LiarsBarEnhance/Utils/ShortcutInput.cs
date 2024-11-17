@@ -1,23 +1,26 @@
 ﻿using BepInEx.Configuration;
+
+using System.Linq;
+
 using UnityEngine;
 
 namespace LiarsBarEnhance.Utils
 {
-    internal class ShortcutInput
+    public static class ShortcutInput
     {
-        public static bool IsDown(ConfigEntry<KeyboardShortcut> entry)
+        public static bool IsDown(this ConfigEntry<KeyboardShortcut> entry)
         {
-            return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKeyDown(entry.Value.MainKey);
+            return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKeyDown(entry.Value.MainKey) && entry.Value.Modifiers.All((e) => Input.GetKey(e));
         }
 
-        public static bool IsUp(ConfigEntry<KeyboardShortcut> entry)
+        public static bool IsUp(this ConfigEntry<KeyboardShortcut> entry)
         {
-            return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKeyUp(entry.Value.MainKey);
+            return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKeyUp(entry.Value.MainKey) && entry.Value.Modifiers.All((e) => Input.GetKey(e));
         }
 
-        public static bool IsPressed(ConfigEntry<KeyboardShortcut> entry)
+        public static bool IsPressed(this ConfigEntry<KeyboardShortcut> entry)
         {
-            return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKey(entry.Value.MainKey);
+            return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKey(entry.Value.MainKey) && entry.Value.Modifiers.All((e) => Input.GetKey(e));
         }
     }
 }

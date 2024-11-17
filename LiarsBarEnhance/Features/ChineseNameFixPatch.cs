@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+
 using TMPro;
 
 namespace LiarsBarEnhance.Features;
@@ -18,6 +19,17 @@ public class ChineseNameFixPatch
     public static void BlorfGamePlayManagerStartPostfix(BlorfGamePlayManager __instance)
     {
         __instance.LastBidName1.gameObject.AddComponentIfNotExist<FontChanger>();
+        __instance.LastbidName2.gameObject.AddComponentIfNotExist<FontChanger>();
+    }
+
+    [HarmonyPatch(typeof(DiceGamePlayManager), "Start")]
+    [HarmonyPostfix]
+    public static void DiceGamePlayManagerStartPostfix(DiceGamePlayManager __instance)
+    {
+        __instance.TurnNameText.gameObject.AddComponentIfNotExist<FontChanger>();
+        __instance.CalledLiarText.gameObject.AddComponentIfNotExist<FontChanger>();
+        __instance.ShowsText.gameObject.AddComponentIfNotExist<FontChanger>();
+        __instance.LoserName.gameObject.AddComponentIfNotExist<FontChanger>();
     }
 
     [HarmonyPatch(typeof(VoiceChatPrefab), "Start")]
