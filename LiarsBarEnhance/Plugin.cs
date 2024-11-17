@@ -52,9 +52,17 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(ChineseNameFixPatch), nameof(ChineseNameFixPatch));
         Harmony.CreateAndPatchAll(typeof(RemoveNameLengthLimitPatch), nameof(RemoveNameLengthLimitPatch));
         Harmony.CreateAndPatchAll(typeof(SelectableLevelPatch), nameof(SelectableLevelPatch));
+        Harmony.CreateAndPatchAll(typeof(TeleportPatch), nameof(TeleportPatch));
+        Harmony.CreateAndPatchAll(typeof(AutoRotatePatch), nameof(AutoRotatePatch));
+        Harmony.CreateAndPatchAll(typeof(CharScalePatch), nameof(CharScalePatch));
+        Harmony.CreateAndPatchAll(typeof(FOVPatch), nameof(FOVPatch));
+        Harmony.CreateAndPatchAll(typeof(AnimationPatch), nameof(AnimationPatch));
         Harmony.CreateAndPatchAll(typeof(CustomNamePatch), nameof(CustomNamePatch));
         Harmony.CreateAndPatchAll(typeof(ShowSelfTopInfoPatch), nameof(ShowSelfTopInfoPatch));
         Harmony.CreateAndPatchAll(typeof(DisableTmpWarningsPatch), nameof(DisableTmpWarningsPatch));
+        Harmony.CreateAndPatchAll(typeof(ReplaceChinesePunctuationPatch), nameof(ReplaceChinesePunctuationPatch));
+        Harmony.CreateAndPatchAll(typeof(TestPatch), nameof(TestPatch));
+
 #if CHEATRELEASE
         Harmony.CreateAndPatchAll(typeof(BlorfCheatPatch), nameof(BlorfCheatPatch));
         Harmony.CreateAndPatchAll(typeof(DiceCheatPatch), nameof(DiceCheatPatch));
