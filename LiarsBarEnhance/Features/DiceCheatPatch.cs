@@ -22,7 +22,7 @@ public class DiceCheatPatch
     [HarmonyPostfix]
     public static void UpdateCallPostfix(DiceGamePlay __instance)
     {
-        if (Plugin.BooleanCheatDice.Value && !__instance.isOwned && ShortcutInput.IsPressed(Plugin.KeyCheatDiceShow))
+        if (Plugin.BooleanCheatDice.Value && !__instance.isOwned && Plugin.KeyCheatDiceShow.IsPressed())
         {
             FastMemberAccessor<DiceGamePlay, GameObject>.Get(__instance, "ZarText").SetActive(value: true);
         }

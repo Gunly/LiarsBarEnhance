@@ -1,18 +1,7 @@
 ﻿using BepInEx.Configuration;
 
-using Cinemachine;
-
-using HarmonyLib;
-
 using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
-
-using Mirror;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 using UnityEngine;
 
@@ -31,107 +20,48 @@ namespace LiarsBarEnhance.Components
         private Vector3 initHeadPosition;
         private Vector3 initBodyPosition;
         private Quaternion initBodyRotation;
-        private Vector3 initScale;
-        private bool rotating = false;
-        private readonly List<KeyFrame> usingAnim = [];
-        private int animFrame = -1;
-        private Vector3 animStartPosition;
-        private Quaternion animStartRotation;
-        private CinemachineVirtualCamera cam;
-        private float defaultFOV = 0f, fov = 0f;
 
         private void Start()
         {
             charController = GetComponent<CharController>();
-            playerStats = FastMemberAccessor<CharController, PlayerStats>.Get(charController, "playerStats");
-            initScale = charController.transform.localScale;
-            if (Plugin.BooleanTestGiraffe.Value)
-            {
-                var ntrs = charController.gameObject.GetComponents<NetworkTransformReliable>();
-                foreach (var ntr in ntrs)
-                {
-                    ntr.syncPosition = true;
-                    ntr.syncScale = true;
-                }
-            }
             if (!charController.isOwned) return;
+            playerStats = CharMoveablePatch.PlayerStats;
+            manager = CharMoveablePatch.Manager;
 
             initHeadPosition = charController.HeadPivot.transform.localPosition;
             initBodyPosition = charController.transform.localPosition;
             initBodyRotation = charController.transform.localRotation;
             groundY = charController.transform.position.y;
             playerY = groundY;
-
-            manager = FastMemberAccessor<CharController, Manager>.Get(charController, "manager");
-            try
-            {
-                cam = charController.HeadPivot.Find("Base HumanHead/Virtual Camera").GetComponent<CinemachineVirtualCamera>();
-            }
-            catch (Exception)
-            {
-                cam = charController.HeadPivot.Find("RHINO_Head/Virtual Camera").GetComponent<CinemachineVirtualCamera>();
-            }
-            fov = defaultFOV = cam.m_Lens.FieldOfView;
-            cam.m_Lens.FieldOfView = Plugin.FloatViewField.Value;
         }
 
         private void Update()
         {
             if (!charController.isOwned) return;
-            var newPos = false;
             if (!manager.GamePaused)
             {
-                Move();
                 MoveHead();
                 MouseRotate();
-                MouseViewFieldControl();
-                newPos = PositionControl();
-                KeyFrameAnimControl();
-                if (Plugin.KeyViewRemoveRotationLimit.IsDown())
-                {
-                    Plugin.BooleanViewRemoveRotationLimit.Value = !Plugin.BooleanViewRemoveRotationLimit.Value;
-                }
+                Move();
             }
-            ScalePlayer();
-            AutoRotate();
-            MouseViewField();
-            KeyFrameAnim();
-            if (newPos || Plugin.KeyMoveResetPosition.IsDown())
+            if (Plugin.KeyMoveResetPosition.IsDown())
             {
                 charController.HeadPivot.transform.localPosition = initHeadPosition;
-                CharMoveablePatch.CinemachineTargetRoll = 0f;
-                if (!newPos)
-                {
-                    charController.transform.localPosition = initBodyPosition;
-                    charController.transform.localRotation = initBodyRotation;
-                    if (Plugin.BooleanResetView.Value)
-                    {
-                        SetYaw(0f);
-                        SetPitch(0f);
-                        Plugin.FloatViewField.Value = defaultFOV;
-                    }
-                }
+                charController.transform.localPosition = initBodyPosition;
+                charController.transform.localRotation = initBodyRotation;
                 groundY = charController.transform.position.y;
                 playerY = groundY;
                 inGround = true;
                 isFling = false;
                 fullV = 0f;
-                animFrame = -1;
-            }
-        }
-
-        private void ScalePlayer()
-        {
-            if (Plugin.FloatCustomPlayerScale.Value == 0.5f)
-            {
-                charController.transform.localScale = initScale;
-            }
-            else
-            {
-                var scale = (Plugin.FloatCustomPlayerScale.Value - 0.5f) * 8f;
-                if (scale > 0f) scale += 1f;
-                else scale = 1 / (1 - scale);
-                charController.transform.localScale = initScale * scale;
+                CharMoveablePatch.CinemachineTargetRoll = 0f;
+                AnimationPatch.AnimFrame = -1;
+                if (Plugin.BooleanResetView.Value)
+                {
+                    charController.SetYaw(0f);
+                    charController.SetPitch(0f);
+                    Plugin.FloatViewField.Value = 60f;
+                }
             }
         }
 
@@ -189,89 +119,19 @@ namespace LiarsBarEnhance.Components
                 {
                     charController.transform.Rotate(-x * Vector3.forward, Space.Self);
                 }
-                if (playerStats.Dead)
-                    SetYaw(0f);
-                else
-                    AddYaw(x);
+                if (!playerStats.Dead) charController.AddYaw(x);
             }
             if (RotatePitch)
             {
                 charController.transform.Rotate(y * Vector3.right, Space.Self);
-                if (playerStats.Dead)
-                    SetYaw(0f);
-                else
-                    AddPitch(-y);
+                if (!playerStats.Dead) charController.AddPitch(-y);
             }
             var speccamindex = FastMemberAccessor<CharController, int>.Get(charController, "speccamindex");
             var trans = manager.SpectatorCameraParrent.transform.GetChild(speccamindex);
             if (playerStats.Dead && Plugin.BooleanViewRemoveRotationLimit.Value)
             {
-                var rz = (Plugin.KeyViewAnticlockwise.IsPressed() ? 1f : 0f) + (Plugin.KeyViewClockwise.IsPressed() ? -1f : 0f);
+                var rz = (Plugin.KeyViewAnticlockwise.IsPressed() ? 2f : 0f) + (Plugin.KeyViewClockwise.IsPressed() ? -2f : 0f);
                 trans.Rotate(new Vector3(-y, x, rz), Space.Self);
-            }
-            if (!Plugin.BooleanViewRemoveRotationLimit.Value) return;
-            if (!playerStats.Dead) return;
-            trans.Rotate(new Vector3(-y, x, 0f), Space.Self);
-        }
-
-        private void MouseViewFieldControl()
-        {
-            if (Plugin.BooleanViewMouseViewField.Value)
-            {
-                var mouseScroll = Input.GetAxis("Mouse ScrollWheel");
-                if (mouseScroll != 0f)
-                {
-                    Plugin.FloatViewField.Value += -50f * mouseScroll;
-                }
-            }
-        }
-        private void MouseViewField()
-        {
-            var d = Plugin.FloatViewField.Value - fov;
-            if (d == 0f) return;
-            if (Mathf.Abs(d) < 0.02f)
-            {
-                fov = Plugin.FloatViewField.Value;
-            }
-            else if (d > 0f)
-            {
-                fov += Mathf.Max(0.1f, d / 5);
-            }
-            else
-            {
-                fov += Mathf.Min(-0.1f, d / 5);
-            }
-            if (!playerStats.Dead)
-            {
-                cam.m_Lens.FieldOfView = fov;
-            }
-            else
-            {
-                for (var i = 0; i < manager.SpectatorCameraParrent.transform.childCount; i++)
-                {
-                    manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = fov;
-                }
-            }
-        }
-
-        private void AutoRotate()
-        {
-            if (Plugin.KeyRotateAuto.IsDown()) rotating = !rotating;
-            if (!rotating || manager.GamePaused) return;
-            var rotateSpeed = Plugin.FloatAutoRotateSpeed.Value * 6;
-            if ((Plugin.DirectionRotateState.Value & RotateDirection.Pitch) != RotateDirection.None)
-                charController.transform.Rotate(rotateSpeed * Vector3.right, Space.Self);
-            if ((Plugin.DirectionRotateState.Value & RotateDirection.Roll) != RotateDirection.None)
-                charController.transform.Rotate(rotateSpeed * Vector3.forward, Space.Self);
-            if ((Plugin.DirectionRotateState.Value & RotateDirection.Yaw) != RotateDirection.None)
-                charController.transform.Rotate(rotateSpeed * Vector3.up, Space.Self);
-            if ((Plugin.DirectionRotateState.Value & RotateDirection.HeadYaw) != RotateDirection.None)
-            {
-                AddYaw(rotateSpeed);
-            }
-            if ((Plugin.DirectionRotateState.Value & RotateDirection.HeadPitch) != RotateDirection.None)
-            {
-                AddPitch(rotateSpeed);
             }
         }
 
@@ -383,13 +243,13 @@ namespace LiarsBarEnhance.Components
         private Vector3 WalkBodyRotate(Vector3 d, float toYaw)
         {
             if (!Plugin.BooleanMoveFollowHead.Value) return d;
-            var yaw = GetYaw();
+            var yaw = charController.GetYaw();
             var rotateAngle = (toYaw - yaw) / 5f;
             var newYaw = yaw + rotateAngle;
             if (Mathf.Abs(rotateAngle) > 1f)
             {
                 charController.transform.Rotate(rotateAngle * Vector3.up, Space.Self);
-                SetYaw(newYaw);
+                charController.SetYaw(newYaw);
                 return (Quaternion.AngleAxis(-newYaw, Vector3.up) * d);
             }
             else if (rotateAngle != 0f)
@@ -397,7 +257,7 @@ namespace LiarsBarEnhance.Components
                 rotateAngle = toYaw - yaw;
                 newYaw = yaw + rotateAngle;
                 charController.transform.Rotate(rotateAngle * Vector3.up, Space.Self);
-                SetYaw(newYaw);
+                charController.SetYaw(newYaw);
                 return (Quaternion.AngleAxis(-newYaw, Vector3.up) * d);
             }
             else
@@ -406,143 +266,9 @@ namespace LiarsBarEnhance.Components
             }
         }
 
-        private bool PositionControl()
-        {
-            var newPos = false;
-            for (var i = 0; i < Plugin.InitPositionNumValue; i++)
-            {
-                if (Plugin.KeyPosition[i].IsDown())
-                {
-                    charController.transform.localPosition = Plugin.VectorPosition[i].Value;
-                    charController.transform.localRotation = Quaternion.Euler(
-                        Plugin.VectorRotation[i].Value.x, Plugin.VectorRotation[i].Value.y, Plugin.VectorRotation[i].Value.z);
-                    newPos = true;
-                }
-            }
-            return newPos;
-        }
-
-        private void KeyFrameAnimControl()
-        {
-            for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
-            {
-                if (Plugin.KeyAnims[i].IsDown())
-                {
-                    ReadAnim(i);
-                    if (usingAnim.Count > 1)
-                    {
-                        animStartPosition = charController.transform.localPosition;
-                        animStartRotation = charController.transform.localRotation;
-                        animFrame = 0;
-                    }
-                    break;
-                }
-            }
-        }
-
-        private void ReadAnim(int index)
-        {
-            var name = Plugin.StringAnims[index].Value;
-            var txt = System.Text.Encoding.Default.GetString(File.ReadAllBytes(AppDomain.CurrentDomain.BaseDirectory + "\\" + name));
-            var lines = txt.Split('\n');
-            usingAnim.Clear();
-            foreach (var line in lines)
-            {
-                try
-                {
-                    var args = line.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
-                    if (args.Length < 7) continue;
-                    var keyFrame = new KeyFrame
-                    {
-                        frame = int.Parse(args[0]),
-                        position = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3])),
-                        rotation = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]))
-                    };
-                    usingAnim.Add(keyFrame);
-                }
-                catch (Exception) { continue; }
-            }
-            if (usingAnim.Count > 0 && usingAnim.First().frame > 0)
-            {
-                var keyFrame = new KeyFrame
-                {
-                    frame = 0,
-                    position = usingAnim.First().position,
-                    rotation = usingAnim.First().rotation
-                };
-                usingAnim.Insert(0, keyFrame);
-            }
-        }
-
-        private void KeyFrameAnim()
-        {
-            if (animFrame < 0) return;
-            if (animFrame >= usingAnim.Last().frame)
-            {
-                usingAnim.Clear();
-                animFrame = -1;
-                return;
-            }
-            for (var index = 0; index < usingAnim.Count - 1; index++)
-            {
-                var item = usingAnim[index + 1];
-                var animKey = item.frame;
-                if (animFrame < animKey)
-                {
-                    var thisItem = usingAnim[index];
-                    var thisKey = thisItem.frame;
-                    var progress = ((float)animFrame - thisKey) / (animKey - thisKey);
-                    var thisPosition = thisItem.position;
-                    var thisRotation = thisItem.rotation;
-                    var animPosition = item.position;
-                    var animRotation = item.rotation;
-                    var framePosition = thisPosition + progress * (animPosition - thisPosition);
-                    var frameRotation = thisRotation + progress * (animRotation - thisRotation);
-                    charController.transform.localPosition = animStartPosition;
-                    charController.transform.Translate(framePosition, Space.Self);
-                    charController.transform.localRotation = animStartRotation;
-                    charController.transform.Rotate(frameRotation, Space.Self);
-                    break;
-                }
-            }
-            ++animFrame;
-        }
-
-        public float GetYaw()
-        {
-            return (float)AccessTools.Field(typeof(CharController), "_cinemachineTargetYaw").GetValue(charController);
-        }
-        public void SetYaw(float value)
-        {
-            AccessTools.Field(typeof(CharController), "_cinemachineTargetYaw").SetValue(charController, value);
-        }
-        public void AddYaw(float value)
-        {
-            SetYaw(GetYaw() + value);
-        }
-        public float GetPitch()
-        {
-            return (float)AccessTools.Field(typeof(CharController), "_cinemachineTargetPitch").GetValue(charController);
-        }
-        public void SetPitch(float value)
-        {
-            AccessTools.Field(typeof(CharController), "_cinemachineTargetPitch").SetValue(charController, value);
-        }
-        public void AddPitch(float value)
-        {
-            SetPitch(GetPitch() + value);
-        }
-
-        internal class KeyFrame
-        {
-            public int frame;
-            public Vector3 position;
-            public Vector3 rotation;
-        }
-
         private void OnGUI()
         {
-            if (ShortcutInput.IsPressed(Plugin.KeyCustomShowHint))
+            if (Plugin.KeyCustomShowHint.IsPressed())
             {
                 var yes = "<color=#00FF00>是</color>";
                 var no = "<color=#FF0000>否</color>";

@@ -1,6 +1,5 @@
 ﻿#if CHEATRELEASE
 using HarmonyLib;
-using LiarsBarEnhance.Utils;
 using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,14 +40,14 @@ public class BlorfCheatPatch
                     CardRotations.Add(__instance, __instance.transform.localEulerAngles);
                     CardScales.Add(__instance, __instance.transform.localScale);
                 }
-                if (ShortcutInput.IsDown(Plugin.KeyCheatDeckFlip))
+                if (Plugin.KeyCheatDeckFlip.IsDown())
                 {
                     Reset(__instance);
                     __instance.transform.Translate(Vector3.up * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
                     __instance.transform.Rotate(180f, 0f, 0f, Space.Self);
                     __instance.transform.localScale = CardScales[__instance] * Plugin.FloatCheatCardSize.Value;
                 }
-                if (ShortcutInput.IsUp(Plugin.KeyCheatDeckFlip))
+                if (Plugin.KeyCheatDeckFlip.IsUp())
                 {
                     Reset(__instance);
                 }

@@ -11,7 +11,11 @@ public class RemoveNameLengthLimitPatch
     public static bool UpdatePrefix(PlayerStats __instance, TextMeshPro ___NameText)
     {
         ___NameText.text = $"<sprite={__instance.GetComponent<CharController>().level}>{__instance.PlayerName}";
-        ___NameText.transform.parent.gameObject.SetActive(Plugin.BooleanCustomShowSelfInfo.Value);
+
+        if (__instance.isOwned)
+        {
+            ___NameText.transform.parent.gameObject.SetActive(!__instance.Winner && Plugin.BooleanCustomShowSelfInfo.Value);
+        }
         if (__instance.Health == 0 && __instance.isServer)
         {
             __instance.NetworkDead = true;
