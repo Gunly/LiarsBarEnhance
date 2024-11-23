@@ -9,12 +9,19 @@ public class AutoRotatePatch
 {
     private static bool rotating = false;
 
+    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPostfix]
+    public static void StartPostfix(CharController __instance)
+    {
+        rotating = false;
+    }
+
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
     public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        if (Plugin.KeyRotateAuto.IsDown()) rotating = !rotating;
+        if (Plugin.KeyRotateAuto.IsDown() && !__instance.Paused()) rotating = !rotating;
         if (!rotating) return;
         var rotateSpeed = Plugin.FloatAutoRotateSpeed.Value * 6;
         if ((Plugin.DirectionRotateState.Value & RotateDirection.Pitch) != RotateDirection.None)

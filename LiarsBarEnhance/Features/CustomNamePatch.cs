@@ -21,4 +21,15 @@ public class CustomNamePatch
         }
         return true;
     }
+
+    [HarmonyPatch(typeof(PlayerStats), "Start")]
+    [HarmonyPrefix]
+    public static void StartPrefix(PlayerStats __instance)
+    {
+        if (!__instance.isOwned) return;
+        Plugin.StringCustomName.SettingChanged += (sender, args) =>
+        {
+            __instance.NetworkPlayerName = Plugin.StringCustomName.Value;
+        };
+    }
 }

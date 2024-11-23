@@ -1,7 +1,8 @@
 ﻿#if CHEATRELEASE
 using HarmonyLib;
-using Mirror;
+
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace LiarsBarEnhance.Features;
@@ -9,57 +10,147 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class BlorfCheatPatch
 {
-    private static readonly Dictionary<Card, Vector3> CardPositons = [], CardRotations = [], CardScales = [];
+    private static readonly Dictionary<Card, bool> cardFliped = [];
 
-    [HarmonyPatch(typeof(Card), "Update")]
-    [HarmonyPrefix]
-    public static void UpdatePrefix(Card __instance)
+    [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
+    [HarmonyPostfix]
+    public static void UpdateCallPostfix(BlorfGamePlay __instance)
     {
-        if (Plugin.BooleanCheatCard.Value && __instance.gameObject.activeInHierarchy)
+        if (!Plugin.BooleanCheatBlorf.Value) return;
+        if (__instance.isOwned)
         {
-            var n = __instance.transform.root.GetComponent<NetworkIdentity>();
-            if (n == null)
+            for (var i = 0; i < __instance.Cards.Count; i++)
             {
-                Reset(__instance);
-                return;
-            }
-            if (!n.isOwned)
-            {
-                __instance.activecard = true;
-                if (__instance.Devil)
+                var cardObject = __instance.Cards[i];
+                if (!cardObject.gameObject.activeSelf) continue;
+                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && cardObject.gameObject.activeSelf)
                 {
-                    __instance.GetComponent<MeshRenderer>().material = Manager.Instance.devil;
+                    var card = cardObject.GetComponent<Card>();
+                    if (card.Devil)
+                    {
+                        card.Devil = false;
+                        card.cardtype = 1;
+                    }
+                    else if (card.cardtype == 4)
+                    {
+                        card.Devil = true;
+                        card.cardtype = -1;
+                    }
+                    else
+                    {
+                        card.cardtype++;
+                    }
+                    card.SetCard();
+                }
+            }
+        }
+        else
+        {
+            for (var i = 0; i < __instance.Cards.Count; i++)
+            {
+                var cardObject = __instance.Cards[i];
+                if (!cardObject.gameObject.activeSelf) continue;
+                var card = cardObject.GetComponent<Card>();
+                card.activecard = true;
+                if (!cardFliped.ContainsKey(card)) cardFliped.Add(card, false);
+                if (card.Devil)
+                {
+                    card.GetComponent<MeshRenderer>().material = Manager.Instance.devil;
+                    if (Manager.Instance.BlorfGame.RoundCard == 1)
+                    {
+                        card.GetComponent<MeshFilter>().sharedMesh = Manager.Instance.BlorfGame.Card1;
+                    }
+                    else if (Manager.Instance.BlorfGame.RoundCard == 2)
+                    {
+                        card.GetComponent<MeshFilter>().sharedMesh = Manager.Instance.BlorfGame.Card2;
+                    }
+                    else if (Manager.Instance.BlorfGame.RoundCard == 3)
+                    {
+                        card.GetComponent<MeshFilter>().sharedMesh = Manager.Instance.BlorfGame.Card3;
+                    }
                 }
                 else
                 {
-                    __instance.GetComponent<MeshRenderer>().material = __instance.normal;
+                    card.GetComponent<MeshRenderer>().material = card.normal;
                 }
-                if (!CardPositons.ContainsKey(__instance))
+                if (Plugin.KeyCheatBlorfFlip.IsPressed())
                 {
-                    CardPositons.Add(__instance, __instance.transform.localPosition);
-                    CardRotations.Add(__instance, __instance.transform.localEulerAngles);
-                    CardScales.Add(__instance, __instance.transform.localScale);
+                    if (!cardFliped[card])
+                    {
+                        cardObject.transform.localScale = new Vector3(-100 * Plugin.FloatCheatCardSize.Value, 100 * Plugin.FloatCheatCardSize.Value, -100 * Plugin.FloatCheatCardSize.Value);
+                        cardObject.transform.Translate(Vector3.up * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
+                        cardFliped[card] = true;
+                    }
                 }
-                if (Plugin.KeyCheatDeckFlip.IsDown())
+                else
                 {
-                    Reset(__instance);
-                    __instance.transform.Translate(Vector3.up * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
-                    __instance.transform.Rotate(180f, 0f, 0f, Space.Self);
-                    __instance.transform.localScale = CardScales[__instance] * Plugin.FloatCheatCardSize.Value;
-                }
-                if (Plugin.KeyCheatDeckFlip.IsUp())
-                {
-                    Reset(__instance);
+                    if (cardFliped[card])
+                    {
+                        cardObject.transform.localScale = new Vector3(100, 100, 100);
+                        cardObject.transform.Translate(Vector3.down * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
+                        cardFliped[card] = false;
+                    }
                 }
             }
         }
     }
 
-    private static void Reset(Card card)
+    [HarmonyPatch(typeof(DiceGamePlay), "UpdateCall")]
+    [HarmonyPostfix]
+    public static void UpdateCallPostfix(DiceGamePlay __instance)
     {
-        if (CardPositons.ContainsKey(card)) card.transform.localPosition = CardPositons[card];
-        if (CardRotations.ContainsKey(card)) card.transform.localEulerAngles = CardRotations[card];
-        if (CardScales.ContainsKey(card)) card.transform.localScale = CardScales[card];
+        if (!Plugin.BooleanCheatBlorf.Value) return;
+        if (__instance.isOwned)
+        {
+            for (var i = 0; i < __instance.DiceValues.Count; i++)
+            {
+                if (Plugin.KeyCheatChangeCardDice[5 - i].IsDown())
+                {
+                    if (__instance.DiceValues[i] < 6) __instance.DiceValues[i]++;
+                    else __instance.DiceValues[i] = 1;
+                }
+
+            }
+        }
+
+    }
+
+    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPostfix]
+    public static void StartPostfix(CharController __instance)
+    {
+        if (__instance.isOwned && __instance is BlorfGamePlay blorfGamePlay)
+        {
+            Plugin.IntCheatBlorfRevoler.Value = 0;
+            Plugin.IntCheatBlorfHealth.SettingChanged += (sender, args) =>
+            {
+                if (Plugin.BooleanCheatBlorf.Value)
+                    blorfGamePlay.Networkrevolverbulllet = Plugin.IntCheatBlorfHealth.Value - 1;
+            };
+            Plugin.IntCheatBlorfRevoler.SettingChanged += (sender, args) =>
+            {
+                if (Plugin.BooleanCheatBlorf.Value)
+                    blorfGamePlay.Networkcurrentrevoler = Plugin.IntCheatBlorfRevoler.Value;
+            };
+        }
+    }
+
+    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.Networkrevolverbulllet), MethodType.Setter)]
+    [HarmonyPostfix]
+    public static void NetworkrevolverbullletPostfix(BlorfGamePlay __instance)
+    {
+        if (!__instance.isOwned) return;
+        if (Plugin.IntCheatBlorfHealth.Value != __instance.Networkrevolverbulllet + 1)
+            Plugin.IntCheatBlorfHealth.Value = __instance.Networkrevolverbulllet + 1;
+    }
+
+    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.Networkcurrentrevoler), MethodType.Setter)]
+    [HarmonyPostfix]
+    public static void NetworkcurrentrevolerPostfix(BlorfGamePlay __instance)
+    {
+        if (!__instance.isOwned) return;
+        if (Plugin.IntCheatBlorfRevoler.Value != __instance.Networkcurrentrevoler)
+            Plugin.IntCheatBlorfRevoler.Value = __instance.Networkcurrentrevoler;
     }
 }
 #endif

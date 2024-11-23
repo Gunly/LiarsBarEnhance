@@ -8,8 +8,8 @@ namespace LiarsBarEnhance.Utils;
 
 public static class FastMemberAccessor<TClass, TValue> where TClass : class
 {
-    private static readonly Dictionary<string, Func<TClass, TValue>> getters = new();
-    private static readonly Dictionary<string, Action<TClass, TValue>> setters = new();
+    private static readonly Dictionary<string, Func<TClass, TValue>> getters = [];
+    private static readonly Dictionary<string, Action<TClass, TValue>> setters = [];
 
     private static readonly BindingFlags bindingAttr = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 

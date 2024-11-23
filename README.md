@@ -1,6 +1,6 @@
 ﻿# 中文说明文档
 
-***English README is in [README_EN.md](README_EN.md)***
+***English README is in [README_EN.md](README_en.md)***
 
 ## 开源协议
 
@@ -30,10 +30,13 @@
 - 自动旋转
 - 跳跃
 - 等级修改
+- 传送
 - 游戏名修改
 - 视野大小调整
+- 死亡后头部转动
 - 死亡后自由视角
 - 玩家缩放(仅自己可见)
+- 显示自身头顶信息
 
 #### 按键列表
 按键可配置，建议使用[ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)  
@@ -41,17 +44,18 @@
 
 | 按键                | 功能         |
 | :-----------------: | :----------: |
-| `I`                 | 疯狂转头     |
-| `O`                 | 张嘴         |
-| `↑` `↓` `←` `→` | 身体移动     |
-| `小键盘0`           | 跳跃         |
-| `小键盘数字键`      | 头部移动     |
-| `鼠标滚轮`          | 视野大小     |
-| `鼠标按键` + `转动` | 身体转动     |
 | `Tab`               | 启用提示     |
+| `C`                 | 疯狂转头     |
+| `B`                 | 张嘴         |
 | `R`                 | 重置身体     |
-| `U`                 | 切换视角限制 |
+| `T`                 | 重置视角     |
+| `↑` `↓` `←` `→` | 身体移动     |
+| `I` `J` `K` `L`     | 头部移动     |
+| `鼠标按键` + `转动` | 身体转动     |
+| `小键盘0`           | 跳跃         |
 | `P`                 | 自动旋转     |
+| `1` `2` `3` `4`     | 传送         |
+| `鼠标滚轮`          | 调整视野大小 |
 
 ### 做不到
 
@@ -61,10 +65,18 @@
 
 ## 安装
 
+### 仅安装LiarsBarEnhance
+
 1. 下载[BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x64_5.4.23.2.zip)
 2. 将`BepInEx`解压至游戏根目录（[官方安装教程](https://docs.bepinex.dev/articles/user_guide/installation/index.html)）
-3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.3/com.github.gunly.LiarsBarEnhance.dll)
+3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.5/com.github.gunly.LiarsBarEnhance.dll)
 4. 将插件本体(`com.github.gunly.LiarsBarEnhance.dll`)放置在插件文件夹（即`<游戏根目录>/BepInEx/plugins`）（没有`plugins`文件夹请手动创建）
+
+### 安装可配置的LiarsBarEnhance
+
+1. 下载[BepInEx_ConfigurationManager_LiarsBarEnhance.zip](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.0.5/BepInEx_ConfigurationManager_LiarsBarEnhance.zip)
+2. 将`BepInEx_ConfigurationManager_LiarsBarEnhance.zip`解压至游戏根目录
+3. 进入游戏后按F1打开`ConfigurationManager`窗口，可以在游戏内修改配置和自定义快捷键
 
 ## 自行构建插件
 

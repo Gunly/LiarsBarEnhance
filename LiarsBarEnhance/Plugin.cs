@@ -17,26 +17,29 @@ public class Plugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger;
     private static ConfigEntry<int> intPositionNum, intAnimationNum;
+    public static ConfigEntry<int> IntHintPosX, IntHintPosY;
     public static int InitPositionNumValue, InitAnimationNumValue;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyCustomShowHint,
         KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveRun, KeyMoveSquat, KeyMoveResetPosition,
-        KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewForward, KeyViewBack, KeyViewLeft,
-        KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
+        KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewReset,
+        KeyViewForward, KeyViewBack, KeyViewLeft, KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
         KeyRotateYaw, KeyRotatePitch, KeyRotateRoll, KeyRotateAuto;
     public static ConfigEntry<KeyboardShortcut>[] KeyPosition;
     public static ConfigEntry<KeyboardShortcut>[] KeyAnims;
     public static ConfigEntry<Vector3>[] VectorPosition, VectorRotation;
     public static ConfigEntry<float> FloatJumpHeight, FloatGravity, FloatMoveSpeed, FloatViewSpeed, FloatViewField,
         FloatAutoRotateSpeed, FloatCustomPlayerScale;
-    public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewMouseViewField, BooleanResetView,
+    public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewMouseViewField,
         BooleanTestGiraffe, BooleanCustomShowSelfInfo;
     public static ConfigEntry<string> StringCustomName, StringCustomNameColor, StringCustomMessageColor;
     public static ConfigEntry<string>[] StringAnims;
     public static ConfigEntry<RotateDirection> DirectionRotateState;
 #if CHEATRELEASE
-    public static ConfigEntry<KeyboardShortcut> KeyCheatDeckFlip, KeyCheatDeckScale, KeyCheatDiceShow;
+    public static ConfigEntry<bool> BooleanCheatBlorf, BooleanCheatDice, BooleanCheatBlorfHealth, BooleanCheatBlorfLastRoundCard, BooleanCheatDiceTotalDice;
+    public static ConfigEntry<KeyboardShortcut> KeyCheatBlorfFlip, KeyCheatDiceShow;
+    public static ConfigEntry<KeyboardShortcut>[] KeyCheatChangeCardDice;
     public static ConfigEntry<float> FloatCheatCardSize;
-    public static ConfigEntry<bool> BooleanCheatCard, BooleanCheatDice;
+    public static ConfigEntry<int> IntCheatBlorfHealth, IntCheatBlorfRevoler;
 #endif
 
     private void Awake()
@@ -60,18 +63,21 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(CustomNamePatch), nameof(CustomNamePatch));
         Harmony.CreateAndPatchAll(typeof(ShowSelfTopInfoPatch), nameof(ShowSelfTopInfoPatch));
         Harmony.CreateAndPatchAll(typeof(DisableTmpWarningsPatch), nameof(DisableTmpWarningsPatch));
-        Harmony.CreateAndPatchAll(typeof(ReplaceChinesePunctuationPatch), nameof(ReplaceChinesePunctuationPatch));
         Harmony.CreateAndPatchAll(typeof(TestPatch), nameof(TestPatch));
 
 #if CHEATRELEASE
         Harmony.CreateAndPatchAll(typeof(BlorfCheatPatch), nameof(BlorfCheatPatch));
         Harmony.CreateAndPatchAll(typeof(DiceCheatPatch), nameof(DiceCheatPatch));
 #else
-        Harmony.CreateAndPatchAll(typeof(BlorfAntiCheat), nameof(BlorfAntiCheat));
-        Harmony.CreateAndPatchAll(typeof(DiceAntiCheat), nameof(DiceAntiCheat));
+//        Harmony.CreateAndPatchAll(typeof(BlorfAntiCheat), nameof(BlorfAntiCheat));
+//        Harmony.CreateAndPatchAll(typeof(DiceAntiCheat), nameof(DiceAntiCheat));
 #endif
 
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+    }
+
+    private void Update()
+    {
     }
 
     private void BindConfig()
@@ -82,11 +88,22 @@ public class Plugin : BaseUnityPlugin
         InitAnimationNumValue = intAnimationNum.Value;
 
 #if CHEATRELEASE
-        BooleanCheatCard = Config.Bind("Cheat", "CheatDeck", false, "Deck模式作弊");
+        BooleanCheatBlorf = Config.Bind("Cheat", "CheatDeck", false, "Deck模式作弊");
         BooleanCheatDice = Config.Bind("Cheat", "CheatDice", false, "Dice模式作弊");
-        KeyCheatDeckFlip = Config.Bind("Cheat", "CardFlip", new KeyboardShortcut(KeyCode.LeftControl), "翻转放大其他玩家卡牌");
-        FloatCheatCardSize = Config.Bind("Cheat", "CardSize", 1f, new ConfigDescription("放大大小", new AcceptableValueRange<float>(1f, 10f)));
+        KeyCheatBlorfFlip = Config.Bind("Cheat", "CardFlip", new KeyboardShortcut(KeyCode.LeftControl), "翻转放大其他玩家卡牌");
         KeyCheatDiceShow = Config.Bind("Cheat", "DiceShow", new KeyboardShortcut(KeyCode.LeftControl), "显示其他玩家骰子");
+        FloatCheatCardSize = Config.Bind("Cheat", "CardSize", 1f, new ConfigDescription("放大大小", new AcceptableValueRange<float>(1f, 10f)));
+        IntCheatBlorfHealth = Config.Bind("Cheat", "DeckHealth", 6, new ConfigDescription("Deck模式生命值(开始游戏后更改生效)", new AcceptableValueRange<int>(1, 50)));
+        IntCheatBlorfRevoler = Config.Bind("Cheat", "DeckRevoler", 0, new ConfigDescription("开枪数", new AcceptableValueRange<int>(0, 49)));
+        BooleanCheatBlorfHealth = Config.Bind("Cheat", "ShowHealth", false, "显示生命值(第几枪实弹)");
+        BooleanCheatBlorfLastRoundCard = Config.Bind("Cheat", "ShowRoundCard", false, "显示当前出牌(提示GUI)");
+        BooleanCheatDiceTotalDice = Config.Bind("Cheat", "ShowTotalDice", false, "显示骰子总数(提示GUI)");
+        KeyCheatChangeCardDice = new ConfigEntry<KeyboardShortcut>[5];
+        KeyCode[] defaultKey = [KeyCode.G, KeyCode.H, KeyCode.J, KeyCode.K, KeyCode.L];
+        for (var i = 0; i < KeyCheatChangeCardDice.Length; i++)
+        {
+            KeyCheatChangeCardDice[i] = Config.Bind("Cheat", $"Change{i + 1}", new KeyboardShortcut(defaultKey[i]), $"改变第{i + 1}个牌/骰子");
+        }
 #endif
 
         KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.O), "张嘴");
@@ -96,9 +113,10 @@ public class Plugin : BaseUnityPlugin
         StringCustomMessageColor = Config.Bind("Custom", "MessageColor", "FFFFFF", "聊天文本颜色");
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", false, "显示自身头顶信息");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放(自己)", new AcceptableValueRange<float>(0f, 1f)));
+        IntHintPosX = Config.Bind("Custom", "HintPosX", -240, new ConfigDescription("提示坐标X, 负数表示以屏幕宽度减去设置值))", new AcceptableValueRange<int>(-2000, 2000)));
+        IntHintPosY = Config.Bind("Custom", "HintPosY", 60, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(-1000, 1000)));
 
         KeyMoveResetPosition = Config.Bind("Move", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
-        BooleanResetView = Config.Bind("Move", "ResetView", false, "重置坐标时重置视角");
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
         KeyMoveForward = Config.Bind("Move", "BodyForward", new KeyboardShortcut(KeyCode.UpArrow), "向前移动");
         KeyMoveBack = Config.Bind("Move", "BodyBack", new KeyboardShortcut(KeyCode.DownArrow), "向后移动");
@@ -111,9 +129,10 @@ public class Plugin : BaseUnityPlugin
         FloatGravity = Config.Bind("Move", "Gravity", 9.8f, new ConfigDescription("重力加速度(仅对跳跃生效)", new AcceptableValueRange<float>(0f, 100f)));
         FloatMoveSpeed = Config.Bind("Move", "MoveSpeed", 4f, new ConfigDescription("移动速度", new AcceptableValueRange<float>(0f, 100f)));
 
+        KeyViewReset = Config.Bind("View", "ResetView", new KeyboardShortcut(KeyCode.T), "重置视角");
         KeyViewCrazyShakeHead = Config.Bind("View", "CrazyShakeHead", new KeyboardShortcut(KeyCode.I), "疯狂摇头");
-        BooleanViewMouseViewField = Config.Bind("View", "MouseViewField", true, "滚轮调整视野范围");
-        BooleanViewRemoveRotationLimit = Config.Bind("View", "RemoveRotationLimit", true, "移除视角限制");
+        BooleanViewMouseViewField = Config.Bind("View", "MouseViewField", true, "滚轮调整视场角");
+        BooleanViewRemoveRotationLimit = Config.Bind("View", "RemoveRotationLimit", true, "移除视限制");
         KeyViewRemoveRotationLimit = Config.Bind("View", "RemoveRotationLimitShortcut", new KeyboardShortcut(KeyCode.U), "切换移除视角限制快捷键");
         KeyViewForward = Config.Bind("View", "ViewForward", new KeyboardShortcut(KeyCode.Keypad8), "头部/视角向前移动");
         KeyViewBack = Config.Bind("View", "ViewBack", new KeyboardShortcut(KeyCode.Keypad5), "头部/视角向后移动");
@@ -124,7 +143,7 @@ public class Plugin : BaseUnityPlugin
         KeyViewClockwise = Config.Bind("View", "ViewClockwise", new KeyboardShortcut(KeyCode.Keypad3), "视角顺时针旋转");
         KeyViewAnticlockwise = Config.Bind("View", "ViewAnticlockwise", new KeyboardShortcut(KeyCode.Keypad2), "视角逆时针旋转");
         FloatViewSpeed = Config.Bind("View", "ViewSpeed", 3f, new ConfigDescription("视角移动速度", new AcceptableValueRange<float>(0f, 100f)));
-        FloatViewField = Config.Bind("View", "ViewField", 60f, new ConfigDescription("视野范围", new AcceptableValueRange<float>(1f, 180f)));
+        FloatViewField = Config.Bind("View", "ViewField", 60f, new ConfigDescription("视场角", new AcceptableValueRange<float>(1f, 180f)));
 
         KeyRotateYaw = Config.Bind("Rotate", "RotateYaw", new KeyboardShortcut(KeyCode.Mouse1), "水平旋转(Yaw, 偏航角, 按住移动鼠标)");
         KeyRotatePitch = Config.Bind("Rotate", "RotatePitch", new KeyboardShortcut(KeyCode.Mouse2), "垂直旋转(Pitch, 俯仰角, 按住移动鼠标)");

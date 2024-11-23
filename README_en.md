@@ -28,10 +28,13 @@
 - Auto Rotate
 - Jump
 - Change Level
+- Teleport
 - Change Name
 - Adjust Field Of View
+- Rotate Head In Death
 - Free Camera In Death
 - Player Scale(only visible to self)
+- Show Self Top Information
 
 #### Key Bindings
 Key Bindings is configurable. Suggest using [ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)
@@ -39,17 +42,18 @@ If ConfigurationManager window cannot be opened, you can try editing `BepInEx/co
 
 | Key                     | Function           |
 | :---------------------: | :----------------: |
-| `I`                     | Spin Crazy         |
-| `O`                     | Open Mouth         |
-| `↑` `↓` `←` `→`     | Body Movement      |
-| `Numpad 0`              | Jump               |
-| `Numpad 1-9`            | Head Movement      |
-| `Mouse Wheel`           | Fiwld Of View      |
-| `Mouse Button` + `Turn` | Body Rotation      |
 | `Tab`                   | Enable Hint        |
+| `C`                     | Spin Crazy         |
+| `B`                     | Open Mouth         |
 | `R`                     | Reset Body         |
-| `U`                     | Change Free Camrea |
+| `T`                     | Reset Head         |
+| `↑` `↓` `←` `→`     | Body Movement      |
+| `I` `J` `K` `L`         | Head Movement      |
+| `Mouse Button` + `Turn` | Body Rotation      |
+| `Numpad 0`              | Jump               |
 | `P`                     | Auto Rotate        |
+| `1` `2` `3` `4`         | Teleport           |
+| `Mouse Wheel`           | Fiwld Of View      |
 
 ### You cannot
 

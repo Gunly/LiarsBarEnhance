@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+
 using TMPro;
 
 namespace LiarsBarEnhance.Features;
@@ -20,6 +21,7 @@ public class RemoveNameLengthLimitPatch
         {
             __instance.NetworkDead = true;
         }
+
         return false;
     }
 }

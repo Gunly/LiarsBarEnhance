@@ -12,7 +12,7 @@ namespace LiarsBarEnhance.Features;
 public class FOVPatch
 {
     private static CinemachineVirtualCamera cam;
-    private static float fov = 60f;
+    public static float Fov = 60f;
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
     [HarmonyPostfix]
@@ -27,15 +27,15 @@ public class FOVPatch
         {
             cam = __instance.HeadPivot.Find("RHINO_Head/Virtual Camera").GetComponent<CinemachineVirtualCamera>();
         }
-        fov = cam.m_Lens.FieldOfView;
+        Fov = cam.m_Lens.FieldOfView;
         cam.m_Lens.FieldOfView = Plugin.FloatViewField.Value;
     }
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance)
+    public static void UpdatePostfix(CharController __instance, PlayerStats ___playerStats, Manager ___manager)
     {
-        if (!__instance.isOwned) return;
+        if (!__instance.isOwned || __instance.Paused()) return;
         if (Plugin.BooleanViewMouseViewField.Value)
         {
             var mouseScroll = Input.GetAxis("Mouse ScrollWheel");
@@ -44,29 +44,24 @@ public class FOVPatch
                 Plugin.FloatViewField.Value += -50f * mouseScroll;
             }
         }
-        var d = Plugin.FloatViewField.Value - fov;
-        if (d == 0f) return;
-        if (Mathf.Abs(d) < 0.02f)
+        var d = Plugin.FloatViewField.Value - Fov;
+        if (Mathf.Abs(d) < 0.1f)
         {
-            fov = Plugin.FloatViewField.Value;
-        }
-        else if (d > 0f)
-        {
-            fov += Mathf.Max(0.1f, d / 5);
+            Fov = Plugin.FloatViewField.Value;
         }
         else
         {
-            fov += Mathf.Min(-0.1f, d / 5);
+            Fov += Mathf.Max(d / Mathf.Abs(d) / 10f, d / 5);
         }
-        if (!CharMoveablePatch.PlayerStats.Dead)
+        if (!___playerStats.Dead)
         {
-            cam.m_Lens.FieldOfView = fov;
+            cam.m_Lens.FieldOfView = Fov;
         }
         else
         {
-            for (var i = 0; i < CharMoveablePatch.Manager.SpectatorCameraParrent.transform.childCount; i++)
+            for (var i = 0; i < ___manager.SpectatorCameraParrent.transform.childCount; i++)
             {
-                CharMoveablePatch.Manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = fov;
+                ___manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = Fov;
             }
         }
     }

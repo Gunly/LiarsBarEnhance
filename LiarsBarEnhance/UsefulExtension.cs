@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 
-using HarmonyLib;
+using LiarsBarEnhance.Utils;
 
 using System.Linq;
 
@@ -37,28 +37,33 @@ public static class UsefulExtension
         return Quaternion.Euler(vector.x, vector.y, vector.z);
     }
 
+    public static bool Paused(this CharController charController)
+    {
+        return FastMemberAccessor<CharController, Manager>.Get(charController, "manager").GamePaused;
+    }
+
     public static float GetYaw(this CharController charController)
     {
-        return (float)AccessTools.Field(typeof(CharController), "_cinemachineTargetYaw").GetValue(charController);
+        return FastMemberAccessor<CharController, float>.Get(charController, "_cinemachineTargetYaw");
     }
     public static void SetYaw(this CharController charController, float value)
     {
-        AccessTools.Field(typeof(CharController), "_cinemachineTargetYaw").SetValue(charController, value);
+        FastMemberAccessor<CharController, float>.Set(charController, "_cinemachineTargetYaw", value);
     }
     public static void AddYaw(this CharController charController, float value)
     {
-        SetYaw(charController, GetYaw(charController) + value);
+        charController.SetYaw(charController.GetYaw() + value);
     }
     public static float GetPitch(this CharController charController)
     {
-        return (float)AccessTools.Field(typeof(CharController), "_cinemachineTargetPitch").GetValue(charController);
+        return FastMemberAccessor<CharController, float>.Get(charController, "_cinemachineTargetPitch");
     }
     public static void SetPitch(this CharController charController, float value)
     {
-        AccessTools.Field(typeof(CharController), "_cinemachineTargetPitch").SetValue(charController, value);
+        FastMemberAccessor<CharController, float>.Set(charController, "_cinemachineTargetPitch", value);
     }
     public static void AddPitch(this CharController charController, float value)
     {
-        SetPitch(charController, GetPitch(charController) + value);
+        charController.SetPitch(charController.GetPitch() + value);
     }
 }

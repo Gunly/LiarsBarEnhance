@@ -40,7 +40,7 @@ public class CrazyShakeHeadPatch
     [HarmonyPostfix]
     private static void RotateInFramePostfix(CharController __instance, float ___MinX, float ___MaxX, float ___MinY, float ___MaxY)
     {
-        if (Plugin.KeyViewCrazyShakeHead.IsDown())
+        if (Plugin.KeyViewCrazyShakeHead.IsDown() && !__instance.Paused())
             ToggleEnabled(__instance);
 
         if (!IsEnabled)
