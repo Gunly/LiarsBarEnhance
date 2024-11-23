@@ -36,7 +36,7 @@ public class Plugin : BaseUnityPlugin
 #if CHEATRELEASE
     public static ConfigEntry<KeyboardShortcut> KeyCheatDeckFlip, KeyCheatDeckScale, KeyCheatDiceShow;
     public static ConfigEntry<float> FloatCheatCardSize;
-    public static ConfigEntry<bool> BooleanCheatCard, BooleanCheatDice;
+    public static ConfigEntry<bool> BooleanCheatBlorf, BooleanCheatDice;
 #endif
 
     private void Awake()
@@ -82,7 +82,7 @@ public class Plugin : BaseUnityPlugin
         InitAnimationNumValue = intAnimationNum.Value;
 
 #if CHEATRELEASE
-        BooleanCheatCard = Config.Bind("Cheat", "CheatDeck", false, "Deck模式作弊");
+        BooleanCheatBlorf = Config.Bind("Cheat", "CheatDeck", false, "Deck模式作弊");
         BooleanCheatDice = Config.Bind("Cheat", "CheatDice", false, "Dice模式作弊");
         KeyCheatDeckFlip = Config.Bind("Cheat", "CardFlip", new KeyboardShortcut(KeyCode.LeftControl), "翻转放大其他玩家卡牌");
         FloatCheatCardSize = Config.Bind("Cheat", "CardSize", 1f, new ConfigDescription("放大大小", new AcceptableValueRange<float>(1f, 10f)));

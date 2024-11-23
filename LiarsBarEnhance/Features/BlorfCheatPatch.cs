@@ -15,7 +15,7 @@ public class BlorfCheatPatch
     [HarmonyPrefix]
     public static void UpdatePrefix(Card __instance)
     {
-        if (Plugin.BooleanCheatCard.Value && __instance.gameObject.activeInHierarchy)
+        if (Plugin.BooleanCheatBlorf.Value && __instance.gameObject.activeInHierarchy)
         {
             var n = __instance.transform.root.GetComponent<NetworkIdentity>();
             if (n == null)

@@ -28,6 +28,7 @@
 - Auto Rotate
 - Jump
 - Change Level
+- Teleport
 - Change Name
 - Adjust Field Of View
 - Free Camera In Death
