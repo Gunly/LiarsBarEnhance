@@ -20,8 +20,8 @@ public class Plugin : BaseUnityPlugin
     public static int InitPositionNumValue, InitAnimationNumValue;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyCustomShowHint,
         KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveRun, KeyMoveSquat, KeyMoveResetPosition,
-        KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewForward, KeyViewBack, KeyViewLeft,
-        KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
+        KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit,
+        KeyViewForward, KeyViewBack, KeyViewLeft, KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
         KeyRotateYaw, KeyRotatePitch, KeyRotateRoll, KeyRotateAuto;
     public static ConfigEntry<KeyboardShortcut>[] KeyPosition;
     public static ConfigEntry<KeyboardShortcut>[] KeyAnims;
@@ -34,9 +34,10 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<string>[] StringAnims;
     public static ConfigEntry<RotateDirection> DirectionRotateState;
 #if CHEATRELEASE
-    public static ConfigEntry<KeyboardShortcut> KeyCheatDeckFlip, KeyCheatDeckScale, KeyCheatDiceShow;
+    public static ConfigEntry<bool> BooleanCheatBlorf, BooleanCheatDice, BooleanCheatBlorfHealth, BooleanCheatBlorfLastRoundCard, BooleanCheatDiceTotalDice;
+    public static ConfigEntry<KeyboardShortcut> KeyCheatBlorfFlip, KeyCheatDiceShow;
     public static ConfigEntry<float> FloatCheatCardSize;
-    public static ConfigEntry<bool> BooleanCheatBlorf, BooleanCheatDice;
+    public static ConfigEntry<int> IntCheatBlorfHealth;
 #endif
 
     private void Awake()
@@ -74,6 +75,10 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
     }
 
+    private void Update()
+    {
+    }
+
     private void BindConfig()
     {
         intPositionNum = Config.Bind("AAARepeatConfigNum", "PositionNum", 4, new ConfigDescription("可传送坐标数量(需要重启游戏)", new AcceptableValueRange<int>(0, 9)));
@@ -84,9 +89,13 @@ public class Plugin : BaseUnityPlugin
 #if CHEATRELEASE
         BooleanCheatBlorf = Config.Bind("Cheat", "CheatDeck", false, "Deck模式作弊");
         BooleanCheatDice = Config.Bind("Cheat", "CheatDice", false, "Dice模式作弊");
-        KeyCheatDeckFlip = Config.Bind("Cheat", "CardFlip", new KeyboardShortcut(KeyCode.LeftControl), "翻转放大其他玩家卡牌");
-        FloatCheatCardSize = Config.Bind("Cheat", "CardSize", 1f, new ConfigDescription("放大大小", new AcceptableValueRange<float>(1f, 10f)));
+        KeyCheatBlorfFlip = Config.Bind("Cheat", "CardFlip", new KeyboardShortcut(KeyCode.LeftControl), "翻转放大其他玩家卡牌");
         KeyCheatDiceShow = Config.Bind("Cheat", "DiceShow", new KeyboardShortcut(KeyCode.LeftControl), "显示其他玩家骰子");
+        FloatCheatCardSize = Config.Bind("Cheat", "CardSize", 1f, new ConfigDescription("放大大小", new AcceptableValueRange<float>(1f, 10f)));
+        IntCheatBlorfHealth = Config.Bind("Cheat", "DeckHealth", 6, new ConfigDescription("Deck模式生命值(开始游戏后更改生效)", new AcceptableValueRange<int>(1, 50)));
+        BooleanCheatBlorfHealth = Config.Bind("Cheat", "ShowHealth", false, "显示生命值(第几枪实弹)");
+        BooleanCheatBlorfLastRoundCard = Config.Bind("Cheat", "ShowRoundCard", false, "显示当前出牌(提示GUI)");
+        BooleanCheatDiceTotalDice = Config.Bind("Cheat", "ShowTotalDice", false, "显示骰子总数(提示GUI)");
 #endif
 
         KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.O), "张嘴");

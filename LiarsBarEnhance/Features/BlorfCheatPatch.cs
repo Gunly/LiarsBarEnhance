@@ -1,7 +1,10 @@
 ﻿#if CHEATRELEASE
 using HarmonyLib;
+
 using Mirror;
+
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace LiarsBarEnhance.Features;
@@ -9,13 +12,13 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class BlorfCheatPatch
 {
-    private static readonly Dictionary<Card, Vector3> CardPositons = [], CardRotations = [], CardScales = [];
+    private static readonly Dictionary<Card, Vector3> cardPositons = [], cardRotations = [], cardScales = [];
 
     [HarmonyPatch(typeof(Card), "Update")]
     [HarmonyPrefix]
     public static void UpdatePrefix(Card __instance)
     {
-        if (Plugin.BooleanCheatBlorf.Value && __instance.gameObject.activeInHierarchy)
+        if (Plugin.BooleanCheatBlorf.Value)
         {
             var n = __instance.transform.root.GetComponent<NetworkIdentity>();
             if (n == null)
@@ -29,25 +32,37 @@ public class BlorfCheatPatch
                 if (__instance.Devil)
                 {
                     __instance.GetComponent<MeshRenderer>().material = Manager.Instance.devil;
+                    if (Manager.Instance.BlorfGame.RoundCard == 1)
+                    {
+                        __instance.GetComponent<MeshFilter>().sharedMesh = Manager.Instance.BlorfGame.Card1;
+                    }
+                    else if (Manager.Instance.BlorfGame.RoundCard == 2)
+                    {
+                        __instance.GetComponent<MeshFilter>().sharedMesh = Manager.Instance.BlorfGame.Card2;
+                    }
+                    else if (Manager.Instance.BlorfGame.RoundCard == 3)
+                    {
+                        __instance.GetComponent<MeshFilter>().sharedMesh = Manager.Instance.BlorfGame.Card3;
+                    }
                 }
                 else
                 {
                     __instance.GetComponent<MeshRenderer>().material = __instance.normal;
                 }
-                if (!CardPositons.ContainsKey(__instance))
+                if (!cardPositons.ContainsKey(__instance))
                 {
-                    CardPositons.Add(__instance, __instance.transform.localPosition);
-                    CardRotations.Add(__instance, __instance.transform.localEulerAngles);
-                    CardScales.Add(__instance, __instance.transform.localScale);
+                    cardPositons.Add(__instance, __instance.transform.localPosition);
+                    cardRotations.Add(__instance, __instance.transform.localEulerAngles);
+                    cardScales.Add(__instance, __instance.transform.localScale);
                 }
-                if (Plugin.KeyCheatDeckFlip.IsDown())
+                if (Plugin.KeyCheatBlorfFlip.IsDown())
                 {
                     Reset(__instance);
                     __instance.transform.Translate(Vector3.up * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
                     __instance.transform.Rotate(180f, 0f, 0f, Space.Self);
-                    __instance.transform.localScale = CardScales[__instance] * Plugin.FloatCheatCardSize.Value;
+                    __instance.transform.localScale = cardScales[__instance] * Plugin.FloatCheatCardSize.Value;
                 }
-                if (Plugin.KeyCheatDeckFlip.IsUp())
+                if (Plugin.KeyCheatBlorfFlip.IsUp())
                 {
                     Reset(__instance);
                 }
@@ -57,9 +72,22 @@ public class BlorfCheatPatch
 
     private static void Reset(Card card)
     {
-        if (CardPositons.ContainsKey(card)) card.transform.localPosition = CardPositons[card];
-        if (CardRotations.ContainsKey(card)) card.transform.localEulerAngles = CardRotations[card];
-        if (CardScales.ContainsKey(card)) card.transform.localScale = CardScales[card];
+        if (cardPositons.ContainsKey(card)) card.transform.localPosition = cardPositons[card];
+        if (cardRotations.ContainsKey(card)) card.transform.localEulerAngles = cardRotations[card];
+        if (cardScales.ContainsKey(card)) card.transform.localScale = cardScales[card];
+    }
+
+    private static bool handlerset = false;
+    [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
+    [HarmonyPostfix]
+    public static void UpdateCallPostfix(BlorfGamePlay __instance, bool ___revolverset)
+    {
+        if (__instance.isOwned && Plugin.BooleanCheatBlorf.Value && !handlerset && ___revolverset)
+        {
+            handlerset = true;
+            Plugin.IntCheatBlorfHealth.Value = __instance.Networkrevolverbulllet;
+            Plugin.IntCheatBlorfHealth.SettingChanged += (sender, args) => __instance.Networkrevolverbulllet = Plugin.IntCheatBlorfHealth.Value - 1;
+        }
     }
 }
 #endif

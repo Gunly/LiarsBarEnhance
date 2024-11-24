@@ -33,7 +33,7 @@ public class FOVPatch
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance)
+    public static void UpdatePostfix(CharController __instance, PlayerStats ___playerStats, Manager ___manager)
     {
         if (!__instance.isOwned) return;
         if (Plugin.BooleanViewMouseViewField.Value)
@@ -58,15 +58,15 @@ public class FOVPatch
         {
             fov += Mathf.Min(-0.1f, d / 5);
         }
-        if (!CharMoveablePatch.PlayerStats.Dead)
+        if (!___playerStats.Dead)
         {
             cam.m_Lens.FieldOfView = fov;
         }
         else
         {
-            for (var i = 0; i < CharMoveablePatch.Manager.SpectatorCameraParrent.transform.childCount; i++)
+            for (var i = 0; i < ___manager.SpectatorCameraParrent.transform.childCount; i++)
             {
-                CharMoveablePatch.Manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = fov;
+                ___manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = fov;
             }
         }
     }

@@ -12,7 +12,7 @@ public class TeleportPatch
         if (!__instance.isOwned) return;
         for (var i = 0; i < Plugin.InitPositionNumValue; i++)
         {
-            if (Plugin.KeyPosition[i].IsDown())
+            if (Plugin.KeyPosition[i].Value.IsDown())
             {
                 __instance.transform.localPosition = Plugin.VectorPosition[i].Value;
                 __instance.transform.localRotation = Plugin.VectorRotation[i].Value.ToQuaternion();

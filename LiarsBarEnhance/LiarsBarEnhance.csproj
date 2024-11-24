@@ -4,7 +4,7 @@
         <AssemblyName>com.github.gunly.LiarsBarEnhance</AssemblyName>
         <Product>LiarsBarEnhance</Product>
         <Description>A BepInEx plugin help to enhance your playing experience in game Liar's Bar</Description>
-        <Version>1.0.3</Version>
+        <Version>1.0.5</Version>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
         <OutDir>./Output</OutDir>

@@ -15,7 +15,11 @@ public class ShowSelfTopInfoPatch
     {
         if (Plugin.BooleanCustomShowSelfInfo.Value)
         {
-            ___RoundText.text = $"({___currentrevoler}|{(Plugin.BooleanCheatBlorf.Value ? ___revolverbulllet + 1 : 6)})";
+#if CHEATRELEASE
+            ___RoundText.text = $"({___currentrevoler}|{(Plugin.BooleanCheatBlorf.Value && Plugin.BooleanCheatBlorfHealth.Value ? ___revolverbulllet + 1 : 6)})";
+#else
+            ___RoundText.text = $"({___currentrevoler}|6)";
+#endif
             ___RoundText.gameObject.SetActive(true);
             if (___playerStats.HaveTurn)
             {

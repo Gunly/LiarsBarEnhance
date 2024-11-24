@@ -10,8 +10,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class CharMoveablePatch
 {
-    public static PlayerStats PlayerStats;
-    public static Manager Manager;
+    private static PlayerStats playerStats;
     public static float CinemachineTargetRoll = 0f;
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
@@ -19,8 +18,7 @@ public class CharMoveablePatch
     public static void StartPostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        PlayerStats = FastMemberAccessor<CharController, PlayerStats>.Get(__instance, "playerStats");
-        Manager = FastMemberAccessor<CharController, Manager>.Get(__instance, "manager");
+        playerStats = FastMemberAccessor<CharController, PlayerStats>.Get(__instance, "playerStats");
         __instance.gameObject.AddComponent<FpController>();
         CinemachineTargetRoll = 0f;
         Debug.Log($"{nameof(CharMoveablePatch)}: {nameof(FpController)} added to {nameof(CharController)}");
@@ -35,7 +33,7 @@ public class CharMoveablePatch
         {
             Plugin.BooleanViewRemoveRotationLimit.Value = !Plugin.BooleanViewRemoveRotationLimit.Value;
         }
-        if (!PlayerStats.Dead || !Plugin.BooleanViewRemoveRotationLimit.Value)
+        if (!playerStats.Dead || !Plugin.BooleanViewRemoveRotationLimit.Value)
         {
             if (Plugin.KeyViewClockwise.IsPressed()) CinemachineTargetRoll -= 2f;
             if (Plugin.KeyViewAnticlockwise.IsPressed()) CinemachineTargetRoll += 2f;
