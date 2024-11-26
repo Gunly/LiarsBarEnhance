@@ -14,7 +14,7 @@ public class BlorfCheatPatch
 
     [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(BlorfGamePlay __instance)
+    public static void UpdateCallPostfix(BlorfGamePlay __instance, Manager ___manager)
     {
         if (!Plugin.BooleanCheatBlorf.Value) return;
         if (__instance.isOwned)
@@ -23,7 +23,7 @@ public class BlorfCheatPatch
             {
                 var cardObject = __instance.Cards[i];
                 if (!cardObject.gameObject.activeSelf) continue;
-                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && cardObject.gameObject.activeSelf)
+                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && !___manager.GamePaused && !___manager.Chatting && cardObject.gameObject.activeSelf)
                 {
                     var card = cardObject.GetComponent<Card>();
                     if (card.Devil)
@@ -73,7 +73,7 @@ public class BlorfCheatPatch
                 {
                     card.GetComponent<MeshRenderer>().material = card.normal;
                 }
-                if (Plugin.KeyCheatBlorfFlip.IsPressed())
+                if (Plugin.KeyCheatBlorfFlip.IsPressed() && !___manager.GamePaused && !___manager.Chatting)
                 {
                     if (!cardFliped[card])
                     {
@@ -93,26 +93,6 @@ public class BlorfCheatPatch
                 }
             }
         }
-    }
-
-    [HarmonyPatch(typeof(DiceGamePlay), "UpdateCall")]
-    [HarmonyPostfix]
-    public static void UpdateCallPostfix(DiceGamePlay __instance)
-    {
-        if (!Plugin.BooleanCheatBlorf.Value) return;
-        if (__instance.isOwned)
-        {
-            for (var i = 0; i < __instance.DiceValues.Count; i++)
-            {
-                if (Plugin.KeyCheatChangeCardDice[5 - i].IsDown())
-                {
-                    if (__instance.DiceValues[i] < 6) __instance.DiceValues[i]++;
-                    else __instance.DiceValues[i] = 1;
-                }
-
-            }
-        }
-
     }
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]

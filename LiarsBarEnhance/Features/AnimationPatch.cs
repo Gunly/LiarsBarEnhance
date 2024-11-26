@@ -21,12 +21,12 @@ public class AnimationPatch
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance)
+    public static void UpdatePostfix(CharController __instance, Manager ___manager)
     {
         if (!__instance.isOwned) return;
         for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
         {
-            if (Plugin.KeyAnims[i].IsDown())
+            if (Plugin.KeyAnims[i].IsDown() && !___manager.GamePaused && !___manager.Chatting)
             {
                 ReadAnim(i);
                 if (usingAnim.Count > 1)

@@ -2,7 +2,6 @@
 using HarmonyLib;
 
 using System;
-using System.Linq;
 
 using UnityEngine;
 
@@ -12,7 +11,6 @@ namespace LiarsBarEnhance.Features;
 public class DiceCheatPatch
 {
     public static readonly int[] diceCounts = new int[6];
-    private static int first = 4;
 
     [HarmonyPatch(typeof(Dice), "Update")]
     [HarmonyPostfix]
@@ -28,29 +26,45 @@ public class DiceCheatPatch
     [HarmonyPostfix]
     public static void UpdateCallPostfix(DiceGamePlay __instance, GameObject ___ZarText, Manager ___manager, PlayerStats ___playerStats)
     {
-        if (Plugin.BooleanCheatDice.Value && !__instance.isOwned && Plugin.KeyCheatDiceShow.IsPressed())
+        if (Plugin.BooleanCheatDice.Value && !__instance.isOwned && Plugin.KeyCheatDiceShow.IsPressed() && !___manager.GamePaused && !___manager.Chatting)
         {
             ___ZarText.SetActive(value: true);
         }
 
-        if (___playerStats.Slot < first) first = ___playerStats.Slot;
-        if (___playerStats.Slot == first) Array.Fill(diceCounts, 0);
-        if (___playerStats.Dead) return;
-        foreach (var value in __instance.DiceValues)
+        if (!___playerStats.Dead && Plugin.BooleanCheatDiceTotalDice.Value)
         {
-            if (value != 1 || ___manager.DiceGame.DiceMode == DiceGamePlayManager.dicemode.Basic)
+            foreach (var value in __instance.DiceValues)
             {
-                diceCounts[value - 1]++;
-            }
-            else
-            {
-                for (var i = 0; i < diceCounts.Length; i++) diceCounts[i]++;
+                if (value != 1 || ___manager.DiceGame.DiceMode == DiceGamePlayManager.dicemode.Basic)
+                {
+                    diceCounts[value - 1]++;
+                }
+                else
+                {
+                    for (var i = 0; i < diceCounts.Length; i++) diceCounts[i]++;
+                }
             }
         }
-        if (diceCounts.Any(i => i > 20))
+
+        if (__instance.isOwned)
         {
-            first = 4;
+            for (var i = 0; i < __instance.DiceValues.Count; i++)
+            {
+                if (Plugin.KeyCheatChangeCardDice[4 - i].IsDown() && !___manager.GamePaused && !___manager.Chatting)
+                {
+                    if (__instance.DiceValues[i] < 6) __instance.DiceValues[i]++;
+                    else __instance.DiceValues[i] = 1;
+                }
+
+            }
         }
+    }
+
+    [HarmonyPatch(typeof(DiceGamePlayManager), "Update")]
+    [HarmonyPostfix]
+    public static void UpdatePostfix()
+    {
+        if (Plugin.BooleanCheatDiceTotalDice.Value) Array.Fill(diceCounts, 0);
     }
 }
 #endif

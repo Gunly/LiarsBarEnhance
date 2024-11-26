@@ -5,7 +5,7 @@ using HarmonyLib;
 using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
 
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -31,8 +31,8 @@ namespace LiarsBarEnhance.Components
         private void Start()
         {
             charController = GetComponent<CharController>();
-            if (!charController.isOwned) return;
             playerStats = FastMemberAccessor<CharController, PlayerStats>.Get(charController, "playerStats");
+            if (!charController.isOwned) return;
             manager = FastMemberAccessor<CharController, Manager>.Get(charController, "manager");
 
             initHeadPosition = charController.HeadPivot.transform.localPosition;
@@ -49,7 +49,7 @@ namespace LiarsBarEnhance.Components
         private void Update()
         {
             if (!charController.isOwned) return;
-            if (!manager.GamePaused)
+            if (!manager.GamePaused && !manager.Chatting)
             {
                 MoveHead();
                 MouseRotate();
@@ -73,6 +73,18 @@ namespace LiarsBarEnhance.Components
                 charController.SetPitch(0f);
                 CharMoveablePatch.CinemachineTargetRoll = 0f;
                 Plugin.FloatViewField.Value = 60f;
+            }
+            if (Plugin.KeyViewRemoveRotationLimit.IsDown())
+            {
+                Plugin.BooleanViewRemoveRotationLimit.Value = !Plugin.BooleanViewRemoveRotationLimit.Value;
+            }
+            if (Plugin.KeyMoveFollowHeadShortcut.IsDown())
+            {
+                Plugin.BooleanMoveFollowHead.Value = !Plugin.BooleanMoveFollowHead.Value;
+            }
+            if (Plugin.KeyViewField.IsDown())
+            {
+                Plugin.BooleanViewField.Value = !Plugin.BooleanViewField.Value;
             }
         }
 
@@ -156,10 +168,9 @@ namespace LiarsBarEnhance.Components
 
         private void Move()
         {
-            var run = Plugin.KeyMoveRun.IsPressed();
             var squat = Plugin.KeyMoveSquat.IsPressed();
             var jump = Plugin.KeyMoveJump.IsPressed();
-            var moveSpeed = Plugin.FloatMoveSpeed.Value * (run ? 1.5f : 1f) * (squat ? 0.5f : 1f);
+            var moveSpeed = Plugin.FloatMoveSpeed.Value * (squat ? 0.5f : 1f);
 
             if (isFling)
             {
@@ -251,11 +262,11 @@ namespace LiarsBarEnhance.Components
             }
             if (Plugin.KeyMoveLeft.IsPressed())
             {
-                charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.left, 0f), Space.Self);
+                charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.left, -Plugin.FloatMoveHorizontalBodyRotate.Value), Space.Self);
             }
             if (Plugin.KeyMoveRight.IsPressed())
             {
-                charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.right, 0f), Space.Self);
+                charController.transform.Translate(moveSpeed * Time.deltaTime * WalkBodyRotate(Vector3.right, Plugin.FloatMoveHorizontalBodyRotate.Value), Space.Self);
             }
         }
 
@@ -299,7 +310,8 @@ namespace LiarsBarEnhance.Components
                 if (y < 0) y += Screen.height;
                 GUI.Label(new Rect(x, y, 240, 480),
                     hintTitle +
-                    $"{playerStats.PlayerName}\n\n" +
+                    $"{playerStats.PlayerName}{HintHealth()}\n" +
+                    $"\n" +
                     $"按住 {HintKey(Plugin.KeyCustomShowHint)} 显示提示\n" +
                     $"按住 {HintKey(Plugin.KeyViewCrazyShakeHead)} 疯狂转头\n" +
                     $"按住 {HintKey(Plugin.KeyCustomBigMouth)} 张嘴\n" +
@@ -313,19 +325,16 @@ namespace LiarsBarEnhance.Components
                     $"按住 {HintKey(Plugin.KeyRotateRoll)} 垂直(左右)转动身体\n" +
                     $"按 {HintKey(Plugin.KeyMoveJump)} 跳跃\n" +
                     $"按 {HintKey(Plugin.KeyMoveSquat)} 蹲下\n" +
-                    $"按 {HintKey(Plugin.KeyMoveRun)} 奔跑\n" +
-                    $"按 {HintKey(Plugin.KeyViewRemoveRotationLimit)} 切换解除视角限制\n" +
                     $"按 {HintKey(Plugin.KeyRotateAuto)} 自动旋转\n" +
                     $"传送: {HintKey(Plugin.KeyPosition)}\n" +
-                    "使用 <color=#FFFF00>鼠标滚轮</color> 调整视场\n" +
-                    $"视场角: {FOVPatch.Fov:0.00}\n\n" +
-                    $"解除视角限制: {(Plugin.BooleanViewRemoveRotationLimit.Value ? on : off)}\n" +
-                    $"移动方向跟随视角: {(Plugin.BooleanMoveFollowHead.Value ? on : off)}\n" +
-                    $"调整视场: {(Plugin.BooleanViewMouseViewField.Value ? on : off)}\n" +
+                    $"\n" +
+                    $"解除视角限制({HintKey(Plugin.KeyViewRemoveRotationLimit)}): {(Plugin.BooleanViewRemoveRotationLimit.Value ? on : off)}\n" +
+                    $"移动方向跟随头部视角({HintKey(Plugin.KeyMoveFollowHeadShortcut)}): {(Plugin.BooleanMoveFollowHead.Value ? on : off)}\n" +
+                    $"调整视场({HintKey(Plugin.KeyViewField)}, {FOVPatch.Fov:0.00}): {(Plugin.BooleanViewField.Value ? on : off)}\n" +
                     $"显示自身头顶信息: {(Plugin.BooleanCustomShowSelfInfo.Value ? on : off)}\n\n" +
                     $"Position:  X: {transform.localPosition.x:0.00}  Y: {transform.localPosition.y:0.00}  Z: {transform.localPosition.z:0.00}\n" +
                     $"Rotation:  X: {transform.localEulerAngles.x:0.00}  Y: {transform.localEulerAngles.y:0.00}  Z: {transform.localEulerAngles.z:0.00}\n" +
-                    $"Pitch: {charController.GetPitch():0.00}  Yaw: {charController.GetYaw():0.00}\n" +
+                    $"Pitch: {charController.GetPitch():0.00}  Yaw: {charController.GetYaw():0.00}  Roll: {CharMoveablePatch.CinemachineTargetRoll:0.00}\n" +
 #if CHEATRELEASE
                     CheatText() +
 #endif
@@ -339,16 +348,11 @@ namespace LiarsBarEnhance.Components
             }
         }
 
-        private string HintKey(params ConfigEntry<KeyboardShortcut>[] entries)
-        {
-            return $"<color=#FFFF00>{entries.Join((e) => KeyboardShortcutString(e.Value))}</color>";
-        }
-
         private string HintTitle()
         {
             var mode = $"<color=#F5E37B>{manager.mode}</color>";
             string ruleSet;
-            if(manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
+            if (manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
             {
                 if (manager.BlorfGame.DeckMode == BlorfGamePlayManager.deckmode.Basic)
                     ruleSet = $"<color=#3487AB>{BlorfGamePlayManager.deckmode.Basic}</color>";
@@ -365,14 +369,36 @@ namespace LiarsBarEnhance.Components
             return $"{mode} - {ruleSet}\n";
         }
 
+        private string HintHealth()
+        {
+            if (charController is BlorfGamePlay blorfGame)
+            {
+#if CHEATRELEASE
+                return $"({blorfGame.Networkcurrentrevoler}|{(Plugin.BooleanCheatBlorf.Value && Plugin.BooleanCheatBlorfHealth.Value ? blorfGame.Networkrevolverbulllet + 1 : 6)})";
+#else
+                return $"({blorfGame.Networkcurrentrevoler}|6)";
+#endif
+            }
+            else if (charController is DiceGamePlay diceGame)
+            {
+                return $"({playerStats.NetworkHealth}|2)";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        private string HintKey(params ConfigEntry<KeyboardShortcut>[] entries)
+        {
+            return entries.Select(e => e.Value).Join(KeyboardShortcutString);
+        }
+
         private string KeyboardShortcutString(KeyboardShortcut shortcut)
         {
-            if (shortcut.MainKey == KeyCode.None)
-            {
-                return "未设置";
-            }
-
-            return string.Join(" ", shortcut.Modifiers.Select((c) => KeycodeString(c)).ToArray()) + " " + KeycodeString(shortcut.MainKey);
+            if (shortcut.MainKey == KeyCode.None) return "未设置";
+            if (shortcut.Modifiers.Count() == 0) return $"<color=#FFFF00>{KeycodeString(shortcut.MainKey)}</color>";
+            return $"<color=#FFFF00>{shortcut.Modifiers.Join(KeycodeString, "+")}+{KeycodeString(shortcut.MainKey)}</color>";
         }
         private string KeycodeString(KeyCode key)
         {

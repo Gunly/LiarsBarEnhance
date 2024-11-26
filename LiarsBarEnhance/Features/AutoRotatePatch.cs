@@ -18,10 +18,10 @@ public class AutoRotatePatch
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance)
+    public static void UpdatePostfix(CharController __instance, Manager ___manager)
     {
         if (!__instance.isOwned) return;
-        if (Plugin.KeyRotateAuto.IsDown() && !__instance.Paused()) rotating = !rotating;
+        if (Plugin.KeyRotateAuto.IsDown() && !___manager.GamePaused && !___manager.Chatting) rotating = !rotating;
         if (!rotating) return;
         var rotateSpeed = Plugin.FloatAutoRotateSpeed.Value * 6;
         if ((Plugin.DirectionRotateState.Value & RotateDirection.Pitch) != RotateDirection.None)

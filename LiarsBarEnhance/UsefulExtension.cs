@@ -19,27 +19,29 @@ public static class UsefulExtension
 
     public static bool IsDown(this ConfigEntry<KeyboardShortcut> entry)
     {
-        return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKeyDown(entry.Value.MainKey) && entry.Value.Modifiers.All((e) => Input.GetKey(e));
+        return entry.Value.MainKey != KeyCode.None && Input.GetKeyDown(entry.Value.MainKey) && ModifierKeyTest(entry.Value);
     }
 
     public static bool IsUp(this ConfigEntry<KeyboardShortcut> entry)
     {
-        return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKeyUp(entry.Value.MainKey) && entry.Value.Modifiers.All((e) => Input.GetKey(e));
+        return entry.Value.MainKey != KeyCode.None && Input.GetKeyUp(entry.Value.MainKey) && ModifierKeyTest(entry.Value);
     }
 
     public static bool IsPressed(this ConfigEntry<KeyboardShortcut> entry)
     {
-        return !KeyboardShortcut.Empty.Equals(entry.Value) && Input.GetKey(entry.Value.MainKey) && entry.Value.Modifiers.All((e) => Input.GetKey(e));
+        return entry.Value.MainKey != KeyCode.None && Input.GetKey(entry.Value.MainKey) && ModifierKeyTest(entry.Value);
+    }
+
+    private static readonly KeyCode[] modifierKeys = [KeyCode.LeftShift, KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.RightShift, KeyCode.RightControl, KeyCode.RightAlt];
+    private static bool ModifierKeyTest(KeyboardShortcut key)
+    {
+        var modifiers = key.Modifiers;
+        return modifiers.All(e => Input.GetKey(e)) && (modifierKeys.Contains(key.MainKey) || modifierKeys.Except(modifiers).All(e => !Input.GetKey(e)));
     }
 
     public static Quaternion ToQuaternion(this Vector3 vector)
     {
         return Quaternion.Euler(vector.x, vector.y, vector.z);
-    }
-
-    public static bool Paused(this CharController charController)
-    {
-        return FastMemberAccessor<CharController, Manager>.Get(charController, "manager").GamePaused;
     }
 
     public static float GetYaw(this CharController charController)

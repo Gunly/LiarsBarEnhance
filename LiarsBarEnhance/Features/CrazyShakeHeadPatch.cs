@@ -38,9 +38,9 @@ public class CrazyShakeHeadPatch
 
     [HarmonyPatch(typeof(CharController), "RotateInFrame")]
     [HarmonyPostfix]
-    private static void RotateInFramePostfix(CharController __instance, float ___MinX, float ___MaxX, float ___MinY, float ___MaxY)
+    private static void RotateInFramePostfix(CharController __instance, Manager ___manager, float ___MinX, float ___MaxX, float ___MinY, float ___MaxY)
     {
-        if (Plugin.KeyViewCrazyShakeHead.IsDown() && !__instance.Paused())
+        if (Plugin.KeyViewCrazyShakeHead.IsDown() && !___manager.GamePaused && !___manager.Chatting)
             ToggleEnabled(__instance);
 
         if (!IsEnabled)

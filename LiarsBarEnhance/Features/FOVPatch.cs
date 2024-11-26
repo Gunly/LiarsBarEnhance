@@ -35,13 +35,13 @@ public class FOVPatch
     [HarmonyPostfix]
     public static void UpdatePostfix(CharController __instance, PlayerStats ___playerStats, Manager ___manager)
     {
-        if (!__instance.isOwned || __instance.Paused()) return;
-        if (Plugin.BooleanViewMouseViewField.Value)
+        if (!__instance.isOwned) return;
+        if (Plugin.BooleanViewField.Value && !___manager.GamePaused && !___manager.Chatting)
         {
             var mouseScroll = Input.GetAxis("Mouse ScrollWheel");
             if (mouseScroll != 0f)
             {
-                Plugin.FloatViewField.Value += -50f * mouseScroll;
+                Plugin.FloatViewField.Value -= 50f * mouseScroll;
             }
         }
         var d = Plugin.FloatViewField.Value - Fov;
@@ -49,9 +49,13 @@ public class FOVPatch
         {
             Fov = Plugin.FloatViewField.Value;
         }
+        else if (d > 0f)
+        {
+            Fov += Mathf.Max(0.1f, d / 5);
+        }
         else
         {
-            Fov += Mathf.Max(d / Mathf.Abs(d) / 10f, d / 5);
+            Fov += Mathf.Min(-0.1f, d / 5);
         }
         if (!___playerStats.Dead)
         {

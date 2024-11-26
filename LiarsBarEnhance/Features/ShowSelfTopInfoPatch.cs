@@ -10,15 +10,14 @@ public class ShowSelfTopInfoPatch
 {
     [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(BlorfGamePlay __instance, PlayerStats ___playerStats, GameObject ___KartKafaSprite,
-        TextMeshPro ___RoundText, int ___currentrevoler, int ___revolverbulllet)
+    public static void UpdateCallPostfix(BlorfGamePlay __instance, PlayerStats ___playerStats, GameObject ___KartKafaSprite, TextMeshPro ___RoundText)
     {
         if (Plugin.BooleanCustomShowSelfInfo.Value)
         {
 #if CHEATRELEASE
-            ___RoundText.text = $"({___currentrevoler}|{(Plugin.BooleanCheatBlorf.Value && Plugin.BooleanCheatBlorfHealth.Value ? ___revolverbulllet + 1 : 6)})";
+            ___RoundText.text = $"({__instance.Networkcurrentrevoler}|{(Plugin.BooleanCheatBlorf.Value && Plugin.BooleanCheatBlorfHealth.Value ? __instance.Networkrevolverbulllet + 1 : 6)})";
 #else
-            ___RoundText.text = $"({___currentrevoler}|6)";
+            ___RoundText.text = $"({__instance.Networkcurrentrevoler}|6)";
 #endif
             ___RoundText.gameObject.SetActive(true);
             if (___playerStats.HaveTurn)

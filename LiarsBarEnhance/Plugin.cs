@@ -5,6 +5,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 
 using LiarsBarEnhance.Features;
+using LiarsBarEnhance.Utils;
 
 using System;
 
@@ -16,20 +17,20 @@ namespace LiarsBarEnhance;
 public class Plugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger;
-    private static ConfigEntry<int> intPositionNum, intAnimationNum;
+    private static ConfigEntry<int> intPositionNum, intAnimationNum, intCustomXP;
     public static ConfigEntry<int> IntHintPosX, IntHintPosY;
     public static int InitPositionNumValue, InitAnimationNumValue;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyCustomShowHint,
-        KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveRun, KeyMoveSquat, KeyMoveResetPosition,
-        KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewReset,
+        KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveSquat, KeyMoveResetPosition, KeyMoveFollowHeadShortcut,
+        KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewReset, KeyViewField,
         KeyViewForward, KeyViewBack, KeyViewLeft, KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
         KeyRotateYaw, KeyRotatePitch, KeyRotateRoll, KeyRotateAuto;
     public static ConfigEntry<KeyboardShortcut>[] KeyPosition;
     public static ConfigEntry<KeyboardShortcut>[] KeyAnims;
     public static ConfigEntry<Vector3>[] VectorPosition, VectorRotation;
-    public static ConfigEntry<float> FloatJumpHeight, FloatGravity, FloatMoveSpeed, FloatViewSpeed, FloatViewField,
+    public static ConfigEntry<float> FloatJumpHeight, FloatGravity, FloatMoveSpeed, FloatMoveHorizontalBodyRotate, FloatViewSpeed, FloatViewField,
         FloatAutoRotateSpeed, FloatCustomPlayerScale;
-    public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewMouseViewField,
+    public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewField,
         BooleanTestGiraffe, BooleanCustomShowSelfInfo;
     public static ConfigEntry<string> StringCustomName, StringCustomNameColor, StringCustomMessageColor;
     public static ConfigEntry<string>[] StringAnims;
@@ -99,51 +100,53 @@ public class Plugin : BaseUnityPlugin
         BooleanCheatBlorfLastRoundCard = Config.Bind("Cheat", "ShowRoundCard", false, "显示当前出牌(提示GUI)");
         BooleanCheatDiceTotalDice = Config.Bind("Cheat", "ShowTotalDice", false, "显示骰子总数(提示GUI)");
         KeyCheatChangeCardDice = new ConfigEntry<KeyboardShortcut>[5];
-        KeyCode[] defaultKey = [KeyCode.G, KeyCode.H, KeyCode.J, KeyCode.K, KeyCode.L];
         for (var i = 0; i < KeyCheatChangeCardDice.Length; i++)
         {
-            KeyCheatChangeCardDice[i] = Config.Bind("Cheat", $"Change{i + 1}", new KeyboardShortcut(defaultKey[i]), $"改变第{i + 1}个牌/骰子");
+            KeyCheatChangeCardDice[i] = Config.Bind("Cheat", $"Change{i + 1}", new KeyboardShortcut(KeyCode.Alpha1 + i), $"改变第{i + 1}个牌/骰子");
         }
 #endif
 
-        KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.O), "张嘴");
+        KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.B), "张嘴");
         KeyCustomShowHint = Config.Bind("Custom", "ShowHint", new KeyboardShortcut(KeyCode.Tab), "启用提示");
         StringCustomName = Config.Bind("Custom", "CustomName", "", "自定义名称");
         StringCustomNameColor = Config.Bind("Custom", "NameColor", "FDE2AA", "聊天名字颜色");
         StringCustomMessageColor = Config.Bind("Custom", "MessageColor", "FFFFFF", "聊天文本颜色");
-        BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", false, "显示自身头顶信息");
+        BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "显示自身头顶信息");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放(自己)", new AcceptableValueRange<float>(0f, 1f)));
         IntHintPosX = Config.Bind("Custom", "HintPosX", -240, new ConfigDescription("提示坐标X, 负数表示以屏幕宽度减去设置值))", new AcceptableValueRange<int>(-2000, 2000)));
         IntHintPosY = Config.Bind("Custom", "HintPosY", 60, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(-1000, 1000)));
+        intCustomXP = Config.Bind("Custom", "XP", 0, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(0, 10000)));
 
         KeyMoveResetPosition = Config.Bind("Move", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
+        KeyMoveFollowHeadShortcut = Config.Bind("Move", "MoveFollowHeadShortcut", new KeyboardShortcut(KeyCode.H), "切换移动方向跟随头部视角快捷键");
+        FloatMoveHorizontalBodyRotate = Config.Bind("Move", "MoveHorizontalBodyRotate", 0f, new ConfigDescription("左右移动时身体旋转", new AcceptableValueRange<float>(0f, 90f)));
         KeyMoveForward = Config.Bind("Move", "BodyForward", new KeyboardShortcut(KeyCode.UpArrow), "向前移动");
         KeyMoveBack = Config.Bind("Move", "BodyBack", new KeyboardShortcut(KeyCode.DownArrow), "向后移动");
         KeyMoveLeft = Config.Bind("Move", "BodyLeft", new KeyboardShortcut(KeyCode.LeftArrow), "向左移动");
         KeyMoveRight = Config.Bind("Move", "BodyRight", new KeyboardShortcut(KeyCode.RightArrow), "向右移动");
         KeyMoveJump = Config.Bind("Move", "BodyJump", new KeyboardShortcut(KeyCode.Keypad0), "跳跃(双击进入飞行模式, 飞行模式向上移动)");
-        KeyMoveRun = Config.Bind("Move", "BodyRun", new KeyboardShortcut(KeyCode.RightShift), "奔跑");
         KeyMoveSquat = Config.Bind("Move", "BodySquat", new KeyboardShortcut(KeyCode.RightControl), "蹲下(飞行模式向下移动, 同时按跳跃和蹲下退出飞行模式)");
         FloatJumpHeight = Config.Bind("Move", "JumpHeight", 0.65f, new ConfigDescription("跳跃高度", new AcceptableValueRange<float>(0f, 10f)));
         FloatGravity = Config.Bind("Move", "Gravity", 9.8f, new ConfigDescription("重力加速度(仅对跳跃生效)", new AcceptableValueRange<float>(0f, 100f)));
         FloatMoveSpeed = Config.Bind("Move", "MoveSpeed", 4f, new ConfigDescription("移动速度", new AcceptableValueRange<float>(0f, 100f)));
 
         KeyViewReset = Config.Bind("View", "ResetView", new KeyboardShortcut(KeyCode.T), "重置视角");
-        KeyViewCrazyShakeHead = Config.Bind("View", "CrazyShakeHead", new KeyboardShortcut(KeyCode.I), "疯狂摇头");
-        BooleanViewMouseViewField = Config.Bind("View", "MouseViewField", true, "滚轮调整视场角");
-        BooleanViewRemoveRotationLimit = Config.Bind("View", "RemoveRotationLimit", true, "移除视限制");
-        KeyViewRemoveRotationLimit = Config.Bind("View", "RemoveRotationLimitShortcut", new KeyboardShortcut(KeyCode.U), "切换移除视角限制快捷键");
-        KeyViewForward = Config.Bind("View", "ViewForward", new KeyboardShortcut(KeyCode.Keypad8), "头部/视角向前移动");
-        KeyViewBack = Config.Bind("View", "ViewBack", new KeyboardShortcut(KeyCode.Keypad5), "头部/视角向后移动");
-        KeyViewLeft = Config.Bind("View", "ViewLeft", new KeyboardShortcut(KeyCode.Keypad4), "头部/视角向左移动");
-        KeyViewRight = Config.Bind("View", "ViewRight", new KeyboardShortcut(KeyCode.Keypad6), "头部/视角向右移动");
-        KeyViewUp = Config.Bind("View", "ViewUp", new KeyboardShortcut(KeyCode.Keypad7), "头部/视角向上移动");
-        KeyViewDown = Config.Bind("View", "ViewDown", new KeyboardShortcut(KeyCode.Keypad1), "头部/视角向下移动");
-        KeyViewClockwise = Config.Bind("View", "ViewClockwise", new KeyboardShortcut(KeyCode.Keypad3), "视角顺时针旋转");
-        KeyViewAnticlockwise = Config.Bind("View", "ViewAnticlockwise", new KeyboardShortcut(KeyCode.Keypad2), "视角逆时针旋转");
-        FloatViewSpeed = Config.Bind("View", "ViewSpeed", 3f, new ConfigDescription("视角移动速度", new AcceptableValueRange<float>(0f, 100f)));
+        KeyViewCrazyShakeHead = Config.Bind("View", "CrazyShakeHead", new KeyboardShortcut(KeyCode.C), "疯狂摇头");
+        BooleanViewField = Config.Bind("View", "MouseViewField", true, "滚轮调整视场角");
         FloatViewField = Config.Bind("View", "ViewField", 60f, new ConfigDescription("视场角", new AcceptableValueRange<float>(1f, 180f)));
+        KeyViewField = Config.Bind("View", "ViewFieldKey", new KeyboardShortcut(KeyCode.Mouse2), "切换滚轮调整视场角");
+        BooleanViewRemoveRotationLimit = Config.Bind("View", "RemoveRotationLimit", true, "移除视限制");
+        KeyViewRemoveRotationLimit = Config.Bind("View", "RemoveRotationLimitShortcut", new KeyboardShortcut(KeyCode.G), "切换移除视角限制快捷键");
+        KeyViewForward = Config.Bind("View", "ViewForward", new KeyboardShortcut(KeyCode.I), "头部/视角向前移动");
+        KeyViewBack = Config.Bind("View", "ViewBack", new KeyboardShortcut(KeyCode.K), "头部/视角向后移动");
+        KeyViewLeft = Config.Bind("View", "ViewLeft", new KeyboardShortcut(KeyCode.J), "头部/视角向左移动");
+        KeyViewRight = Config.Bind("View", "ViewRight", new KeyboardShortcut(KeyCode.L), "头部/视角向右移动");
+        KeyViewUp = Config.Bind("View", "ViewUp", new KeyboardShortcut(KeyCode.O), "头部/视角向上移动");
+        KeyViewDown = Config.Bind("View", "ViewDown", new KeyboardShortcut(KeyCode.U), "头部/视角向下移动");
+        KeyViewClockwise = Config.Bind("View", "ViewClockwise", new KeyboardShortcut(KeyCode.RightBracket), "头部/视角顺时针旋转");
+        KeyViewAnticlockwise = Config.Bind("View", "ViewAnticlockwise", new KeyboardShortcut(KeyCode.LeftBracket), "头部/视角逆时针旋转");
+        FloatViewSpeed = Config.Bind("View", "ViewSpeed", 3f, new ConfigDescription("视角移动速度", new AcceptableValueRange<float>(0f, 100f)));
 
         KeyRotateYaw = Config.Bind("Rotate", "RotateYaw", new KeyboardShortcut(KeyCode.Mouse1), "水平旋转(Yaw, 偏航角, 按住移动鼠标)");
         KeyRotatePitch = Config.Bind("Rotate", "RotatePitch", new KeyboardShortcut(KeyCode.Mouse2), "垂直旋转(Pitch, 俯仰角, 按住移动鼠标)");
@@ -181,7 +184,7 @@ public class Plugin : BaseUnityPlugin
             ];
             for (var i = 0; i < intPositionNum.Value; i++)
             {
-                KeyPosition[i] = Config.Bind("Position", $"Position{i + 1}", new KeyboardShortcut(KeyCode.Alpha1 + i), $"移动到坐标{i + 1}");
+                KeyPosition[i] = Config.Bind("Position", $"Position{i + 1}", new KeyboardShortcut(KeyCode.Keypad1 + i), $"移动到坐标{i + 1}");
                 VectorPosition[i] = Config.Bind("Position", $"Position{i + 1}Position", DefaultPositions[i], $"坐标{i + 1}坐标");
                 VectorRotation[i] = Config.Bind("Position", $"Position{i + 1}Rotation", DefaultRotations[i], $"坐标{i + 1}角度");
             }
@@ -199,6 +202,18 @@ public class Plugin : BaseUnityPlugin
         }
 
         BooleanTestGiraffe = Config.Bind("Test", "Giraffe", false, "修复伸头(服务器和客户端都需要, 先开启再开始游戏)");
+
+        intCustomXP.SettingChanged += (sender, args) =>
+        {
+            if (intCustomXP.Value % 50 == 0)
+            {
+                PlayerLevelHelper.SetXp(intCustomXP.Value);
+            }
+            else
+            {
+                intCustomXP.Value = (int)((intCustomXP.Value + 25f) / 50f) * 50;
+            }
+        };
     }
 }
 

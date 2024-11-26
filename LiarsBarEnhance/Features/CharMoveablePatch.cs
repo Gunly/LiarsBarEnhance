@@ -23,15 +23,14 @@ public class CharMoveablePatch
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance, float ____cinemachineTargetYaw, float ____cinemachineTargetPitch)
+    public static void UpdatePostfix(CharController __instance, Manager ___manager, float ____cinemachineTargetYaw, float ____cinemachineTargetPitch)
     {
         if (!__instance.isOwned) return;
-        if (Plugin.KeyViewRemoveRotationLimit.IsDown() && !__instance.Paused())
+        if (!___manager.GamePaused && !___manager.Chatting)
         {
-            Plugin.BooleanViewRemoveRotationLimit.Value = !Plugin.BooleanViewRemoveRotationLimit.Value;
+            if (Plugin.KeyViewClockwise.IsPressed()) CinemachineTargetRoll -= 2f;
+            if (Plugin.KeyViewAnticlockwise.IsPressed()) CinemachineTargetRoll += 2f;
         }
-        if (Plugin.KeyViewClockwise.IsPressed()) CinemachineTargetRoll -= 2f;
-        if (Plugin.KeyViewAnticlockwise.IsPressed()) CinemachineTargetRoll += 2f;
         __instance.HeadPivot.transform.localRotation = Quaternion.Euler(____cinemachineTargetYaw, CinemachineTargetRoll, ____cinemachineTargetPitch);
     }
 }
