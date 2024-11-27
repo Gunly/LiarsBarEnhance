@@ -26,7 +26,7 @@ public class CharMoveablePatch
     public static void UpdatePostfix(CharController __instance, Manager ___manager, float ____cinemachineTargetYaw, float ____cinemachineTargetPitch)
     {
         if (!__instance.isOwned) return;
-        if (!___manager.GamePaused && !___manager.Chatting)
+        if (!Plugin.BooleanViewRemoveRotationLimit.Value && !___manager.GamePaused && !___manager.Chatting)
         {
             if (Plugin.KeyViewClockwise.IsPressed()) CinemachineTargetRoll -= 2f;
             if (Plugin.KeyViewAnticlockwise.IsPressed()) CinemachineTargetRoll += 2f;

@@ -18,24 +18,74 @@ public class AnimationPatch
     public static int AnimFrame = -1;
     private static Vector3 animStartPosition;
     private static Quaternion animStartRotation;
+    private static readonly string[] charAnimBoolsBlorf = ["Look", "Throw", "Dead", "Roulet", "HaveCard", "Reload", "Winner"];//tr2.2 rl? rl5
+    private static readonly string[] charAnimBoolsDice = ["Look", "Show", "Drink", "Dead", "Winner"];
+    private static readonly string[] charAnimTriggersBlorf = ["CallLiar"];//1.4
+    private static readonly string[] charAnimTriggersDice = ["Shake", "CallLiar", "SpotOn"];
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance, Manager ___manager)
+    public static void UpdatePostfix(CharController __instance, Manager ___manager, PlayerStats ___playerStats)
     {
         if (!__instance.isOwned) return;
-        for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
+        if (!___manager.GamePaused && !___manager.Chatting)
         {
-            if (Plugin.KeyAnims[i].IsDown() && !___manager.GamePaused && !___manager.Chatting)
+            if (!___playerStats.HaveTurn)
             {
-                ReadAnim(i);
-                if (usingAnim.Count > 1)
+                if (Input.GetKeyDown(KeyCode.Space)) __instance.animator.SetBool("Look", true);
+                if (Input.GetKeyUp(KeyCode.Space)) __instance.animator.SetBool("Look", false);
+            }
+            if (Plugin.KeyAnimCallLiar.IsDown()) __instance.animator.SetTrigger("CallLiar");
+            if (__instance is BlorfGamePlay)
+            {
+                if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
+                if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
+                if (Plugin.KeyAnimRoulet.IsDown()) __instance.animator.SetBool("Roulet", true);
+                if (Plugin.KeyAnimRoulet.IsUp()) __instance.animator.SetBool("Roulet", false);
+                if (Plugin.KeyAnimReload.IsDown()) __instance.animator.SetBool("Reload", true);
+                if (Plugin.KeyAnimReload.IsUp()) __instance.animator.SetBool("Reload", false);
+            }
+            else if (__instance is DiceGamePlay)
+            {
+                if (Plugin.KeyAnimSpotOn.IsDown()) __instance.animator.SetTrigger("SpotOn");
+                if (Plugin.KeyAnimShake.IsDown()) __instance.animator.SetTrigger("Shake");
+                if (Plugin.KeyAnimShow.IsPressed()) __instance.animator.SetBool("Show", true);
+                if (Plugin.KeyAnimShow.IsUp()) __instance.animator.SetBool("Show", false);
+                if (Plugin.KeyAnimDrink.IsDown()) __instance.animator.SetBool("Drink", true);
+                if (Plugin.KeyAnimDrink.IsUp()) __instance.animator.SetBool("Drink", false);
+            }
+            for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
+            {
+                if (Plugin.KeyAnims[i].IsDown())
                 {
-                    animStartPosition = __instance.transform.localPosition;
-                    animStartRotation = __instance.transform.localRotation;
-                    AnimFrame = 0;
+                    if (__instance is BlorfGamePlay && charAnimBoolsBlorf.Contains(Plugin.StringAnims[i].Value))
+                    {
+                        __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
+                    }
+                    else if (__instance is DiceGamePlay && charAnimBoolsDice.Contains(Plugin.StringAnims[i].Value))
+                    {
+                        __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
+                    }
+                    else if (__instance is BlorfGamePlay && charAnimTriggersBlorf.Contains(Plugin.StringAnims[i].Value))
+                    {
+                        __instance.animator.SetTrigger(Plugin.StringAnims[i].Value);
+                    }
+                    else if (__instance is DiceGamePlay && charAnimTriggersDice.Contains(Plugin.StringAnims[i].Value))
+                    {
+                        __instance.animator.SetTrigger(Plugin.StringAnims[i].Value);
+                    }
+                    else
+                    {
+                        ReadAnim(i);
+                        if (usingAnim.Count > 1)
+                        {
+                            animStartPosition = __instance.transform.localPosition;
+                            animStartRotation = __instance.transform.localRotation;
+                            AnimFrame = 0;
+                        }
+                    }
+                    break;
                 }
-                break;
             }
         }
         if (AnimFrame < 0) return;

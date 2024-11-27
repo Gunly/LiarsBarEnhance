@@ -5,7 +5,6 @@ using HarmonyLib;
 using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
 
-using System;
 using System.Linq;
 using System.Text;
 
@@ -311,7 +310,7 @@ namespace LiarsBarEnhance.Components
                 GUI.Label(new Rect(x, y, 240, 480),
                     hintTitle +
                     $"{playerStats.PlayerName}{HintHealth()}\n" +
-                    $"\n" +
+                    "\n" +
                     $"按住 {HintKey(Plugin.KeyCustomShowHint)} 显示提示\n" +
                     $"按住 {HintKey(Plugin.KeyViewCrazyShakeHead)} 疯狂转头\n" +
                     $"按住 {HintKey(Plugin.KeyCustomBigMouth)} 张嘴\n" +
@@ -327,11 +326,17 @@ namespace LiarsBarEnhance.Components
                     $"按 {HintKey(Plugin.KeyMoveSquat)} 蹲下\n" +
                     $"按 {HintKey(Plugin.KeyRotateAuto)} 自动旋转\n" +
                     $"传送: {HintKey(Plugin.KeyPosition)}\n" +
-                    $"\n" +
+                    "\n" +
                     $"解除视角限制({HintKey(Plugin.KeyViewRemoveRotationLimit)}): {(Plugin.BooleanViewRemoveRotationLimit.Value ? on : off)}\n" +
                     $"移动方向跟随头部视角({HintKey(Plugin.KeyMoveFollowHeadShortcut)}): {(Plugin.BooleanMoveFollowHead.Value ? on : off)}\n" +
                     $"调整视场({HintKey(Plugin.KeyViewField)}, {FOVPatch.Fov:0.00}): {(Plugin.BooleanViewField.Value ? on : off)}\n" +
-                    $"显示自身头顶信息: {(Plugin.BooleanCustomShowSelfInfo.Value ? on : off)}\n\n" +
+                    $"显示自身头顶信息: {(Plugin.BooleanCustomShowSelfInfo.Value ? on : off)}\n" +
+                    "\n" +
+                    $"Liar: {HintKey(Plugin.KeyAnimCallLiar)}  SpotOn: {HintKey(Plugin.KeyAnimSpotOn)}\n" +
+                    $"扔牌: {HintKey(Plugin.KeyAnimThrow)}  展示: {HintKey(Plugin.KeyAnimShow)}\n" +
+                    $"开枪: {HintKey(Plugin.KeyAnimRoulet)}  喝酒: {HintKey(Plugin.KeyAnimDrink)}\n" +
+                    $"装弹: {HintKey(Plugin.KeyAnimReload)}  摇骰: {HintKey(Plugin.KeyAnimShake)}\n" +
+                    "\n" +
                     $"Position:  X: {transform.localPosition.x:0.00}  Y: {transform.localPosition.y:0.00}  Z: {transform.localPosition.z:0.00}\n" +
                     $"Rotation:  X: {transform.localEulerAngles.x:0.00}  Y: {transform.localEulerAngles.y:0.00}  Z: {transform.localEulerAngles.z:0.00}\n" +
                     $"Pitch: {charController.GetPitch():0.00}  Yaw: {charController.GetYaw():0.00}  Roll: {CharMoveablePatch.CinemachineTargetRoll:0.00}\n" +

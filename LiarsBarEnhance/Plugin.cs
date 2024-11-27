@@ -21,6 +21,7 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<int> IntHintPosX, IntHintPosY;
     public static int InitPositionNumValue, InitAnimationNumValue;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyCustomShowHint,
+        KeyAnimCallLiar, KeyAnimDrink, KeyAnimReload, KeyAnimRoulet, KeyAnimShake, KeyAnimShow, KeyAnimSpotOn, KeyAnimThrow,
         KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveSquat, KeyMoveResetPosition, KeyMoveFollowHeadShortcut,
         KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewReset, KeyViewField,
         KeyViewForward, KeyViewBack, KeyViewLeft, KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
@@ -102,7 +103,7 @@ public class Plugin : BaseUnityPlugin
         KeyCheatChangeCardDice = new ConfigEntry<KeyboardShortcut>[5];
         for (var i = 0; i < KeyCheatChangeCardDice.Length; i++)
         {
-            KeyCheatChangeCardDice[i] = Config.Bind("Cheat", $"Change{i + 1}", new KeyboardShortcut(KeyCode.Alpha1 + i), $"改变第{i + 1}个牌/骰子");
+            KeyCheatChangeCardDice[i] = Config.Bind("Cheat", $"Change{i + 1}", new KeyboardShortcut(KeyCode.None), $"改变第{i + 1}个牌/骰子");
         }
 #endif
 
@@ -115,7 +116,7 @@ public class Plugin : BaseUnityPlugin
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放(自己)", new AcceptableValueRange<float>(0f, 1f)));
         IntHintPosX = Config.Bind("Custom", "HintPosX", -240, new ConfigDescription("提示坐标X, 负数表示以屏幕宽度减去设置值))", new AcceptableValueRange<int>(-2000, 2000)));
         IntHintPosY = Config.Bind("Custom", "HintPosY", 60, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(-1000, 1000)));
-        intCustomXP = Config.Bind("Custom", "XP", 0, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(0, 10000)));
+        intCustomXP = Config.Bind("Custom", "XP", 0, new ConfigDescription("经验值", new AcceptableValueRange<int>(0, 10000)));
 
         KeyMoveResetPosition = Config.Bind("Move", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
@@ -184,7 +185,7 @@ public class Plugin : BaseUnityPlugin
             ];
             for (var i = 0; i < intPositionNum.Value; i++)
             {
-                KeyPosition[i] = Config.Bind("Position", $"Position{i + 1}", new KeyboardShortcut(KeyCode.Keypad1 + i), $"移动到坐标{i + 1}");
+                KeyPosition[i] = Config.Bind("Position", $"Position{i + 1}", new KeyboardShortcut(KeyCode.Alpha1 + i), $"移动到坐标{i + 1}");
                 VectorPosition[i] = Config.Bind("Position", $"Position{i + 1}Position", DefaultPositions[i], $"坐标{i + 1}坐标");
                 VectorRotation[i] = Config.Bind("Position", $"Position{i + 1}Rotation", DefaultRotations[i], $"坐标{i + 1}角度");
             }
@@ -200,6 +201,14 @@ public class Plugin : BaseUnityPlugin
                 StringAnims[i] = Config.Bind("Anim", $"Anim{i + 1}Path", "", $"动画{i + 1}路径");
             }
         }
+        KeyAnimCallLiar = Config.Bind("Anim", "CallLiar", new KeyboardShortcut(KeyCode.None), "Call Liar (Deck模式下看牌时可用)(Deck和Dice)");
+        KeyAnimSpotOn = Config.Bind("Anim", "SpotOn", new KeyboardShortcut(KeyCode.None), "Spot On (仅Dice)");
+        KeyAnimThrow = Config.Bind("Anim", "Throw", new KeyboardShortcut(KeyCode.None), "扔牌 (看牌时按住)(仅Deck)");
+        KeyAnimShow = Config.Bind("Anim", "Show", new KeyboardShortcut(KeyCode.None), "展示骰子 (按住)(仅Dice)");
+        KeyAnimRoulet = Config.Bind("Anim", "Roulet", new KeyboardShortcut(KeyCode.None), "开枪 (按下举枪, 松开开枪)(仅Deck)");
+        KeyAnimDrink = Config.Bind("Anim", "Drink", new KeyboardShortcut(KeyCode.None), "喝酒 (仅Dice)");
+        KeyAnimReload = Config.Bind("Anim", "Reload", new KeyboardShortcut(KeyCode.None), "装弹 (按住, 手里没牌时可用)(仅Deck)");
+        KeyAnimShake = Config.Bind("Anim", "Shake", new KeyboardShortcut(KeyCode.None), "摇骰子 (仅Dice)");
 
         BooleanTestGiraffe = Config.Bind("Test", "Giraffe", false, "修复伸头(服务器和客户端都需要, 先开启再开始游戏)");
 

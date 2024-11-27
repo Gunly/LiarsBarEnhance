@@ -37,10 +37,13 @@
 - 死亡后自由视角
 - 玩家缩放(仅自己可见)
 - 显示自身头顶信息
+- 主动使用动画
 
 #### 按键列表
-按键可配置，建议使用[ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)  
-如果无法打开ConfigurationManager窗口，可以尝试编辑`BepInEx/config/BepInEx.cfg`，将`HideManagerGameObject = false`更改为`true`
+大多数按键可以更改，建议使用[ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)  
+如果无法打开`ConfigurationManager`窗口，可以尝试编辑`BepInEx/config/BepInEx.cfg`，将`HideManagerGameObject = false`更改为`true`  
+传送坐标和快捷键可编辑，默认4个，最高9个  
+动画快捷键默认未设置，可编辑`BepInEx\config\com.github.gunly.LiarsBarEnhance.cfg`后启动游戏，或使用`ConfigurationManager`在游戏内修改快捷键  
 
 | 按键                | 功能         |
 | :-----------------: | :----------: |
@@ -51,6 +54,8 @@
 | `T`                 | 重置视角     |
 | `↑` `↓` `←` `→` | 身体移动     |
 | `I` `J` `K` `L`     | 头部移动     |
+| `U` `O`             | 头部上下移动 |
+| `[` `]`             | 头部偏转     |
 | `鼠标按键` + `转动` | 身体转动     |
 | `小键盘0`           | 跳跃         |
 | `P`                 | 自动旋转     |
@@ -59,8 +64,8 @@
 
 ### 做不到
 
-- 看别人的牌
-- 修改手中的牌型
+- 看别人的牌或骰子
+- 修改手中的牌或骰子
 - 不死
 
 ## 安装

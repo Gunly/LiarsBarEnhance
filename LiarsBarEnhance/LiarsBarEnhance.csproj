@@ -26,6 +26,9 @@
             https://nuget.bepinex.dev/v3/index.json;
             https://nuget.samboy.dev/v3/index.json
         </RestoreAdditionalProjectSources>
+        <Company>https://github.com/Gunly/LiarsBarEnhance</Company>
+        <PackageProjectUrl>https://github.com/Gunly/LiarsBarEnhance</PackageProjectUrl>
+        <Title>LiarsBarEnhance</Title>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CheatRelease|AnyCPU'">
