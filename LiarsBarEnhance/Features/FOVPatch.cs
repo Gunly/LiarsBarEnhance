@@ -19,16 +19,26 @@ public class FOVPatch
     public static void StartPostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        try
-        {
-            cam = __instance.HeadPivot.Find("Base HumanHead/Virtual Camera").GetComponent<CinemachineVirtualCamera>();
-        }
-        catch (Exception)
-        {
-            cam = __instance.HeadPivot.Find("RHINO_Head/Virtual Camera").GetComponent<CinemachineVirtualCamera>();
-        }
+        getCharCam(__instance);
         Fov = cam.m_Lens.FieldOfView;
         cam.m_Lens.FieldOfView = Plugin.FloatViewField.Value;
+    }
+
+    private static void getCharCam(CharController charController)
+    {
+        string[] cameraPaths = ["Base HumanHead/Virtual Camera", "RHINO_Head/Virtual Camera", "YAKUZA_Head/Virtual Camera"];
+        foreach (var cameraPath in cameraPaths)
+        {
+            try
+            {
+                cam = charController.HeadPivot.Find(cameraPath).GetComponent<CinemachineVirtualCamera>();
+                break;
+            }
+            catch (Exception)
+            {
+                continue;
+            }
+        }
     }
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]

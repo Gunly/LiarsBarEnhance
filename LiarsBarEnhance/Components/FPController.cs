@@ -336,6 +336,7 @@ namespace LiarsBarEnhance.Components
                     $"扔牌: {HintKey(Plugin.KeyAnimThrow)}  展示: {HintKey(Plugin.KeyAnimShow)}\n" +
                     $"开枪: {HintKey(Plugin.KeyAnimRoulet)}  喝酒: {HintKey(Plugin.KeyAnimDrink)}\n" +
                     $"装弹: {HintKey(Plugin.KeyAnimReload)}  摇骰: {HintKey(Plugin.KeyAnimShake)}\n" +
+                    $"举枪: {HintKey(Plugin.KeyAnimTakeAim)}  开枪: {HintKey(Plugin.KeyAnimFire)}\n" +
                     "\n" +
                     $"Position:  X: {transform.localPosition.x:0.00}  Y: {transform.localPosition.y:0.00}  Z: {transform.localPosition.z:0.00}\n" +
                     $"Rotation:  X: {transform.localEulerAngles.x:0.00}  Y: {transform.localEulerAngles.y:0.00}  Z: {transform.localEulerAngles.z:0.00}\n" +
@@ -364,12 +365,20 @@ namespace LiarsBarEnhance.Components
                 else
                     ruleSet = $"<color=#CD2C48>{BlorfGamePlayManager.deckmode.Devil}</color>";
             }
-            else
+            else if (manager.mode == CustomNetworkManager.GameMode.LiarsDice)
             {
                 if (manager.DiceGame.DiceMode == DiceGamePlayManager.dicemode.Basic)
                     ruleSet = $"<color=#3487AB>{DiceGamePlayManager.dicemode.Basic}</color>";
                 else
                     ruleSet = $"<color=#DFAF4A>{DiceGamePlayManager.dicemode.Traditional}</color>";
+            }
+            else if (manager.mode == CustomNetworkManager.GameMode.LiarsChaos)
+            {
+                return $"<color=#F5E37B>{CustomNetworkManager.GameMode.LiarsDeck}</color> - <color=#FF82FF>Chaos</color>\n";
+            }
+            else
+            {
+                ruleSet = "";
             }
             return $"{mode} - {ruleSet}\n";
         }
@@ -379,7 +388,7 @@ namespace LiarsBarEnhance.Components
             if (charController is BlorfGamePlay blorfGame)
             {
 #if CHEATRELEASE
-                return $"({blorfGame.Networkcurrentrevoler}|{(Plugin.BooleanCheatBlorf.Value && Plugin.BooleanCheatBlorfHealth.Value ? blorfGame.Networkrevolverbulllet + 1 : 6)})";
+                return $"({blorfGame.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? blorfGame.Networkrevolverbulllet + 1 : 6)})";
 #else
                 return $"({blorfGame.Networkcurrentrevoler}|6)";
 #endif
@@ -387,6 +396,14 @@ namespace LiarsBarEnhance.Components
             else if (charController is DiceGamePlay diceGame)
             {
                 return $"({playerStats.NetworkHealth}|2)";
+            }
+            else if (charController is ChaosGamePlay chaosGame)
+            {
+#if CHEATRELEASE
+                return $"({chaosGame.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? chaosGame.Networkrevolverbulllet + 1 : 6)})";
+#else
+                return $"({chaosGame.Networkcurrentrevoler}|6)";
+#endif
             }
             else
             {
@@ -457,7 +474,7 @@ namespace LiarsBarEnhance.Components
         private string CheatText()
         {
             var sb = new StringBuilder();
-            if (Plugin.BooleanCheatBlorf.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController is BlorfGamePlay)
+            if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController is BlorfGamePlay)
             {
                 foreach (var card in manager.BlorfGame.LastRound)
                 {
@@ -477,6 +494,20 @@ namespace LiarsBarEnhance.Components
                 for (var i = 0; i < 6; i++)
                 {
                     sb.AppendLine($"{DiceCheatPatch.diceCounts[i],2}个{i + 1}");
+                }
+            }
+            if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController is ChaosGamePlay)
+            {
+                foreach (var card in manager.ChaosGame.LastRound)
+                {
+                    var type = card switch
+                    {
+                        1 => "King",
+                        2 => "Queen",
+                        3 => "Chaos",
+                        _ => "Master"
+                    };
+                    sb.AppendLine($"<color=#{(card > 2 || card == manager.ChaosGame.RoundCard ? "00FF" : "FF00")}00>{type}</color>");
                 }
             }
             return sb.ToString();

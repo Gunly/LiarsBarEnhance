@@ -20,8 +20,11 @@ public class AnimationPatch
     private static Quaternion animStartRotation;
     private static readonly string[] charAnimBoolsBlorf = ["Look", "Throw", "Dead", "Roulet", "HaveCard", "Reload", "Winner"];//tr2.2 rl? rl5
     private static readonly string[] charAnimBoolsDice = ["Look", "Show", "Drink", "Dead", "Winner"];
+    private static readonly string[] charAnimBoolsChaos = ["Look", "Throw", "Dead", "Roulet", "HaveCard", "Reload", "Winner", "Fire", "Empty", "TakeAim"];
     private static readonly string[] charAnimTriggersBlorf = ["CallLiar"];//1.4
     private static readonly string[] charAnimTriggersDice = ["Shake", "CallLiar", "SpotOn"];
+    private static readonly string[] charAnimTriggersChaos = ["CallLiar"];
+    private static readonly string[] charAnimIntsChaos = ["LookDirection"];
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
@@ -53,6 +56,34 @@ public class AnimationPatch
                 if (Plugin.KeyAnimShow.IsUp()) __instance.animator.SetBool("Show", false);
                 if (Plugin.KeyAnimDrink.IsDown()) __instance.animator.SetBool("Drink", true);
                 if (Plugin.KeyAnimDrink.IsUp()) __instance.animator.SetBool("Drink", false);
+            }
+            else if (__instance is ChaosGamePlay chaosGame)
+            {
+                if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
+                if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
+                if (Plugin.KeyAnimRoulet.IsDown()) __instance.animator.SetBool("Roulet", true);
+                if (Plugin.KeyAnimRoulet.IsUp()) __instance.animator.SetBool("Roulet", false);
+                if (Plugin.KeyAnimReload.IsDown()) __instance.animator.SetBool("Reload", true);
+                if (Plugin.KeyAnimReload.IsUp()) __instance.animator.SetBool("Reload", false);
+                if (Plugin.KeyAnimTakeAim.IsDown()) __instance.animator.SetBool("TakeAim", true);
+                if (Plugin.KeyAnimTakeAim.IsUp()) __instance.animator.SetBool("TakeAim", false);
+                if (!chaosGame.TakingAim && __instance.animator.GetBool("TakeAim"))
+                {
+                    var lookDirection = __instance.animator.GetInteger("LookDirection");
+                    if (Input.GetKeyDown(KeyCode.A))
+                    {
+                        if (lookDirection >= 0) lookDirection--;
+                    }
+                    else if (Input.GetKeyDown(KeyCode.D))
+                    {
+                        if (lookDirection <= 0) lookDirection++;
+                    }
+                    __instance.animator.SetInteger("LookDirection", lookDirection);
+                }
+                if (Plugin.KeyAnimFire.IsDown()) __instance.animator.SetBool("Fire", true);
+                if (Plugin.KeyAnimFire.IsUp()) __instance.animator.SetBool("Fire", false);
+                if (Plugin.KeyAnimEmpty.IsDown()) __instance.animator.SetBool("Empty", true);
+                if (Plugin.KeyAnimEmpty.IsUp()) __instance.animator.SetBool("Empty", false);
             }
             for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
             {

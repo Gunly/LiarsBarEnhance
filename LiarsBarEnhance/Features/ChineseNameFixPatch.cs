@@ -34,6 +34,14 @@ public class ChineseNameFixPatch
         __instance.LoserName.gameObject.AddComponentIfNotExist<FontChanger>();
     }
 
+    [HarmonyPatch(typeof(ChaosGamePlayManager), "Start")]
+    [HarmonyPostfix]
+    public static void ChaosGamePlayManagerStartPostfix(ChaosGamePlayManager __instance)
+    {
+        __instance.LastBidName1.gameObject.AddComponentIfNotExist<FontChanger>();
+        __instance.LastbidName2.gameObject.AddComponentIfNotExist<FontChanger>();
+    }
+
     [HarmonyPatch(typeof(VoiceChatPrefab), "Start")]
     [HarmonyPostfix]
     public static void VoiceChatPrefabStartPostfix(VoiceChatPrefab __instance)
@@ -57,6 +65,13 @@ public class ChineseNameFixPatch
             if (LocalizationSettings.SelectedLocale.LocaleName == "Chinese (Simplified) (zh-Hans)")
             {
                 ___TipText.text = "说谎者的骰子: 在这个游戏中, 你会发现总是帮你移动的朋友也是刚刚骗你喝下自己毒药的人";
+            }
+        }
+        else if (__instance.Mode == CustomNetworkManager.GameMode.LiarsChaos)
+        {
+            if (LocalizationSettings.SelectedLocale.LocaleName == "Chinese (Simplified) (zh-Hans)")
+            {
+                ___TipText.text = "最终, 每个人都是骗子——只是有些人玩得更好";
             }
         }
     }

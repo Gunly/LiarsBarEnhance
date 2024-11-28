@@ -8,13 +8,13 @@ using UnityEngine;
 namespace LiarsBarEnhance.Features;
 
 [HarmonyPatch]
-public class BlorfCheatPatch
+public class ChaosCheatPatch
 {
     private static readonly Dictionary<Card, bool> cardFliped = [];
 
-    [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
+    [HarmonyPatch(typeof(ChaosGamePlay), "UpdateCall")]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(BlorfGamePlay __instance, Manager ___manager)
+    public static void UpdateCallPostfix(ChaosGamePlay __instance, Manager ___manager)
     {
         if (!Plugin.BooleanCheatDeck.Value) return;
         if (__instance.isOwned)
@@ -99,34 +99,34 @@ public class BlorfCheatPatch
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {
-        if (__instance.isOwned && __instance is BlorfGamePlay blorfGamePlay)
+        if (__instance.isOwned && __instance is ChaosGamePlay chaosGame)
         {
             Plugin.IntCheatBlorfRevoler.Value = 0;
             Plugin.IntCheatBlorfHealth.SettingChanged += (sender, args) =>
             {
                 if (Plugin.BooleanCheatDeck.Value)
-                    blorfGamePlay.Networkrevolverbulllet = Plugin.IntCheatBlorfHealth.Value - 1;
+                    chaosGame.Networkrevolverbulllet = Plugin.IntCheatBlorfHealth.Value - 1;
             };
             Plugin.IntCheatBlorfRevoler.SettingChanged += (sender, args) =>
             {
                 if (Plugin.BooleanCheatDeck.Value)
-                    blorfGamePlay.Networkcurrentrevoler = Plugin.IntCheatBlorfRevoler.Value;
+                    chaosGame.Networkcurrentrevoler = Plugin.IntCheatBlorfRevoler.Value;
             };
         }
     }
 
-    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.Networkrevolverbulllet), MethodType.Setter)]
+    [HarmonyPatch(typeof(ChaosGamePlay), nameof(ChaosGamePlay.Networkrevolverbulllet), MethodType.Setter)]
     [HarmonyPostfix]
-    public static void NetworkrevolverbullletPostfix(BlorfGamePlay __instance)
+    public static void NetworkrevolverbullletPostfix(ChaosGamePlay __instance)
     {
         if (!__instance.isOwned) return;
         if (Plugin.IntCheatBlorfHealth.Value != __instance.Networkrevolverbulllet + 1)
             Plugin.IntCheatBlorfHealth.Value = __instance.Networkrevolverbulllet + 1;
     }
 
-    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.Networkcurrentrevoler), MethodType.Setter)]
+    [HarmonyPatch(typeof(ChaosGamePlay), nameof(ChaosGamePlay.Networkcurrentrevoler), MethodType.Setter)]
     [HarmonyPostfix]
-    public static void NetworkcurrentrevolerPostfix(BlorfGamePlay __instance)
+    public static void NetworkcurrentrevolerPostfix(ChaosGamePlay __instance)
     {
         if (!__instance.isOwned) return;
         if (Plugin.IntCheatBlorfRevoler.Value != __instance.Networkcurrentrevoler)

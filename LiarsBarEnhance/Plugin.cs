@@ -21,7 +21,7 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<int> IntHintPosX, IntHintPosY;
     public static int InitPositionNumValue, InitAnimationNumValue;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyCustomShowHint,
-        KeyAnimCallLiar, KeyAnimDrink, KeyAnimReload, KeyAnimRoulet, KeyAnimShake, KeyAnimShow, KeyAnimSpotOn, KeyAnimThrow,
+        KeyAnimCallLiar, KeyAnimDrink, KeyAnimReload, KeyAnimRoulet, KeyAnimShake, KeyAnimShow, KeyAnimSpotOn, KeyAnimThrow, KeyAnimTakeAim, KeyAnimFire, KeyAnimEmpty,
         KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveSquat, KeyMoveResetPosition, KeyMoveFollowHeadShortcut,
         KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewReset, KeyViewField,
         KeyViewForward, KeyViewBack, KeyViewLeft, KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
@@ -37,7 +37,7 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<string>[] StringAnims;
     public static ConfigEntry<RotateDirection> DirectionRotateState;
 #if CHEATRELEASE
-    public static ConfigEntry<bool> BooleanCheatBlorf, BooleanCheatDice, BooleanCheatBlorfHealth, BooleanCheatBlorfLastRoundCard, BooleanCheatDiceTotalDice;
+    public static ConfigEntry<bool> BooleanCheatDeck, BooleanCheatDice, BooleanCheatDeckHealth, BooleanCheatBlorfLastRoundCard, BooleanCheatDiceTotalDice;
     public static ConfigEntry<KeyboardShortcut> KeyCheatBlorfFlip, KeyCheatDiceShow;
     public static ConfigEntry<KeyboardShortcut>[] KeyCheatChangeCardDice;
     public static ConfigEntry<float> FloatCheatCardSize;
@@ -70,6 +70,7 @@ public class Plugin : BaseUnityPlugin
 #if CHEATRELEASE
         Harmony.CreateAndPatchAll(typeof(BlorfCheatPatch), nameof(BlorfCheatPatch));
         Harmony.CreateAndPatchAll(typeof(DiceCheatPatch), nameof(DiceCheatPatch));
+        Harmony.CreateAndPatchAll(typeof(ChaosCheatPatch), nameof(ChaosCheatPatch));
 #else
 //        Harmony.CreateAndPatchAll(typeof(BlorfAntiCheat), nameof(BlorfAntiCheat));
 //        Harmony.CreateAndPatchAll(typeof(DiceAntiCheat), nameof(DiceAntiCheat));
@@ -90,14 +91,14 @@ public class Plugin : BaseUnityPlugin
         InitAnimationNumValue = intAnimationNum.Value;
 
 #if CHEATRELEASE
-        BooleanCheatBlorf = Config.Bind("Cheat", "CheatDeck", false, "Deck模式作弊");
+        BooleanCheatDeck = Config.Bind("Cheat", "CheatDeck", false, "Deck模式作弊");
         BooleanCheatDice = Config.Bind("Cheat", "CheatDice", false, "Dice模式作弊");
         KeyCheatBlorfFlip = Config.Bind("Cheat", "CardFlip", new KeyboardShortcut(KeyCode.LeftControl), "翻转放大其他玩家卡牌");
         KeyCheatDiceShow = Config.Bind("Cheat", "DiceShow", new KeyboardShortcut(KeyCode.LeftControl), "显示其他玩家骰子");
         FloatCheatCardSize = Config.Bind("Cheat", "CardSize", 1f, new ConfigDescription("放大大小", new AcceptableValueRange<float>(1f, 10f)));
         IntCheatBlorfHealth = Config.Bind("Cheat", "DeckHealth", 6, new ConfigDescription("Deck模式生命值(开始游戏后更改生效)", new AcceptableValueRange<int>(1, 50)));
         IntCheatBlorfRevoler = Config.Bind("Cheat", "DeckRevoler", 0, new ConfigDescription("开枪数", new AcceptableValueRange<int>(0, 49)));
-        BooleanCheatBlorfHealth = Config.Bind("Cheat", "ShowHealth", false, "显示生命值(第几枪实弹)");
+        BooleanCheatDeckHealth = Config.Bind("Cheat", "ShowHealth", false, "显示生命值(第几枪实弹)");
         BooleanCheatBlorfLastRoundCard = Config.Bind("Cheat", "ShowRoundCard", false, "显示当前出牌(提示GUI)");
         BooleanCheatDiceTotalDice = Config.Bind("Cheat", "ShowTotalDice", false, "显示骰子总数(提示GUI)");
         KeyCheatChangeCardDice = new ConfigEntry<KeyboardShortcut>[5];
@@ -201,14 +202,17 @@ public class Plugin : BaseUnityPlugin
                 StringAnims[i] = Config.Bind("Anim", $"Anim{i + 1}Path", "", $"动画{i + 1}路径");
             }
         }
-        KeyAnimCallLiar = Config.Bind("Anim", "CallLiar", new KeyboardShortcut(KeyCode.None), "Call Liar (Deck模式下看牌时可用)(Deck和Dice)");
+        KeyAnimCallLiar = Config.Bind("Anim", "CallLiar", new KeyboardShortcut(KeyCode.None), "Call Liar (Deck模式下看牌时可用)(所有模式)");
         KeyAnimSpotOn = Config.Bind("Anim", "SpotOn", new KeyboardShortcut(KeyCode.None), "Spot On (仅Dice)");
-        KeyAnimThrow = Config.Bind("Anim", "Throw", new KeyboardShortcut(KeyCode.None), "扔牌 (看牌时按住)(仅Deck)");
+        KeyAnimThrow = Config.Bind("Anim", "Throw", new KeyboardShortcut(KeyCode.None), "扔牌 (看牌时按住)(Deck/Chaos)");
         KeyAnimShow = Config.Bind("Anim", "Show", new KeyboardShortcut(KeyCode.None), "展示骰子 (按住)(仅Dice)");
-        KeyAnimRoulet = Config.Bind("Anim", "Roulet", new KeyboardShortcut(KeyCode.None), "开枪 (按下举枪, 松开开枪)(仅Deck)");
+        KeyAnimRoulet = Config.Bind("Anim", "Roulet", new KeyboardShortcut(KeyCode.None), "开枪 (按下举枪, 松开开枪)(Deck/Chaos)");
         KeyAnimDrink = Config.Bind("Anim", "Drink", new KeyboardShortcut(KeyCode.None), "喝酒 (仅Dice)");
-        KeyAnimReload = Config.Bind("Anim", "Reload", new KeyboardShortcut(KeyCode.None), "装弹 (按住, 手里没牌时可用)(仅Deck)");
+        KeyAnimReload = Config.Bind("Anim", "Reload", new KeyboardShortcut(KeyCode.None), "装弹 (按住, 手里没牌时可用)(Deck/Chaos)");
         KeyAnimShake = Config.Bind("Anim", "Shake", new KeyboardShortcut(KeyCode.None), "摇骰子 (仅Dice)");
+        KeyAnimTakeAim= Config.Bind("Anim", "Aim", new KeyboardShortcut(KeyCode.None), "举枪(对他人) (仅Chaos)");
+        KeyAnimFire= Config.Bind("Anim", "Fire", new KeyboardShortcut(KeyCode.None), "开枪(对他人) (仅Chaos)");
+        KeyAnimEmpty= Config.Bind("Anim", "Empty", new KeyboardShortcut(KeyCode.None), "空枪(对他人) (仅Chaos)");
 
         BooleanTestGiraffe = Config.Bind("Test", "Giraffe", false, "修复伸头(服务器和客户端都需要, 先开启再开始游戏)");
 
