@@ -167,11 +167,11 @@ public class Plugin : BaseUnityPlugin
                 new(1.69f, 0.3f, -8.46f),
                 new(0.36f, 0.3f, -7.13f),
                 new(-0.97f, 0.3f, -8.46f),
-                new(0.36f, 0.3f, -8.46f),
-                new(0f, 0f, 0f),
-                new(0f, 0f, 0f),
-                new(0f, 0f, 0f),
-                new(0f, 0f, 0f)
+                new(16.26f, 0.39f, -37.49f),
+                new(17.59f, 0.39f, -36.16f),
+                new(16.26f, 0.39f, -34.83f),
+                new(14.93f, 0.39f, -36.16f),
+                new(0, 0f, 0f)
             ];
             Vector3[] DefaultRotations = [
                 new(0f, 0f, 0f),
@@ -179,9 +179,9 @@ public class Plugin : BaseUnityPlugin
                 new(0f, 180f, 0f),
                 new(0f, 90f, 0f),
                 new(0f, 0f, 0f),
-                new(0f, 0f, 0f),
-                new(0f, 0f, 0f),
-                new(0f, 0f, 0f),
+                new(0f, 270f, 0f),
+                new(0f, 180f, 0f),
+                new(0f, 90f, 0f),
                 new(0f, 0f, 0f)
             ];
             for (var i = 0; i < intPositionNum.Value; i++)

@@ -334,9 +334,9 @@ namespace LiarsBarEnhance.Components
                     "\n" +
                     $"Liar: {HintKey(Plugin.KeyAnimCallLiar)}  SpotOn: {HintKey(Plugin.KeyAnimSpotOn)}\n" +
                     $"扔牌: {HintKey(Plugin.KeyAnimThrow)}  展示: {HintKey(Plugin.KeyAnimShow)}\n" +
-                    $"开枪: {HintKey(Plugin.KeyAnimRoulet)}  喝酒: {HintKey(Plugin.KeyAnimDrink)}\n" +
+                    $"自枪: {HintKey(Plugin.KeyAnimRoulet)}  喝酒: {HintKey(Plugin.KeyAnimDrink)}\n" +
                     $"装弹: {HintKey(Plugin.KeyAnimReload)}  摇骰: {HintKey(Plugin.KeyAnimShake)}\n" +
-                    $"举枪: {HintKey(Plugin.KeyAnimTakeAim)}  开枪: {HintKey(Plugin.KeyAnimFire)}\n" +
+                    $"举枪: {HintKey(Plugin.KeyAnimTakeAim)}  开枪: {HintKey(Plugin.KeyAnimFire)}  空枪: {HintKey(Plugin.KeyAnimEmpty)}\n" +
                     "\n" +
                     $"Position:  X: {transform.localPosition.x:0.00}  Y: {transform.localPosition.y:0.00}  Z: {transform.localPosition.z:0.00}\n" +
                     $"Rotation:  X: {transform.localEulerAngles.x:0.00}  Y: {transform.localEulerAngles.y:0.00}  Z: {transform.localEulerAngles.z:0.00}\n" +

@@ -18,13 +18,9 @@ public class AnimationPatch
     public static int AnimFrame = -1;
     private static Vector3 animStartPosition;
     private static Quaternion animStartRotation;
-    private static readonly string[] charAnimBoolsBlorf = ["Look", "Throw", "Dead", "Roulet", "HaveCard", "Reload", "Winner"];//tr2.2 rl? rl5
+    private static readonly string[] charAnimBoolsBlorf = ["Look", "Throw", "Dead", "Roulet", "HaveCard", "Reload", "Winner"];
     private static readonly string[] charAnimBoolsDice = ["Look", "Show", "Drink", "Dead", "Winner"];
     private static readonly string[] charAnimBoolsChaos = ["Look", "Throw", "Dead", "Roulet", "HaveCard", "Reload", "Winner", "Fire", "Empty", "TakeAim"];
-    private static readonly string[] charAnimTriggersBlorf = ["CallLiar"];//1.4
-    private static readonly string[] charAnimTriggersDice = ["Shake", "CallLiar", "SpotOn"];
-    private static readonly string[] charAnimTriggersChaos = ["CallLiar"];
-    private static readonly string[] charAnimIntsChaos = ["LookDirection"];
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
@@ -97,13 +93,9 @@ public class AnimationPatch
                     {
                         __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }
-                    else if (__instance is BlorfGamePlay && charAnimTriggersBlorf.Contains(Plugin.StringAnims[i].Value))
+                    else if (__instance is ChaosGamePlay && charAnimBoolsChaos.Contains(Plugin.StringAnims[i].Value))
                     {
-                        __instance.animator.SetTrigger(Plugin.StringAnims[i].Value);
-                    }
-                    else if (__instance is DiceGamePlay && charAnimTriggersDice.Contains(Plugin.StringAnims[i].Value))
-                    {
-                        __instance.animator.SetTrigger(Plugin.StringAnims[i].Value);
+                        __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }
                     else
                     {
