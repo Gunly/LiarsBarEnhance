@@ -30,7 +30,7 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<KeyboardShortcut>[] KeyAnims;
     public static ConfigEntry<Vector3>[] VectorPosition, VectorRotation;
     public static ConfigEntry<float> FloatJumpHeight, FloatGravity, FloatMoveSpeed, FloatMoveHorizontalBodyRotate, FloatViewSpeed, FloatViewField,
-        FloatAutoRotateSpeed, FloatCustomPlayerScale;
+        FloatAutoRotateSpeed, FloatCustomPlayerScale, FloatBigMouthAngle;
     public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewField,
         BooleanTestGiraffe, BooleanCustomShowSelfInfo;
     public static ConfigEntry<string> StringCustomName, StringCustomNameColor, StringCustomMessageColor;
@@ -109,6 +109,7 @@ public class Plugin : BaseUnityPlugin
 #endif
 
         KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.B), "张嘴");
+        FloatBigMouthAngle = Config.Bind("Custom", "BigMouthAngle", 60f, new ConfigDescription("张嘴角度", new AcceptableValueRange<float>(-180f, 180f)));
         KeyCustomShowHint = Config.Bind("Custom", "ShowHint", new KeyboardShortcut(KeyCode.Tab), "启用提示");
         StringCustomName = Config.Bind("Custom", "CustomName", "", "自定义名称");
         StringCustomNameColor = Config.Bind("Custom", "NameColor", "FDE2AA", "聊天名字颜色");
@@ -122,7 +123,7 @@ public class Plugin : BaseUnityPlugin
         KeyMoveResetPosition = Config.Bind("Move", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
         KeyMoveFollowHeadShortcut = Config.Bind("Move", "MoveFollowHeadShortcut", new KeyboardShortcut(KeyCode.H), "切换移动方向跟随头部视角快捷键");
-        FloatMoveHorizontalBodyRotate = Config.Bind("Move", "MoveHorizontalBodyRotate", 0f, new ConfigDescription("左右移动时身体旋转", new AcceptableValueRange<float>(0f, 90f)));
+        FloatMoveHorizontalBodyRotate = Config.Bind("Move", "MoveHorizontalBodyRotate", 0f, new ConfigDescription("左右移动时身体旋转角度", new AcceptableValueRange<float>(0f, 90f)));
         KeyMoveForward = Config.Bind("Move", "BodyForward", new KeyboardShortcut(KeyCode.UpArrow), "向前移动");
         KeyMoveBack = Config.Bind("Move", "BodyBack", new KeyboardShortcut(KeyCode.DownArrow), "向后移动");
         KeyMoveLeft = Config.Bind("Move", "BodyLeft", new KeyboardShortcut(KeyCode.LeftArrow), "向左移动");

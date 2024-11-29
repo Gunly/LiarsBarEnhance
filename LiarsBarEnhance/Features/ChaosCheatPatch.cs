@@ -26,15 +26,9 @@ public class ChaosCheatPatch
                 if (Plugin.KeyCheatChangeCardDice[i].IsDown() && !___manager.GamePaused && !___manager.Chatting && cardObject.gameObject.activeSelf)
                 {
                     var card = cardObject.GetComponent<Card>();
-                    if (card.Devil)
+                    if (card.cardtype == 4)
                     {
-                        card.Devil = false;
                         card.cardtype = 1;
-                    }
-                    else if (card.cardtype == 4)
-                    {
-                        card.Devil = true;
-                        card.cardtype = -1;
                     }
                     else
                     {

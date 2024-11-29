@@ -65,7 +65,7 @@ If ConfigurationManager window cannot be opened, you can try editing `BepInEx/co
 
 1. Download [BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x64_5.4.23.2.zip)  
 2. Extract `BepInEx` to the game root directory ([official installation tutorial](https://docs.bepinex.dev/articles/user_guide/installation/index.html))  
-3. Download the latest DLL from [Release](https://github.com/gunly/LiarsBarEnhance/releases)[latest DLL](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.3/com.github.gunly.LiarsBarEnhance.dll)  
+3. Download the latest DLL from [Release](https://github.com/gunly/LiarsBarEnhance/releases)[latest DLL](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.6/com.github.gunly.LiarsBarEnhance.dll)  
 4. Place the plugin DLL (`com.github.gunly.LiarsBarEnhance.dll`) in the plugin folder (i.e., `<game root directory>/BepInEx/plugins`), create the `plugins` folder if it doesn't exist  
 
 ## Building the Plugin Yourself

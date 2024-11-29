@@ -484,7 +484,8 @@ namespace LiarsBarEnhance.Components
                         1 => "King",
                         2 => "Queen",
                         3 => "Ace",
-                        _ => "Joker"
+                        4 => "Joker",
+                        _ => ""
                     };
                     sb.AppendLine($"<color=#{(card == -1 || card == 4 || card == manager.BlorfGame.RoundCard ? "00FF" : "FF00")}00>{type}</color>");
                 }
@@ -505,7 +506,8 @@ namespace LiarsBarEnhance.Components
                         1 => "King",
                         2 => "Queen",
                         3 => "Chaos",
-                        _ => "Master"
+                        4 => "Master",
+                        _ => ""
                     };
                     sb.AppendLine($"<color=#{(card > 2 || card == manager.ChaosGame.RoundCard ? "00FF" : "FF00")}00>{type}</color>");
                 }

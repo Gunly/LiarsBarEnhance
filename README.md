@@ -74,12 +74,12 @@
 
 1. 下载[BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x64_5.4.23.2.zip)
 2. 将`BepInEx`解压至游戏根目录（[官方安装教程](https://docs.bepinex.dev/articles/user_guide/installation/index.html)）
-3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.5/com.github.gunly.LiarsBarEnhance.dll)
+3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.6/com.github.gunly.LiarsBarEnhance.dll)
 4. 将插件本体(`com.github.gunly.LiarsBarEnhance.dll`)放置在插件文件夹（即`<游戏根目录>/BepInEx/plugins`）（没有`plugins`文件夹请手动创建）
 
 ### 安装可配置的LiarsBarEnhance
 
-1. 下载[BepInEx_ConfigurationManager_LiarsBarEnhance.zip](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.0.5/BepInEx_ConfigurationManager_LiarsBarEnhance.zip)
+1. 下载[BepInEx_ConfigurationManager_LiarsBarEnhance.zip](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.0.6/BepInEx_ConfigurationManager_LiarsBarEnhance.zip)
 2. 将`BepInEx_ConfigurationManager_LiarsBarEnhance.zip`解压至游戏根目录
 3. 进入游戏后按F1打开`ConfigurationManager`窗口，可以在游戏内修改配置和自定义快捷键
 

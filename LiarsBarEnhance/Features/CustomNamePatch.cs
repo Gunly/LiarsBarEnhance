@@ -10,12 +10,15 @@ public class CustomNamePatch
     public static bool OnStartAuthorityPrefix(PlayerObjectController __instance)
     {
         if (!__instance.isOwned) return true;
-        if (!Plugin.StringCustomName.Value.Equals(""))
+        if (Plugin.StringCustomName.Value != "")
         {
             __instance.name = "LocalGamePlayer";
             AccessTools.Method("PlayerObjectController:CmdSetPlayerName", [typeof(string)]).Invoke(__instance, [Plugin.StringCustomName.Value]);
-            LobbyController.Instance.FindLocalPlayer();
-            LobbyController.Instance.UpdateLobbyName();
+            if (LobbyController.Instance != null)
+            {
+                LobbyController.Instance.FindLocalPlayer();
+                LobbyController.Instance.UpdateLobbyName();
+            }
             return false;
         }
         return true;
