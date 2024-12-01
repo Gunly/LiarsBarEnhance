@@ -102,12 +102,12 @@ public class BlorfCheatPatch
         if (__instance.isOwned && __instance is BlorfGamePlay blorfGamePlay)
         {
             Plugin.IntCheatBlorfRevoler.Value = 0;
-            Plugin.IntCheatBlorfHealth.SettingChanged += (sender, args) =>
+            Plugin.IntCheatBlorfHealth.SettingChanged += (_, _) =>
             {
                 if (Plugin.BooleanCheatDeck.Value)
                     blorfGamePlay.Networkrevolverbulllet = Plugin.IntCheatBlorfHealth.Value - 1;
             };
-            Plugin.IntCheatBlorfRevoler.SettingChanged += (sender, args) =>
+            Plugin.IntCheatBlorfRevoler.SettingChanged += (_, _) =>
             {
                 if (Plugin.BooleanCheatDeck.Value)
                     blorfGamePlay.Networkcurrentrevoler = Plugin.IntCheatBlorfRevoler.Value;

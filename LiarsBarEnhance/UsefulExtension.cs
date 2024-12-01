@@ -2,6 +2,7 @@
 
 using LiarsBarEnhance.Utils;
 
+using System;
 using System.Linq;
 
 using UnityEngine;
@@ -39,10 +40,7 @@ public static class UsefulExtension
         return modifiers.All(e => Input.GetKey(e)) && (modifierKeys.Contains(key.MainKey) || modifierKeys.Except(modifiers).All(e => !Input.GetKey(e)));
     }
 
-    public static Quaternion ToQuaternion(this Vector3 vector)
-    {
-        return Quaternion.Euler(vector.x, vector.y, vector.z);
-    }
+    public static Quaternion ToQuaternion(this Vector3 vector) => Quaternion.Euler(vector.x, vector.y, vector.z);
 
     public static float GetYaw(this CharController charController)
     {
@@ -67,5 +65,14 @@ public static class UsefulExtension
     public static void AddPitch(this CharController charController, float value)
     {
         charController.SetPitch(charController.GetPitch() + value);
+    }
+
+    public static bool PluginControl(this Manager manager) => !manager.GamePaused && !manager.Chatting;
+
+    public static string GetEnumDescription<T>(this T val) where T : Enum
+    {
+        var field = val.GetType().GetField(val.ToString());
+        var customAttribute = Attribute.GetCustomAttribute(field, typeof(System.ComponentModel.DescriptionAttribute));
+        return customAttribute == null ? val.ToString() : ((System.ComponentModel.DescriptionAttribute)customAttribute).Description;
     }
 }

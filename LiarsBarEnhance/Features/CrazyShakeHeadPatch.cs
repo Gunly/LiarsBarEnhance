@@ -1,58 +1,54 @@
 ﻿using HarmonyLib;
 
 using UnityEngine;
-using CharControllerFloatMemberAccessor = LiarsBarEnhance.Utils.FastMemberAccessor<CharController, float>;
 
 namespace LiarsBarEnhance.Features;
 
 [HarmonyPatch]
 public class CrazyShakeHeadPatch
 {
-    private const string CINEMACHINE_TARGET_YAW_FIELD_NAME = "_cinemachineTargetYaw";
-    private const string CINEMACHINE_TARGET_PITCH_FIELD_NAME = "_cinemachineTargetPitch";
+    private static float savedYaw, savedPitch;
+    public static float CinemachineTargetRoll = 0f;
+    private static bool isEnabled;
 
-    private static float _savedYaw, _savedPitch;
-
-    public static bool IsEnabled { get; private set; }
-
-    public static void SetEnabled(CharController instance, bool value)
-    {
-        if (value == IsEnabled)
-            return;
-        IsEnabled = value;
-
-        if (value)
-        {
-            _savedYaw = CharControllerFloatMemberAccessor.Get(instance, CINEMACHINE_TARGET_YAW_FIELD_NAME);
-            _savedPitch = CharControllerFloatMemberAccessor.Get(instance, CINEMACHINE_TARGET_PITCH_FIELD_NAME);
-        }
-        else
-        {
-            CharControllerFloatMemberAccessor.Set(instance, CINEMACHINE_TARGET_YAW_FIELD_NAME, _savedYaw);
-            CharControllerFloatMemberAccessor.Set(instance, CINEMACHINE_TARGET_PITCH_FIELD_NAME, _savedPitch);
-        }
-    }
-
-    public static void ToggleEnabled(CharController charController)
-        => SetEnabled(charController, !IsEnabled);
-
-    [HarmonyPatch(typeof(CharController), "RotateInFrame")]
+    [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    private static void RotateInFramePostfix(CharController __instance, Manager ___manager, float ___MinX, float ___MaxX, float ___MinY, float ___MaxY)
+    public static void UpdatePostfix(CharController __instance, Manager ___manager, ref float ____cinemachineTargetYaw, ref float ____cinemachineTargetPitch,
+        float ___MinX, float ___MaxX, float ___MinY, float ___MaxY)
     {
-        if (Plugin.KeyViewCrazyShakeHead.IsDown() && !___manager.GamePaused && !___manager.Chatting)
-            ToggleEnabled(__instance);
+        if (!__instance.isOwned) return;
+        if (___manager.PluginControl())
+        {
+            if (Plugin.KeyViewCrazyShakeHead.IsDown())
+            {
+                isEnabled = !isEnabled;
+                if (isEnabled)
+                {
+                    savedYaw = ____cinemachineTargetYaw;
+                    savedPitch = ____cinemachineTargetPitch;
+                }
+                else
+                {
+                    ____cinemachineTargetYaw = savedYaw;
+                    ____cinemachineTargetPitch = savedPitch;
+                }
+            }
 
-        if (!IsEnabled)
-            return;
+            if (!Plugin.BooleanViewRemoveRotationLimit.Value)
+            {
+                if (Plugin.KeyViewClockwise.IsPressed()) CinemachineTargetRoll -= 2f;
+                if (Plugin.KeyViewAnticlockwise.IsPressed()) CinemachineTargetRoll += 2f;
+            }
+        }
+        if (isEnabled)
+        {
+            var limited = Plugin.KeyViewCrazyShakeHead.IsPressed();
+            var x = Random.Range(limited ? ___MinX : 0, limited ? ___MaxX : 360);
+            var y = Random.Range(limited ? ___MinY : 0, limited ? ___MaxY : 360);
 
-        var limited = Plugin.KeyViewCrazyShakeHead.IsPressed();
-        var x = Random.Range(limited ? ___MinX : 0, limited ? ___MaxX : 360);
-        var y = Random.Range(limited ? ___MinY : 0, limited ? ___MaxY : 360);
-
-        CharControllerFloatMemberAccessor.Set(__instance, CINEMACHINE_TARGET_YAW_FIELD_NAME, x);
-        CharControllerFloatMemberAccessor.Set(__instance, CINEMACHINE_TARGET_PITCH_FIELD_NAME, y);
-
-        __instance.HeadPivot.transform.localRotation = Quaternion.Euler(x, 0f, y);
+            __instance.SetYaw(x);
+            __instance.SetPitch(y);
+        }
+        __instance.HeadPivot.transform.localRotation = Quaternion.Euler(____cinemachineTargetYaw, CinemachineTargetRoll, ____cinemachineTargetPitch);
     }
 }

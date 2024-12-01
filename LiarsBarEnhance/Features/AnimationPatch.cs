@@ -27,7 +27,7 @@ public class AnimationPatch
     public static void UpdatePostfix(CharController __instance, Manager ___manager, PlayerStats ___playerStats)
     {
         if (!__instance.isOwned) return;
-        if (!___manager.GamePaused && !___manager.Chatting)
+        if (___manager.PluginControl())
         {
             if (!___playerStats.HaveTurn)
             {
@@ -35,12 +35,29 @@ public class AnimationPatch
                 if (Input.GetKeyUp(KeyCode.Space)) __instance.animator.SetBool("Look", false);
             }
             if (Plugin.KeyAnimCallLiar.IsDown()) __instance.animator.SetTrigger("CallLiar");
-            if (__instance is BlorfGamePlay)
+            if (__instance is BlorfGamePlay blorfGame)
             {
                 if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
                 if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
                 if (Plugin.KeyAnimRoulet.IsDown()) __instance.animator.SetBool("Roulet", true);
-                if (Plugin.KeyAnimRoulet.IsUp()) __instance.animator.SetBool("Roulet", false);
+                if (Plugin.KeyAnimRoulet.IsUp())
+                {
+#if CHEATRELEASE
+                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler < blorfGame.Networkrevolverbulllet)
+                    {
+                        blorfGame.Networkcurrentrevoler++;
+                    }
+                    else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
+                        (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler == blorfGame.Networkrevolverbulllet))
+                    {
+                        __instance.animator.SetBool("Dead", true);
+                        blorfGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:waitforheadopen").Invoke(blorfGame, []));
+                        AccessTools.Method("BlorfGamePlay:CommandBeDead").Invoke(blorfGame, []);
+                        blorfGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:WaitforRevolverUI").Invoke(blorfGame, []));
+                    }
+#endif
+                    __instance.animator.SetBool("Roulet", false);
+                }
                 if (Plugin.KeyAnimReload.IsDown()) __instance.animator.SetBool("Reload", true);
                 if (Plugin.KeyAnimReload.IsUp()) __instance.animator.SetBool("Reload", false);
             }
@@ -51,7 +68,17 @@ public class AnimationPatch
                 if (Plugin.KeyAnimShow.IsPressed()) __instance.animator.SetBool("Show", true);
                 if (Plugin.KeyAnimShow.IsUp()) __instance.animator.SetBool("Show", false);
                 if (Plugin.KeyAnimDrink.IsDown()) __instance.animator.SetBool("Drink", true);
-                if (Plugin.KeyAnimDrink.IsUp()) __instance.animator.SetBool("Drink", false);
+                if (Plugin.KeyAnimDrink.IsUp())
+                {
+                    if (__instance.animator.GetBool("Dead") && !___playerStats.Dead)
+                    {
+                        ___playerStats.NetworkHealth -= 1;
+                        if (___playerStats.NetworkHealth == 0)
+                            ___playerStats.NetworkDead = true;
+                        AccessTools.Method("DiceGamePlayManager:ReduceDice").Invoke(___manager.DiceGame, [___playerStats.connectionToClient, ___playerStats]);
+                    }
+                    __instance.animator.SetBool("Drink", false);
+                }
             }
             else if (__instance is ChaosGamePlay chaosGame)
             {
@@ -61,25 +88,91 @@ public class AnimationPatch
                 if (Plugin.KeyAnimRoulet.IsUp()) __instance.animator.SetBool("Roulet", false);
                 if (Plugin.KeyAnimReload.IsDown()) __instance.animator.SetBool("Reload", true);
                 if (Plugin.KeyAnimReload.IsUp()) __instance.animator.SetBool("Reload", false);
-                if (Plugin.KeyAnimTakeAim.IsDown()) __instance.animator.SetBool("TakeAim", true);
-                if (Plugin.KeyAnimTakeAim.IsUp()) __instance.animator.SetBool("TakeAim", false);
+                if (Plugin.KeyAnimTakeAim.IsDown())
+                {
+                    __instance.animator.SetInteger("LookDirection", 0);
+                    __instance.animator.SetBool("TakeAim", true);
+                }
                 if (!chaosGame.TakingAim && __instance.animator.GetBool("TakeAim"))
                 {
-                    var lookDirection = __instance.animator.GetInteger("LookDirection");
                     if (Input.GetKeyDown(KeyCode.A))
                     {
-                        if (lookDirection >= 0) lookDirection--;
+                        var lookDirection = __instance.animator.GetInteger("LookDirection");
+                        if (lookDirection >= 0)
+                        {
+                            lookDirection--;
+                            __instance.animator.SetInteger("LookDirection", lookDirection);
+                            chaosGame.NetworkAim = lookDirection;
+                        }
                     }
                     else if (Input.GetKeyDown(KeyCode.D))
                     {
-                        if (lookDirection <= 0) lookDirection++;
+                        var lookDirection = __instance.animator.GetInteger("LookDirection");
+                        if (lookDirection <= 0)
+                        {
+                            lookDirection++;
+                            __instance.animator.SetInteger("LookDirection", lookDirection);
+                            chaosGame.NetworkAim = lookDirection;
+                        }
                     }
-                    __instance.animator.SetInteger("LookDirection", lookDirection);
+#if CHEATRELEASE
+                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && chaosGame.Networkcurrentrevoler < chaosGame.Networkrevolverbulllet)
+                    {
+                        chaosGame.Networkcurrentrevoler++;
+                        if (Plugin.KeyAnimFire.IsDown() || Plugin.KeyAnimEmpty.IsDown())
+                        {
+                            __instance.animator.SetBool("Empty", true);
+                        }
+                    }
+                    else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
+                        (Plugin.RouletAnimType.Value == RouletType.Roulet && chaosGame.Networkcurrentrevoler == chaosGame.Networkrevolverbulllet))
+                    {
+                        if (Plugin.KeyAnimFire.IsDown() || Plugin.KeyAnimEmpty.IsDown())
+                        {
+                            __instance.animator.SetBool("Fire", true);
+                            chaosGame.Networkcurrentrevoler = 0;
+                            chaosGame.Networkrevolverbulllet = UnityEngine.Random.Range(0, 6);
+                            chaosGame.HitTargetCmd();
+                        }
+                    }
+                    else
+                    {
+                        if (Plugin.KeyAnimFire.IsDown())
+                        {
+                            __instance.animator.SetBool("Fire", true);
+                        }
+                        if (Plugin.KeyAnimEmpty.IsDown())
+                        {
+                            __instance.animator.SetBool("Empty", true);
+                        }
+                    }
+                    if (Plugin.KeyAnimFire.IsUp() || Plugin.KeyAnimEmpty.IsUp())
+                    {
+                        __instance.animator.SetBool("Fire", false);
+                        __instance.animator.SetBool("Empty", false);
+                        __instance.animator.SetBool("TakeAim", false);
+                    }
+#else
+                    if (Plugin.KeyAnimFire.IsDown())
+                    {
+                        __instance.animator.SetBool("Fire", true);
+                    }
+                    if (Plugin.KeyAnimFire.IsUp())
+                    {
+                        __instance.animator.SetBool("Fire", false);
+                        __instance.animator.SetBool("TakeAim", false);
+                    }
+                    if (Plugin.KeyAnimEmpty.IsDown())
+                    {
+                        __instance.animator.SetBool("Empty", true);
+                    }
+                    if (Plugin.KeyAnimEmpty.IsUp())
+                    {
+                        __instance.animator.SetBool("Empty", false);
+                        __instance.animator.SetBool("TakeAim", false);
+                    }
+#endif
                 }
-                if (Plugin.KeyAnimFire.IsDown()) __instance.animator.SetBool("Fire", true);
-                if (Plugin.KeyAnimFire.IsUp()) __instance.animator.SetBool("Fire", false);
-                if (Plugin.KeyAnimEmpty.IsDown()) __instance.animator.SetBool("Empty", true);
-                if (Plugin.KeyAnimEmpty.IsUp()) __instance.animator.SetBool("Empty", false);
             }
             for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
             {

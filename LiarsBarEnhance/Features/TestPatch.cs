@@ -55,21 +55,4 @@ public class TestPatch
         }
         return false;
     }
-
-    private static readonly string[] allowResetSettingsState = ["state_settings", "substate_display", "substate_gameplay", "substate_graphics", "substate_audiolanguages"];
-    [HarmonyPatch(typeof(ChangeSettings), "Update")]
-    [HarmonyPrefix]
-    public static bool UpdatePrefix(ChangeSettings __instance)
-    {
-        if (Input.GetKeyDown(KeyCode.F7) && SceneManager.GetActiveScene().name == "SteamTest")
-        {
-            var stateManager = __instance.gameObject.GetComponent<StateManager>();
-            var name = stateManager.ActiveCanvas.gameObject.name;
-            if (allowResetSettingsState.Contains(name))
-            {
-                AccessTools.Method("ChangeSettings:ResetSettings").Invoke(__instance, []);
-            }
-        }
-        return false;
-    }
 }

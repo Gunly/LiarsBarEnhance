@@ -96,12 +96,12 @@ public class ChaosCheatPatch
         if (__instance.isOwned && __instance is ChaosGamePlay chaosGame)
         {
             Plugin.IntCheatBlorfRevoler.Value = 0;
-            Plugin.IntCheatBlorfHealth.SettingChanged += (sender, args) =>
+            Plugin.IntCheatBlorfHealth.SettingChanged += (_, _) =>
             {
                 if (Plugin.BooleanCheatDeck.Value)
                     chaosGame.Networkrevolverbulllet = Plugin.IntCheatBlorfHealth.Value - 1;
             };
-            Plugin.IntCheatBlorfRevoler.SettingChanged += (sender, args) =>
+            Plugin.IntCheatBlorfRevoler.SettingChanged += (_, _) =>
             {
                 if (Plugin.BooleanCheatDeck.Value)
                     chaosGame.Networkcurrentrevoler = Plugin.IntCheatBlorfRevoler.Value;

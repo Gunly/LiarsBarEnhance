@@ -7,13 +7,13 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class AutoRotatePatch
 {
-    private static bool rotating = false;
+    public static bool Rotating = false;
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {
-        rotating = false;
+        Rotating = false;
     }
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
@@ -21,8 +21,8 @@ public class AutoRotatePatch
     public static void UpdatePostfix(CharController __instance, Manager ___manager)
     {
         if (!__instance.isOwned) return;
-        if (Plugin.KeyRotateAuto.IsDown() && !___manager.GamePaused && !___manager.Chatting) rotating = !rotating;
-        if (!rotating) return;
+        if (Plugin.KeyRotateAuto.IsDown() && ___manager.PluginControl()) Rotating = !Rotating;
+        if (!Rotating) return;
         var rotateSpeed = Plugin.FloatAutoRotateSpeed.Value * 6;
         if ((Plugin.DirectionRotateState.Value & RotateDirection.Pitch) != RotateDirection.None)
             __instance.transform.Rotate(rotateSpeed * Vector3.right, Space.Self);
@@ -34,5 +34,7 @@ public class AutoRotatePatch
             __instance.AddYaw(rotateSpeed);
         if ((Plugin.DirectionRotateState.Value & RotateDirection.HeadPitch) != RotateDirection.None)
             __instance.AddPitch(rotateSpeed);
+        if ((Plugin.DirectionRotateState.Value & RotateDirection.HeadRoll) != RotateDirection.None)
+            CrazyShakeHeadPatch.CinemachineTargetRoll += rotateSpeed;
     }
 }

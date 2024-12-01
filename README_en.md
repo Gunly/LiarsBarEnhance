@@ -17,6 +17,8 @@
 - Remove player name length restrictions (HUD and chat)  
 - Remove lowercase-only sending restriction  
 - Remove sensitive word restrictions (required by owner of the room)  
+- Fix scrollview with slow mouse wheel speed
+- Reset settings only take effect on the settings page
 
 ### You can
 
@@ -35,25 +37,28 @@
 - Free Camera In Death
 - Player Scale(only visible to self)
 - Show Self Top Information
+- Use Animation
+- Return to main menu (resolve stuck)
 
 #### Key Bindings
 Key Bindings is configurable. Suggest using [ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)
 If ConfigurationManager window cannot be opened, you can try editing `BepInEx/config/BepInEx.cfg` to change `HideManagerGameObject = false` to `true`
 
-| Key                     | Function           |
-| :---------------------: | :----------------: |
-| `Tab`                   | Enable Hint        |
-| `C`                     | Spin Crazy         |
-| `B`                     | Open Mouth         |
-| `R`                     | Reset Body         |
-| `T`                     | Reset Head         |
-| `↑` `↓` `←` `→`     | Body Movement      |
-| `I` `J` `K` `L`         | Head Movement      |
-| `Mouse Button` + `Turn` | Body Rotation      |
-| `Numpad 0`              | Jump               |
-| `P`                     | Auto Rotate        |
-| `1` `2` `3` `4`         | Teleport           |
-| `Mouse Wheel`           | Fiwld Of View      |
+| Key                     | Function            |
+| :---------------------: | :-----------------: |
+| `Tab`                   | Enable Hint         |
+| `C`                     | Spin Crazy          |
+| `B`                     | Open Mouth          |
+| `R`                     | Reset Body          |
+| `T`                     | Reset Head          |
+| `↑` `↓` `←` `→`     | Body Movement       |
+| `I` `J` `K` `L`         | Head Movement       |
+| `Mouse Button` + `Turn` | Body Rotation       |
+| `Numpad 0`              | Jump                |
+| `P`                     | Auto Rotate         |
+| `1` `2` `3` `4`         | Teleport            |
+| `Mouse Wheel`           | Fiwld Of View       |
+| `F9`                    | Return to main menu |
 
 ### You cannot
 
