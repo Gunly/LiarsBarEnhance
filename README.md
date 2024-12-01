@@ -19,6 +19,8 @@
 - 移除玩家名字长度限制（HUD与聊天）
 - 移除只能发送小写限制
 - 移除敏感词限制（房主需要）
+- 修复滚动列表使用鼠标滚轮速度过慢
+- 重置设置只在设置页面生效(F7)
 
 ### 主动技
 
@@ -38,6 +40,7 @@
 - 玩家缩放(仅自己可见)
 - 显示自身头顶信息
 - 主动使用动画
+- 回到主菜单(解决卡死)
 
 #### 按键列表
 大多数按键可以更改，建议使用[ConfigurationManager](https://github.com/BepInEx/BepInEx.ConfigurationManager)  
@@ -61,6 +64,7 @@
 | `P`                 | 自动旋转     |
 | `1` `2` `3` `4`     | 传送         |
 | `鼠标滚轮`          | 调整视野大小 |
+| `F9`                | 回到主菜单   |
 
 ### 做不到
 
@@ -81,7 +85,7 @@
 
 1. 下载[BepInEx_ConfigurationManager_LiarsBarEnhance.zip](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.0.6/BepInEx_ConfigurationManager_LiarsBarEnhance.zip)
 2. 将`BepInEx_ConfigurationManager_LiarsBarEnhance.zip`解压至游戏根目录
-3. 进入游戏后按F1打开`ConfigurationManager`窗口，可以在游戏内修改配置和自定义快捷键
+3. 进入游戏后按`F1`打开`ConfigurationManager`窗口，可以在游戏内修改配置和自定义快捷键
 
 ## 自行构建插件
 
@@ -91,7 +95,7 @@
 2. `cmd` 或者 `powershell` 等终端输入 `git clone https://github.com/dogdie233/LiarsBarEnhance.git`克隆本仓库到本地(前提安装`Git`网上教程一堆)或点击绿色`code`按钮后点击`Download Zip`下载解压  
 3. 设置环境变量`LiarsBarManaged`为`<游戏根目录>/Liar's Bar_Data/Managed/`或者从`<游戏根目录>/Liar's Bar_Data/Managed/`中复制所有dll文件复制到`lib`文件夹  
 4. 在项目根目录执行`dotnet build -c Release`  
-5. 插件本体`com.github.gunly.LiarsBarEnhance.dll`将会生成在`Output`目录下  
+5. 插件本体`com.github.dogdie233.LiarsBarEnhance.dll`将会生成在`Output`目录下  
 
 ***按照[安装](#安装)继续进行下一步操作***  
 

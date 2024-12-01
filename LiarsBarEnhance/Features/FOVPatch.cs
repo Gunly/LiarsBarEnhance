@@ -2,8 +2,6 @@
 
 using HarmonyLib;
 
-using System;
-
 using UnityEngine;
 
 namespace LiarsBarEnhance.Features;
@@ -19,25 +17,13 @@ public class FOVPatch
     public static void StartPostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        getCharCam(__instance);
-        Fov = cam.m_Lens.FieldOfView;
-        cam.m_Lens.FieldOfView = Plugin.FloatViewField.Value;
-    }
-
-    private static void getCharCam(CharController charController)
-    {
         string[] cameraPaths = ["Base HumanHead/Virtual Camera", "RHINO_Head/Virtual Camera", "YAKUZA_Head/Virtual Camera"];
         foreach (var cameraPath in cameraPaths)
         {
-            try
-            {
-                cam = charController.HeadPivot.Find(cameraPath).GetComponent<CinemachineVirtualCamera>();
-                break;
-            }
-            catch (Exception)
-            {
-                continue;
-            }
+            cam = __instance.HeadPivot.Find(cameraPath)?.GetComponent<CinemachineVirtualCamera>();
+            if (cam == null) continue;
+            cam.m_Lens.FieldOfView = Fov = Plugin.FloatViewField.Value;
+            break;
         }
     }
 
@@ -45,8 +31,8 @@ public class FOVPatch
     [HarmonyPostfix]
     public static void UpdatePostfix(CharController __instance, PlayerStats ___playerStats, Manager ___manager)
     {
-        if (!__instance.isOwned) return;
-        if (Plugin.BooleanViewField.Value && !___manager.GamePaused && !___manager.Chatting)
+        if (!__instance.isOwned || cam == null) return;
+        if (Plugin.BooleanViewField.Value && ___manager.PluginControl())
         {
             var mouseScroll = Input.GetAxis("Mouse ScrollWheel");
             if (mouseScroll != 0f)
@@ -55,6 +41,7 @@ public class FOVPatch
             }
         }
         var d = Plugin.FloatViewField.Value - Fov;
+        if (d == 0f) return;
         if (Mathf.Abs(d) < 0.1f)
         {
             Fov = Plugin.FloatViewField.Value;

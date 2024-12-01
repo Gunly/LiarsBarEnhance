@@ -15,7 +15,7 @@ public class CharScalePatch
     {
         if (!__instance.isOwned) return;
         initScale = __instance.transform.localScale;
-        Plugin.FloatCustomPlayerScale.SettingChanged += (s, a) =>
+        Plugin.FloatCustomPlayerScale.SettingChanged += (_, _) =>
         {
             var scale = (Plugin.FloatCustomPlayerScale.Value - 0.5f) * 8f;
             if (scale > 0f) scale += 1f;

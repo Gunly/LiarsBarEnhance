@@ -5,6 +5,7 @@ using HarmonyLib;
 using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
 
+using System;
 using System.Linq;
 using System.Text;
 
@@ -40,15 +41,17 @@ namespace LiarsBarEnhance.Components
             groundY = charController.transform.position.y;
             playerY = groundY;
 
-            Plugin.IntHintPosX.SettingChanged += (s, a) => guiShow = 1f;
-            Plugin.IntHintPosY.SettingChanged += (s, a) => guiShow = 1f;
             hintTitle = HintTitle();
+            void hintGuiEvent(object sender, EventArgs args) => guiShow = 1f;
+            Plugin.IntHintPosX.SettingChanged += hintGuiEvent;
+            Plugin.IntHintPosY.SettingChanged += hintGuiEvent;
+            Plugin.HintTypeSelect.SettingChanged += hintGuiEvent;
         }
 
         private void Update()
         {
             if (!charController.isOwned) return;
-            if (!manager.GamePaused && !manager.Chatting)
+            if (manager.PluginControl())
             {
                 MoveHead();
                 MouseRotate();
@@ -56,7 +59,6 @@ namespace LiarsBarEnhance.Components
             }
             if (Plugin.KeyMoveResetPosition.IsDown())
             {
-                charController.HeadPivot.transform.localPosition = initHeadPosition;
                 charController.transform.localPosition = initBodyPosition;
                 charController.transform.localRotation = initBodyRotation;
                 groundY = charController.transform.position.y;
@@ -68,9 +70,10 @@ namespace LiarsBarEnhance.Components
             }
             if (Plugin.KeyViewReset.IsDown())
             {
+                charController.HeadPivot.transform.localPosition = initHeadPosition;
                 charController.SetYaw(0f);
                 charController.SetPitch(0f);
-                CharMoveablePatch.CinemachineTargetRoll = 0f;
+                CrazyShakeHeadPatch.CinemachineTargetRoll = 0f;
                 Plugin.FloatViewField.Value = 60f;
             }
             if (Plugin.KeyViewRemoveRotationLimit.IsDown())
@@ -85,6 +88,18 @@ namespace LiarsBarEnhance.Components
             {
                 Plugin.BooleanViewField.Value = !Plugin.BooleanViewField.Value;
             }
+#if CHEATRELEASE
+            if (Plugin.KeyAnimRouletType.IsDown())
+            {
+                Plugin.RouletAnimType.Value = Plugin.RouletAnimType.Value switch
+                {
+                    RouletType.AnimOnly => RouletType.Roulet,
+                    RouletType.Roulet => RouletType.Suicide,
+                    RouletType.Suicide => RouletType.AnimOnly,
+                    _ => RouletType.AnimOnly
+                };
+            }
+#endif
         }
 
         private void MoveHead()
@@ -296,8 +311,8 @@ namespace LiarsBarEnhance.Components
         }
 
         private string hintTitle;
-        private readonly string on = "<color=#00FF00>开</color>";
-        private readonly string off = "<color=#FF0000>关</color>";
+        private readonly string on = "<color=lime>开</color>";
+        private readonly string off = "<color=red>关</color>";
         private void OnGUI()
         {
             if (charController.isOwned && (Plugin.KeyCustomShowHint.IsPressed() || guiShow > 0f))
@@ -307,44 +322,7 @@ namespace LiarsBarEnhance.Components
                 if (x < 0) x += Screen.width;
                 var y = Plugin.IntHintPosY.Value;
                 if (y < 0) y += Screen.height;
-                GUI.Label(new Rect(x, y, 240, 480),
-                    hintTitle +
-                    $"{playerStats.PlayerName}{HintHealth()}\n" +
-                    "\n" +
-                    $"按住 {HintKey(Plugin.KeyCustomShowHint)} 显示提示\n" +
-                    $"按住 {HintKey(Plugin.KeyViewCrazyShakeHead)} 疯狂转头\n" +
-                    $"按住 {HintKey(Plugin.KeyCustomBigMouth)} 张嘴\n" +
-                    $"按 {HintKey(Plugin.KeyMoveResetPosition)} 重置位置\n" +
-                    $"按 {HintKey(Plugin.KeyViewReset)} 重置视角\n" +
-                    $"身体移动: {HintKey(Plugin.KeyMoveForward, Plugin.KeyMoveBack, Plugin.KeyMoveLeft, Plugin.KeyMoveRight)}\n" +
-                    $"头部移动: {HintKey(Plugin.KeyViewForward, Plugin.KeyViewBack, Plugin.KeyViewLeft, Plugin.KeyViewRight, Plugin.KeyViewUp, Plugin.KeyViewDown)}\n" +
-                    $"头部偏转: {HintKey(Plugin.KeyViewAnticlockwise, Plugin.KeyViewClockwise)}\n" +
-                    $"按住 {HintKey(Plugin.KeyRotateYaw)} 水平转动身体\n" +
-                    $"按住 {HintKey(Plugin.KeyRotatePitch)} 垂直(前后)转动身体\n" +
-                    $"按住 {HintKey(Plugin.KeyRotateRoll)} 垂直(左右)转动身体\n" +
-                    $"按 {HintKey(Plugin.KeyMoveJump)} 跳跃\n" +
-                    $"按 {HintKey(Plugin.KeyMoveSquat)} 蹲下\n" +
-                    $"按 {HintKey(Plugin.KeyRotateAuto)} 自动旋转\n" +
-                    $"传送: {HintKey(Plugin.KeyPosition)}\n" +
-                    "\n" +
-                    $"解除视角限制({HintKey(Plugin.KeyViewRemoveRotationLimit)}): {(Plugin.BooleanViewRemoveRotationLimit.Value ? on : off)}\n" +
-                    $"移动方向跟随头部视角({HintKey(Plugin.KeyMoveFollowHeadShortcut)}): {(Plugin.BooleanMoveFollowHead.Value ? on : off)}\n" +
-                    $"调整视场({HintKey(Plugin.KeyViewField)}, {FOVPatch.Fov:0.00}): {(Plugin.BooleanViewField.Value ? on : off)}\n" +
-                    $"显示自身头顶信息: {(Plugin.BooleanCustomShowSelfInfo.Value ? on : off)}\n" +
-                    "\n" +
-                    $"Liar: {HintKey(Plugin.KeyAnimCallLiar)}  SpotOn: {HintKey(Plugin.KeyAnimSpotOn)}\n" +
-                    $"扔牌: {HintKey(Plugin.KeyAnimThrow)}  展示: {HintKey(Plugin.KeyAnimShow)}\n" +
-                    $"自枪: {HintKey(Plugin.KeyAnimRoulet)}  喝酒: {HintKey(Plugin.KeyAnimDrink)}\n" +
-                    $"装弹: {HintKey(Plugin.KeyAnimReload)}  摇骰: {HintKey(Plugin.KeyAnimShake)}\n" +
-                    $"举枪: {HintKey(Plugin.KeyAnimTakeAim)}  开枪: {HintKey(Plugin.KeyAnimFire)}  空枪: {HintKey(Plugin.KeyAnimEmpty)}\n" +
-                    "\n" +
-                    $"Position:  X: {transform.localPosition.x:0.00}  Y: {transform.localPosition.y:0.00}  Z: {transform.localPosition.z:0.00}\n" +
-                    $"Rotation:  X: {transform.localEulerAngles.x:0.00}  Y: {transform.localEulerAngles.y:0.00}  Z: {transform.localEulerAngles.z:0.00}\n" +
-                    $"Pitch: {charController.GetPitch():0.00}  Yaw: {charController.GetYaw():0.00}  Roll: {CharMoveablePatch.CinemachineTargetRoll:0.00}\n" +
-#if CHEATRELEASE
-                    CheatText() +
-#endif
-                    "",
+                GUI.Label(new Rect(x, y, 240, 480), buildHint(),
                     new GUIStyle
                     {
                         fontSize = 15,
@@ -352,6 +330,67 @@ namespace LiarsBarEnhance.Components
                     }
                 );
             }
+        }
+
+        private string buildHint()
+        {
+            var sb = new StringBuilder();
+            if ((Plugin.HintTypeSelect.Value & HintType.TitleName) != HintType.None)
+            {
+                sb.AppendLine(hintTitle);
+                sb.AppendLine($"{playerStats.PlayerName}{HintHealth()}");
+                sb.AppendLine();
+            }
+            if ((Plugin.HintTypeSelect.Value & HintType.HintKey) != HintType.None)
+            {
+                sb.AppendLine($"显示提示: {HintKey(Plugin.KeyCustomShowHint)}");
+                sb.AppendLine($"疯狂转头: {HintKey(Plugin.KeyViewCrazyShakeHead)}");
+                sb.AppendLine($"张嘴: {HintKey(Plugin.KeyCustomBigMouth)}");
+                sb.AppendLine($"重置位置: {HintKey(Plugin.KeyMoveResetPosition)}");
+                sb.AppendLine($"重置视角: {HintKey(Plugin.KeyViewReset)}");
+                sb.AppendLine($"身体移动: {HintKey(Plugin.KeyMoveForward, Plugin.KeyMoveBack, Plugin.KeyMoveLeft, Plugin.KeyMoveRight)}");
+                sb.AppendLine($"身体转动: {HintKey(Plugin.KeyRotateYaw, Plugin.KeyRotateRoll, Plugin.KeyRotatePitch)}");
+                sb.AppendLine($"头部移动: {HintKey(Plugin.KeyViewForward, Plugin.KeyViewBack, Plugin.KeyViewLeft, Plugin.KeyViewRight, Plugin.KeyViewUp, Plugin.KeyViewDown)}");
+                sb.AppendLine($"头部偏转: {HintKey(Plugin.KeyViewAnticlockwise, Plugin.KeyViewClockwise)}");
+                sb.AppendLine($"跳跃: {HintKey(Plugin.KeyMoveJump)}");
+                sb.AppendLine($"蹲下: {HintKey(Plugin.KeyMoveSquat)}");
+                sb.AppendLine($"传送: {HintKey(Plugin.KeyPosition)}");
+                sb.AppendLine();
+            }
+            if ((Plugin.HintTypeSelect.Value & HintType.PluginInfo) != HintType.None)
+            {
+                sb.AppendLine($"自动旋转({HintKey(Plugin.KeyRotateAuto)}): {(AutoRotatePatch.Rotating ? on : off)}");
+                sb.AppendLine($"解除视角限制({HintKey(Plugin.KeyViewRemoveRotationLimit)}): {(Plugin.BooleanViewRemoveRotationLimit.Value ? on : off)}");
+                sb.AppendLine($"移动方向跟随头部视角({HintKey(Plugin.KeyMoveFollowHeadShortcut)}): {(Plugin.BooleanMoveFollowHead.Value ? on : off)}");
+                sb.AppendLine($"调整视场({HintKey(Plugin.KeyViewField)}, {FOVPatch.Fov:0.00}): {(Plugin.BooleanViewField.Value ? on : off)}");
+                sb.AppendLine($"显示自身头顶信息: {(Plugin.BooleanCustomShowSelfInfo.Value ? on : off)}");
+                sb.AppendLine();
+            }
+            if ((Plugin.HintTypeSelect.Value & HintType.AnimKey) != HintType.None)
+            {
+                sb.AppendLine($"Liar: {HintKey(Plugin.KeyAnimCallLiar)}  SpotOn: {HintKey(Plugin.KeyAnimSpotOn)}");
+                sb.AppendLine($"扔牌: {HintKey(Plugin.KeyAnimThrow)}  开盅: {HintKey(Plugin.KeyAnimShow)}");
+#if CHEATRELEASE
+                sb.Append($"");
+                sb.AppendLine($"自枪: {HintKey(Plugin.KeyAnimRoulet)}  喝酒: {HintKey(Plugin.KeyAnimDrink)}  " +
+                    $"类型({HintKey(Plugin.KeyAnimRouletType)}): {Plugin.RouletAnimType.Value.GetEnumDescription()}");
+#else
+                sb.AppendLine($"自枪: {HintKey(Plugin.KeyAnimRoulet)}  喝酒: {HintKey(Plugin.KeyAnimDrink)}");
+#endif
+                sb.AppendLine($"装弹: {HintKey(Plugin.KeyAnimReload)}  摇骰: {HintKey(Plugin.KeyAnimShake)}");
+                sb.AppendLine($"举枪: {HintKey(Plugin.KeyAnimTakeAim)}  开枪: {HintKey(Plugin.KeyAnimFire)}  空枪: {HintKey(Plugin.KeyAnimEmpty)}");
+                sb.AppendLine();
+            }
+            if ((Plugin.HintTypeSelect.Value & HintType.DebugInfo) != HintType.None)
+            {
+                sb.AppendLine($"Position:  X: {transform.localPosition.x:0.00}  Y: {transform.localPosition.y:0.00}  Z: {transform.localPosition.z:0.00}");
+                sb.AppendLine($"Rotation:  X: {transform.localEulerAngles.x:0.00}  Y: {transform.localEulerAngles.y:0.00}  Z: {transform.localEulerAngles.z:0.00}");
+                sb.AppendLine($"Pitch: {charController.GetPitch():0.00}  Yaw: {charController.GetYaw():0.00}  Roll: {CrazyShakeHeadPatch.CinemachineTargetRoll:0.00}");
+            }
+#if CHEATRELEASE
+            CheatText(sb);
+#endif
+            return sb.ToString();
         }
 
         private string HintTitle()
@@ -374,13 +413,13 @@ namespace LiarsBarEnhance.Components
             }
             else if (manager.mode == CustomNetworkManager.GameMode.LiarsChaos)
             {
-                return $"<color=#F5E37B>{CustomNetworkManager.GameMode.LiarsDeck}</color> - <color=#FF82FF>Chaos</color>\n";
+                return $"<color=#F5E37B>{CustomNetworkManager.GameMode.LiarsDeck}</color> - <color=#FF82FF>Chaos</color>";
             }
             else
             {
                 ruleSet = "";
             }
-            return $"{mode} - {ruleSet}\n";
+            return $"{mode} - {ruleSet}";
         }
 
         private string HintHealth()
@@ -413,14 +452,14 @@ namespace LiarsBarEnhance.Components
 
         private string HintKey(params ConfigEntry<KeyboardShortcut>[] entries)
         {
-            return entries.Select(e => e.Value).Join(KeyboardShortcutString);
+            return entries.Select(e => e.Value).Join(KeyboardShortcutString, "  ");
         }
 
         private string KeyboardShortcutString(KeyboardShortcut shortcut)
         {
-            if (shortcut.MainKey == KeyCode.None) return "未设置";
-            if (shortcut.Modifiers.Count() == 0) return $"<color=#FFFF00>{KeycodeString(shortcut.MainKey)}</color>";
-            return $"<color=#FFFF00>{shortcut.Modifiers.Join(KeycodeString, "+")}+{KeycodeString(shortcut.MainKey)}</color>";
+            if (shortcut.MainKey == KeyCode.None) return "<color=yellow>未设置</color>";
+            if (shortcut.Modifiers.Count() == 0) return $"<color=yellow>{KeycodeString(shortcut.MainKey)}</color>";
+            return $"<color=yellow>{shortcut.Modifiers.Join(KeycodeString, "+")}+{KeycodeString(shortcut.MainKey)}</color>";
         }
         private string KeycodeString(KeyCode key)
         {
@@ -471,9 +510,9 @@ namespace LiarsBarEnhance.Components
         }
 
 #if CHEATRELEASE
-        private string CheatText()
+        private void CheatText(StringBuilder sb)
         {
-            var sb = new StringBuilder();
+            sb.AppendLine();
             if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController is BlorfGamePlay)
             {
                 foreach (var card in manager.BlorfGame.LastRound)
@@ -487,7 +526,7 @@ namespace LiarsBarEnhance.Components
                         4 => "Joker",
                         _ => ""
                     };
-                    sb.AppendLine($"<color=#{(card == -1 || card == 4 || card == manager.BlorfGame.RoundCard ? "00FF" : "FF00")}00>{type}</color>");
+                    sb.AppendLine($"<color={(card == -1 || card == 4 || card == manager.BlorfGame.RoundCard ? "lime" : "red")}>{type}</color>");
                 }
             }
             if (Plugin.BooleanCheatDice.Value && Plugin.BooleanCheatDiceTotalDice.Value && charController is DiceGamePlay)
@@ -509,10 +548,9 @@ namespace LiarsBarEnhance.Components
                         4 => "Master",
                         _ => ""
                     };
-                    sb.AppendLine($"<color=#{(card > 2 || card == manager.ChaosGame.RoundCard ? "00FF" : "FF00")}00>{type}</color>");
+                    sb.AppendLine($"<color={(card > 2 || card == manager.ChaosGame.RoundCard ? "lime" : "red")}>{type}</color>");
                 }
             }
-            return sb.ToString();
         }
 #endif
     }

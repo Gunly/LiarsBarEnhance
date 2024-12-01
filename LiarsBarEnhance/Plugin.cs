@@ -8,8 +8,10 @@ using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
 
 using System;
+using System.ComponentModel;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace LiarsBarEnhance;
 
@@ -21,11 +23,13 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<int> IntHintPosX, IntHintPosY;
     public static int InitPositionNumValue, InitAnimationNumValue;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyCustomShowHint,
-        KeyAnimCallLiar, KeyAnimDrink, KeyAnimReload, KeyAnimRoulet, KeyAnimShake, KeyAnimShow, KeyAnimSpotOn, KeyAnimThrow, KeyAnimTakeAim, KeyAnimFire, KeyAnimEmpty,
+        KeyAnimCallLiar, KeyAnimDrink, KeyAnimReload, KeyAnimRoulet, KeyAnimShake, KeyAnimShow,
+        KeyAnimSpotOn, KeyAnimThrow, KeyAnimTakeAim, KeyAnimFire, KeyAnimEmpty,
         KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveSquat, KeyMoveResetPosition, KeyMoveFollowHeadShortcut,
         KeyViewCrazyShakeHead, KeyViewRemoveRotationLimit, KeyViewReset, KeyViewField,
         KeyViewForward, KeyViewBack, KeyViewLeft, KeyViewRight, KeyViewUp, KeyViewDown, KeyViewClockwise, KeyViewAnticlockwise,
-        KeyRotateYaw, KeyRotatePitch, KeyRotateRoll, KeyRotateAuto;
+        KeyRotateYaw, KeyRotatePitch, KeyRotateRoll, KeyRotateAuto,
+        KeyGameReturnMenu;
     public static ConfigEntry<KeyboardShortcut>[] KeyPosition;
     public static ConfigEntry<KeyboardShortcut>[] KeyAnims;
     public static ConfigEntry<Vector3>[] VectorPosition, VectorRotation;
@@ -36,12 +40,14 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<string> StringCustomName, StringCustomNameColor, StringCustomMessageColor;
     public static ConfigEntry<string>[] StringAnims;
     public static ConfigEntry<RotateDirection> DirectionRotateState;
+    public static ConfigEntry<HintType> HintTypeSelect;
 #if CHEATRELEASE
     public static ConfigEntry<bool> BooleanCheatDeck, BooleanCheatDice, BooleanCheatDeckHealth, BooleanCheatBlorfLastRoundCard, BooleanCheatDiceTotalDice;
-    public static ConfigEntry<KeyboardShortcut> KeyCheatBlorfFlip, KeyCheatDiceShow;
+    public static ConfigEntry<KeyboardShortcut> KeyCheatBlorfFlip, KeyCheatDiceShow, KeyAnimRouletType;
     public static ConfigEntry<KeyboardShortcut>[] KeyCheatChangeCardDice;
     public static ConfigEntry<float> FloatCheatCardSize;
     public static ConfigEntry<int> IntCheatBlorfHealth, IntCheatBlorfRevoler;
+    public static ConfigEntry<RouletType> RouletAnimType;
 #endif
 
     private void Awake()
@@ -65,6 +71,8 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(CustomNamePatch), nameof(CustomNamePatch));
         Harmony.CreateAndPatchAll(typeof(ShowSelfTopInfoPatch), nameof(ShowSelfTopInfoPatch));
         Harmony.CreateAndPatchAll(typeof(DisableTmpWarningsPatch), nameof(DisableTmpWarningsPatch));
+        Harmony.CreateAndPatchAll(typeof(ResetSettingsPatch), nameof(ResetSettingsPatch));
+        Harmony.CreateAndPatchAll(typeof(ScrollViewPatch), nameof(ScrollViewPatch));
         Harmony.CreateAndPatchAll(typeof(TestPatch), nameof(TestPatch));
 
 #if CHEATRELEASE
@@ -81,6 +89,7 @@ public class Plugin : BaseUnityPlugin
 
     private void Update()
     {
+        if (KeyGameReturnMenu.IsDown()) SceneManager.LoadScene("SteamTest");
     }
 
     private void BindConfig()
@@ -110,15 +119,18 @@ public class Plugin : BaseUnityPlugin
 
         KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.B), "张嘴");
         FloatBigMouthAngle = Config.Bind("Custom", "BigMouthAngle", 60f, new ConfigDescription("张嘴角度", new AcceptableValueRange<float>(-180f, 180f)));
-        KeyCustomShowHint = Config.Bind("Custom", "ShowHint", new KeyboardShortcut(KeyCode.Tab), "启用提示");
         StringCustomName = Config.Bind("Custom", "CustomName", "", "自定义名称");
         StringCustomNameColor = Config.Bind("Custom", "NameColor", "FDE2AA", "聊天名字颜色");
         StringCustomMessageColor = Config.Bind("Custom", "MessageColor", "FFFFFF", "聊天文本颜色");
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "显示自身头顶信息");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放(自己)", new AcceptableValueRange<float>(0f, 1f)));
-        IntHintPosX = Config.Bind("Custom", "HintPosX", -240, new ConfigDescription("提示坐标X, 负数表示以屏幕宽度减去设置值))", new AcceptableValueRange<int>(-2000, 2000)));
-        IntHintPosY = Config.Bind("Custom", "HintPosY", 60, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(-1000, 1000)));
-        intCustomXP = Config.Bind("Custom", "XP", 0, new ConfigDescription("经验值", new AcceptableValueRange<int>(0, 10000)));
+
+        KeyCustomShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "启用提示");
+        HintTypeSelect = Config.Bind("Game", "HintType", HintType.All, "选择需要的提示信息");
+        IntHintPosX = Config.Bind("Game", "HintPosX", -300, new ConfigDescription("提示坐标X, 负数表示以屏幕宽度减去设置值))", new AcceptableValueRange<int>(-2000, 2000)));
+        IntHintPosY = Config.Bind("Game", "HintPosY", 60, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(-1000, 1000)));
+        KeyGameReturnMenu = Config.Bind("Game", "ReturnMenu", new KeyboardShortcut(KeyCode.F9), "回到主菜单(解决卡死)");
+        intCustomXP = Config.Bind("Game", "XP", 0, new ConfigDescription("经验值", new AcceptableValueRange<int>(0, 10000)));
 
         KeyMoveResetPosition = Config.Bind("Move", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
@@ -208,6 +220,10 @@ public class Plugin : BaseUnityPlugin
         KeyAnimThrow = Config.Bind("Anim", "Throw", new KeyboardShortcut(KeyCode.None), "扔牌 (看牌时按住)(Deck/Chaos)");
         KeyAnimShow = Config.Bind("Anim", "Show", new KeyboardShortcut(KeyCode.None), "展示骰子 (按住)(仅Dice)");
         KeyAnimRoulet = Config.Bind("Anim", "Roulet", new KeyboardShortcut(KeyCode.None), "开枪 (按下举枪, 松开开枪)(Deck/Chaos)");
+#if CHEATRELEASE
+        RouletAnimType = Config.Bind("Anim", "RouletType", RouletType.AnimOnly, "开枪动画效果\n(若不为仅动画, Chaos模式对他人时开枪与空枪等效)");
+        KeyAnimRouletType = Config.Bind("Anim", "RouletTypeChange", new KeyboardShortcut(KeyCode.None), "切换开枪动画效果");
+#endif
         KeyAnimDrink = Config.Bind("Anim", "Drink", new KeyboardShortcut(KeyCode.None), "喝酒 (仅Dice)");
         KeyAnimReload = Config.Bind("Anim", "Reload", new KeyboardShortcut(KeyCode.None), "装弹 (按住, 手里没牌时可用)(Deck/Chaos)");
         KeyAnimShake = Config.Bind("Anim", "Shake", new KeyboardShortcut(KeyCode.None), "摇骰子 (仅Dice)");
@@ -217,7 +233,7 @@ public class Plugin : BaseUnityPlugin
 
         BooleanTestGiraffe = Config.Bind("Test", "Giraffe", false, "修复伸头(服务器和客户端都需要, 先开启再开始游戏)");
 
-        intCustomXP.SettingChanged += (sender, args) =>
+        intCustomXP.SettingChanged += (_, _) =>
         {
             if (intCustomXP.Value % 50 == 0)
             {
@@ -239,5 +255,30 @@ public enum RotateDirection
     Yaw = 2,
     Roll = 4,
     HeadPitch = 8,
-    HeadYaw = 16
+    HeadYaw = 16,
+    HeadRoll = 32
 }
+
+[Flags]
+public enum HintType
+{
+    None = 0,
+    TitleName = 1,
+    HintKey = 2,
+    PluginInfo = 4,
+    AnimKey = 8,
+    DebugInfo = 16,
+    All = TitleName | HintKey | PluginInfo | AnimKey | DebugInfo
+}
+
+#if CHEATRELEASE
+public enum RouletType
+{
+    [Description("仅动画")]
+    AnimOnly,
+    [Description("开枪")]
+    Roulet,
+    [Description("自杀")]
+    Suicide
+}
+#endif

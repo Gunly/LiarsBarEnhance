@@ -14,7 +14,7 @@ public class BigMouthPatch
     public static void StartPostfix(FaceAnimator __instance)
     {
         if (!__instance.isOwned) return;
-        Plugin.FloatBigMouthAngle.SettingChanged += (sender, args) =>
+        Plugin.FloatBigMouthAngle.SettingChanged += (_, _) =>
         {
             mouthOpen = 1f;
         };

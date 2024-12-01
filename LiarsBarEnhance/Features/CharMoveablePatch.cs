@@ -9,28 +9,13 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class CharMoveablePatch
 {
-    public static float CinemachineTargetRoll = 0f;
-
     [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
         __instance.gameObject.AddComponent<FpController>();
-        CinemachineTargetRoll = 0f;
+        CrazyShakeHeadPatch.CinemachineTargetRoll = 0f;
         Debug.Log($"{nameof(CharMoveablePatch)}: {nameof(FpController)} added to {nameof(CharController)}");
-    }
-
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
-    [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance, Manager ___manager, float ____cinemachineTargetYaw, float ____cinemachineTargetPitch)
-    {
-        if (!__instance.isOwned) return;
-        if (!Plugin.BooleanViewRemoveRotationLimit.Value && !___manager.GamePaused && !___manager.Chatting)
-        {
-            if (Plugin.KeyViewClockwise.IsPressed()) CinemachineTargetRoll -= 2f;
-            if (Plugin.KeyViewAnticlockwise.IsPressed()) CinemachineTargetRoll += 2f;
-        }
-        __instance.HeadPivot.transform.localRotation = Quaternion.Euler(____cinemachineTargetYaw, CinemachineTargetRoll, ____cinemachineTargetPitch);
     }
 }
