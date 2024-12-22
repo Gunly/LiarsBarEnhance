@@ -5,6 +5,10 @@ VisualStudioVersion = 17.11.35005.142
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiarsBarEnhance", "LiarsBarEnhance\LiarsBarEnhance.csproj", "{318103A4-CDD7-4B11-A778-F8FEDE387761}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LiarsBarEnhanceShared", "LiarsBarEnhanceShared\LiarsBarEnhanceShared.shproj", "{EB3B7CE5-85B6-49EB-9D92-BAFB8F6A636C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiarsBarEnhanceOnlyFix", "LiarsBarEnhanceOnlyFix\LiarsBarEnhanceOnlyFix.csproj", "{5E6C1EC1-1F53-4DD4-B173-FBE57868B686}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CheatRelease|Any CPU = CheatRelease|Any CPU
@@ -18,11 +22,22 @@ Global
 		{318103A4-CDD7-4B11-A778-F8FEDE387761}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{318103A4-CDD7-4B11-A778-F8FEDE387761}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{318103A4-CDD7-4B11-A778-F8FEDE387761}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E6C1EC1-1F53-4DD4-B173-FBE57868B686}.CheatRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{5E6C1EC1-1F53-4DD4-B173-FBE57868B686}.CheatRelease|Any CPU.Build.0 = Release|Any CPU
+		{5E6C1EC1-1F53-4DD4-B173-FBE57868B686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E6C1EC1-1F53-4DD4-B173-FBE57868B686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E6C1EC1-1F53-4DD4-B173-FBE57868B686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E6C1EC1-1F53-4DD4-B173-FBE57868B686}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD0BE7B8-6271-44F7-905E-8A3A8436384D}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems*{318103a4-cdd7-4b11-a778-f8fede387761}*SharedItemsImports = 5
+		LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems*{5e6c1ec1-1f53-4dd4-b173-fbe57868b686}*SharedItemsImports = 5
+		LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems*{eb3b7ce5-85b6-49eb-9d92-bafb8f6a636c}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

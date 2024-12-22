@@ -19,6 +19,7 @@
 - Remove sensitive word restrictions (required by owner of the room)  
 - Fix scrollview with slow mouse wheel speed
 - Reset settings only take effect on the settings page
+- Filter Lobby List
 
 ### You can
 

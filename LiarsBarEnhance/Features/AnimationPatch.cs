@@ -3,6 +3,7 @@
 using HarmonyLib;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -70,13 +71,18 @@ public class AnimationPatch
                 if (Plugin.KeyAnimDrink.IsDown()) __instance.animator.SetBool("Drink", true);
                 if (Plugin.KeyAnimDrink.IsUp())
                 {
-                    if (__instance.animator.GetBool("Dead") && !___playerStats.Dead)
+#if CHEATRELEASE
+                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && ___playerStats.NetworkHealth == 2)
                     {
-                        ___playerStats.NetworkHealth -= 1;
-                        if (___playerStats.NetworkHealth == 0)
-                            ___playerStats.NetworkDead = true;
-                        AccessTools.Method("DiceGamePlayManager:ReduceDice").Invoke(___manager.DiceGame, [___playerStats.connectionToClient, ___playerStats]);
+                        ___playerStats.NetworkHealth = 1;
                     }
+                    else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
+                        (Plugin.RouletAnimType.Value == RouletType.Roulet && ___playerStats.NetworkHealth == 1))
+                    {
+                        ___playerStats.NetworkHealth = 0;
+                        ___playerStats.NetworkDead = true;
+                    }
+#endif
                     __instance.animator.SetBool("Drink", false);
                 }
             }
@@ -85,7 +91,24 @@ public class AnimationPatch
                 if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
                 if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
                 if (Plugin.KeyAnimRoulet.IsDown()) __instance.animator.SetBool("Roulet", true);
-                if (Plugin.KeyAnimRoulet.IsUp()) __instance.animator.SetBool("Roulet", false);
+                if (Plugin.KeyAnimRoulet.IsUp())
+                {
+#if CHEATRELEASE
+                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && chaosGame.Networkcurrentrevoler < chaosGame.Networkrevolverbulllet)
+                    {
+                        chaosGame.Networkcurrentrevoler++;
+                    }
+                    else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
+                        (Plugin.RouletAnimType.Value == RouletType.Roulet && chaosGame.Networkcurrentrevoler == chaosGame.Networkrevolverbulllet))
+                    {
+                        __instance.animator.SetBool("Dead", true);
+                        chaosGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:waitforheadopen").Invoke(chaosGame, []));
+                        AccessTools.Method("BlorfGamePlay:CommandBeDead").Invoke(chaosGame, []);
+                        chaosGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:WaitforRevolverUI").Invoke(chaosGame, []));
+                    }
+#endif
+                    __instance.animator.SetBool("Roulet", false);
+                }
                 if (Plugin.KeyAnimReload.IsDown()) __instance.animator.SetBool("Reload", true);
                 if (Plugin.KeyAnimReload.IsUp()) __instance.animator.SetBool("Reload", false);
                 if (Plugin.KeyAnimTakeAim.IsDown())

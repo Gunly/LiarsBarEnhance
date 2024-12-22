@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <AssemblyName>com.github.gunly.LiarsBarEnhance</AssemblyName>
-        <Product>LiarsBarEnhance</Product>
+        <AssemblyName>com.github.gunly.LiarsBarEnhanceOnlyFix</AssemblyName>
+        <Product>LiarsBarEnhanceOnlyFix</Product>
         <Description>A BepInEx plugin help to enhance your playing experience in game Liar's Bar</Description>
         <Version>1.0.6</Version>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
         <OutDir>./Output</OutDir>
-        <Configurations>Debug;Release;CheatRelease</Configurations>
+        <Configurations>Debug;Release</Configurations>
 
     </PropertyGroup>
     
@@ -28,11 +28,7 @@
         </RestoreAdditionalProjectSources>
         <Company>https://github.com/Gunly/LiarsBarEnhance</Company>
         <PackageProjectUrl>https://github.com/Gunly/LiarsBarEnhance</PackageProjectUrl>
-        <Title>LiarsBarEnhance</Title>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CheatRelease|AnyCPU'">
-      <Optimize>True</Optimize>
+        <Title>LiarsBarEnhanceOnlyFix</Title>
     </PropertyGroup>
 
     <ItemGroup>
@@ -63,15 +59,8 @@
         <Reference Include="BepInEx.Harmony">
           <HintPath>..\lib\BepInEx.Harmony.dll</HintPath>
         </Reference>
-        <Reference Include="Cinemachine">
-          <HintPath>..\lib\Cinemachine.dll</HintPath>
-        </Reference>
         <Reference Include="Mirror">
-            <HintPath>$(ManagedDir)\Mirror.dll</HintPath>
-            <Private>false</Private>
-        </Reference>
-        <Reference Include="Mirror.Components">
-          <HintPath>..\lib\Mirror.Components.dll</HintPath>
+          <HintPath>..\lib\Mirror.dll</HintPath>
         </Reference>
         <Reference Include="UnityEngine.UI">
             <HintPath>$(ManagedDir)\UnityEngine.UI.dll</HintPath>

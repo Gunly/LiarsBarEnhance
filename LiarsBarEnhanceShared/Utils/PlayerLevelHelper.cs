@@ -19,11 +19,9 @@ public static class PlayerLevelHelper
         xpNeededList.Add(0);
         SetXp(0);
         calculateNeeds();
-        Plugin.Logger.LogDebug($"[{nameof(PlayerLevelHelper)}] Level 0 ({(DatabaseManager.Levels)0}) needs {xpNeededList[0]} XP");
         while (dbManager.needs != 0)
         {
             xpNeededList.Add(xpNeededList[^1] + dbManager.needs);
-            Plugin.Logger.LogDebug($"[{nameof(PlayerLevelHelper)}] Level {xpNeededList.Count - 1} ({(DatabaseManager.Levels)(xpNeededList.Count - 1)}) needs {xpNeededList[^1]} XP");
             SetXp(xpNeededList[^1]);
             calculateNeeds();
         }

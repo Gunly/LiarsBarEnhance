@@ -8,7 +8,6 @@ using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
 
 using System;
-using System.ComponentModel;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,10 +18,10 @@ namespace LiarsBarEnhance;
 public class Plugin : BaseUnityPlugin
 {
     internal new static ManualLogSource Logger;
-    private static ConfigEntry<int> intPositionNum, intAnimationNum, intCustomXP;
+    private static ConfigEntry<int> intPositionNum, intAnimationNum, intGammXP;
     public static ConfigEntry<int> IntHintPosX, IntHintPosY;
     public static int InitPositionNumValue, InitAnimationNumValue;
-    public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyCustomShowHint,
+    public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyGameShowHint,
         KeyAnimCallLiar, KeyAnimDrink, KeyAnimReload, KeyAnimRoulet, KeyAnimShake, KeyAnimShow,
         KeyAnimSpotOn, KeyAnimThrow, KeyAnimTakeAim, KeyAnimFire, KeyAnimEmpty,
         KeyMoveForward, KeyMoveBack, KeyMoveLeft, KeyMoveRight, KeyMoveJump, KeyMoveSquat, KeyMoveResetPosition, KeyMoveFollowHeadShortcut,
@@ -37,7 +36,7 @@ public class Plugin : BaseUnityPlugin
         FloatAutoRotateSpeed, FloatCustomPlayerScale, FloatBigMouthAngle;
     public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewField,
         BooleanTestGiraffe, BooleanCustomShowSelfInfo;
-    public static ConfigEntry<string> StringCustomName, StringCustomNameColor, StringCustomMessageColor;
+    public static ConfigEntry<string> StringCustomName, StringGameLobbyFilterWords;
     public static ConfigEntry<string>[] StringAnims;
     public static ConfigEntry<RotateDirection> DirectionRotateState;
     public static ConfigEntry<HintType> HintTypeSelect;
@@ -55,33 +54,36 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
         BindConfig();
 
+        Harmony.CreateAndPatchAll(typeof(ChatProPatch), nameof(ChatProPatch));
+        Harmony.CreateAndPatchAll(typeof(ChineseNameFixPatch), nameof(ChineseNameFixPatch));
+        Harmony.CreateAndPatchAll(typeof(DisableTmpWarningsPatch), nameof(DisableTmpWarningsPatch));
+        Harmony.CreateAndPatchAll(typeof(RemoveNameLengthLimitPatch), nameof(RemoveNameLengthLimitPatch));
+        Harmony.CreateAndPatchAll(typeof(ResetSettingsPatch), nameof(ResetSettingsPatch));
+        Harmony.CreateAndPatchAll(typeof(ScrollViewPatch), nameof(ScrollViewPatch));
+        Harmony.CreateAndPatchAll(typeof(TestPatch), nameof(TestPatch));
         Harmony.CreateAndPatchAll(typeof(RemoveHeadRotationlimitPatch), nameof(RemoveHeadRotationlimitPatch));
         Harmony.CreateAndPatchAll(typeof(CrazyShakeHeadPatch), nameof(CrazyShakeHeadPatch));
-        Harmony.CreateAndPatchAll(typeof(ChatProPatch), nameof(ChatProPatch));
-        Harmony.CreateAndPatchAll(typeof(CharMoveablePatch), nameof(CharMoveablePatch));
         Harmony.CreateAndPatchAll(typeof(BigMouthPatch), nameof(BigMouthPatch));
-        Harmony.CreateAndPatchAll(typeof(ChineseNameFixPatch), nameof(ChineseNameFixPatch));
-        Harmony.CreateAndPatchAll(typeof(RemoveNameLengthLimitPatch), nameof(RemoveNameLengthLimitPatch));
+        Harmony.CreateAndPatchAll(typeof(CharMoveablePatch), nameof(CharMoveablePatch));
         Harmony.CreateAndPatchAll(typeof(SelectableLevelPatch), nameof(SelectableLevelPatch));
         Harmony.CreateAndPatchAll(typeof(TeleportPatch), nameof(TeleportPatch));
         Harmony.CreateAndPatchAll(typeof(AutoRotatePatch), nameof(AutoRotatePatch));
         Harmony.CreateAndPatchAll(typeof(CharScalePatch), nameof(CharScalePatch));
-        Harmony.CreateAndPatchAll(typeof(FOVPatch), nameof(FOVPatch));
-        Harmony.CreateAndPatchAll(typeof(AnimationPatch), nameof(AnimationPatch));
-        Harmony.CreateAndPatchAll(typeof(CustomNamePatch), nameof(CustomNamePatch));
         Harmony.CreateAndPatchAll(typeof(ShowSelfTopInfoPatch), nameof(ShowSelfTopInfoPatch));
-        Harmony.CreateAndPatchAll(typeof(DisableTmpWarningsPatch), nameof(DisableTmpWarningsPatch));
-        Harmony.CreateAndPatchAll(typeof(ResetSettingsPatch), nameof(ResetSettingsPatch));
-        Harmony.CreateAndPatchAll(typeof(ScrollViewPatch), nameof(ScrollViewPatch));
-        Harmony.CreateAndPatchAll(typeof(TestPatch), nameof(TestPatch));
+        Harmony.CreateAndPatchAll(typeof(FOVPatch), nameof(FOVPatch));
+        Harmony.CreateAndPatchAll(typeof(CustomNamePatch), nameof(CustomNamePatch));
+        Harmony.CreateAndPatchAll(typeof(AnimationPatch), nameof(AnimationPatch));
+        Harmony.CreateAndPatchAll(typeof(GiraffePatch), nameof(GiraffePatch));
+        Harmony.CreateAndPatchAll(typeof(LobbyFilterPatch), nameof(LobbyFilterPatch));
 
 #if CHEATRELEASE
         Harmony.CreateAndPatchAll(typeof(BlorfCheatPatch), nameof(BlorfCheatPatch));
         Harmony.CreateAndPatchAll(typeof(DiceCheatPatch), nameof(DiceCheatPatch));
         Harmony.CreateAndPatchAll(typeof(ChaosCheatPatch), nameof(ChaosCheatPatch));
 #else
-//        Harmony.CreateAndPatchAll(typeof(BlorfAntiCheat), nameof(BlorfAntiCheat));
-//        Harmony.CreateAndPatchAll(typeof(DiceAntiCheat), nameof(DiceAntiCheat));
+        Harmony.CreateAndPatchAll(typeof(BlorfAntiCheat), nameof(BlorfAntiCheat));
+        Harmony.CreateAndPatchAll(typeof(DiceAntiCheat), nameof(DiceAntiCheat));
+        Harmony.CreateAndPatchAll(typeof(DicePatch), nameof(DicePatch));
 #endif
 
         Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
@@ -120,19 +122,22 @@ public class Plugin : BaseUnityPlugin
         KeyCustomBigMouth = Config.Bind("Custom", "BigMouth", new KeyboardShortcut(KeyCode.B), "张嘴");
         FloatBigMouthAngle = Config.Bind("Custom", "BigMouthAngle", 60f, new ConfigDescription("张嘴角度", new AcceptableValueRange<float>(-180f, 180f)));
         StringCustomName = Config.Bind("Custom", "CustomName", "", "自定义名称");
-        StringCustomNameColor = Config.Bind("Custom", "NameColor", "FDE2AA", "聊天名字颜色");
-        StringCustomMessageColor = Config.Bind("Custom", "MessageColor", "FFFFFF", "聊天文本颜色");
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "显示自身头顶信息");
-        FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放(自己)", new AcceptableValueRange<float>(0f, 1f)));
+        FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放", new AcceptableValueRange<float>(0f, 1f)));
 
-        KeyCustomShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "启用提示");
+        KeyGameShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "启用提示");
+        KeyMoveResetPosition = Config.Bind("Game", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
+        KeyViewReset = Config.Bind("Game", "ResetView", new KeyboardShortcut(KeyCode.T), "重置视角");
         HintTypeSelect = Config.Bind("Game", "HintType", HintType.All, "选择需要的提示信息");
         IntHintPosX = Config.Bind("Game", "HintPosX", -300, new ConfigDescription("提示坐标X, 负数表示以屏幕宽度减去设置值))", new AcceptableValueRange<int>(-2000, 2000)));
         IntHintPosY = Config.Bind("Game", "HintPosY", 60, new ConfigDescription("提示坐标Y, 负数表示以屏幕高度减去设置值))", new AcceptableValueRange<int>(-1000, 1000)));
         KeyGameReturnMenu = Config.Bind("Game", "ReturnMenu", new KeyboardShortcut(KeyCode.F9), "回到主菜单(解决卡死)");
-        intCustomXP = Config.Bind("Game", "XP", 0, new ConfigDescription("经验值", new AcceptableValueRange<int>(0, 10000)));
+        intGammXP = Config.Bind("Game", "XP", 0, new ConfigDescription("经验值", new AcceptableValueRange<int>(0, 10000)));
+        StringGameLobbyFilterWords = Config.Bind("Game", "LobbyFilterWords", "透视|改牌|透牌|修改|枪数|无敌|低价|稳定|免费|加q|加群|售后|看片|网址|国产|少妇|" +
+            "@[Qq]\\d{5,}|@[a-zA-Z0-9]{3,}\\.[a-zA-Z]{2,}", "大厅过滤词");
+        LobbyFilterPatch.FilterWords = () => StringGameLobbyFilterWords.Value;
+        StringGameLobbyFilterWords.SettingChanged += (_, _) => LobbyFilterPatch.FilterWordsChanged();
 
-        KeyMoveResetPosition = Config.Bind("Move", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
         KeyMoveFollowHeadShortcut = Config.Bind("Move", "MoveFollowHeadShortcut", new KeyboardShortcut(KeyCode.H), "切换移动方向跟随头部视角快捷键");
         FloatMoveHorizontalBodyRotate = Config.Bind("Move", "MoveHorizontalBodyRotate", 0f, new ConfigDescription("左右移动时身体旋转角度", new AcceptableValueRange<float>(0f, 90f)));
@@ -146,7 +151,6 @@ public class Plugin : BaseUnityPlugin
         FloatGravity = Config.Bind("Move", "Gravity", 9.8f, new ConfigDescription("重力加速度(仅对跳跃生效)", new AcceptableValueRange<float>(0f, 100f)));
         FloatMoveSpeed = Config.Bind("Move", "MoveSpeed", 4f, new ConfigDescription("移动速度", new AcceptableValueRange<float>(0f, 100f)));
 
-        KeyViewReset = Config.Bind("View", "ResetView", new KeyboardShortcut(KeyCode.T), "重置视角");
         KeyViewCrazyShakeHead = Config.Bind("View", "CrazyShakeHead", new KeyboardShortcut(KeyCode.C), "疯狂摇头");
         BooleanViewField = Config.Bind("View", "MouseViewField", true, "滚轮调整视场角");
         FloatViewField = Config.Bind("View", "ViewField", 60f, new ConfigDescription("视场角", new AcceptableValueRange<float>(1f, 180f)));
@@ -233,15 +237,15 @@ public class Plugin : BaseUnityPlugin
 
         BooleanTestGiraffe = Config.Bind("Test", "Giraffe", false, "修复伸头(服务器和客户端都需要, 先开启再开始游戏)");
 
-        intCustomXP.SettingChanged += (_, _) =>
+        intGammXP.SettingChanged += (_, _) =>
         {
-            if (intCustomXP.Value % 50 == 0)
+            if (intGammXP.Value % 50 == 0)
             {
-                PlayerLevelHelper.SetXp(intCustomXP.Value);
+                PlayerLevelHelper.SetXp(intGammXP.Value);
             }
             else
             {
-                intCustomXP.Value = (int)((intCustomXP.Value + 25f) / 50f) * 50;
+                intGammXP.Value = (int)((intGammXP.Value + 25f) / 50f) * 50;
             }
         };
     }

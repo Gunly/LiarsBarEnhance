@@ -23,7 +23,7 @@ public class BlorfCheatPatch
             {
                 var cardObject = __instance.Cards[i];
                 if (!cardObject.gameObject.activeSelf) continue;
-                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && !___manager.GamePaused && !___manager.Chatting && cardObject.gameObject.activeSelf)
+                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && ___manager.PluginControl())
                 {
                     var card = cardObject.GetComponent<Card>();
                     if (card.Devil)
@@ -73,22 +73,25 @@ public class BlorfCheatPatch
                 {
                     card.GetComponent<MeshRenderer>().material = card.normal;
                 }
-                if (Plugin.KeyCheatBlorfFlip.IsPressed() && !___manager.GamePaused && !___manager.Chatting)
+                if (___manager.PluginControl())
                 {
-                    if (!cardFliped[card])
+                    if (Plugin.KeyCheatBlorfFlip.IsPressed())
                     {
-                        cardObject.transform.localScale = new Vector3(-100 * Plugin.FloatCheatCardSize.Value, 100 * Plugin.FloatCheatCardSize.Value, -100 * Plugin.FloatCheatCardSize.Value);
-                        cardObject.transform.Translate(Vector3.up * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
-                        cardFliped[card] = true;
+                        if (!cardFliped[card])
+                        {
+                            cardObject.transform.localScale = new Vector3(-100 * Plugin.FloatCheatCardSize.Value, 100 * Plugin.FloatCheatCardSize.Value, -100 * Plugin.FloatCheatCardSize.Value);
+                            cardObject.transform.Translate(Vector3.up * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
+                            cardFliped[card] = true;
+                        }
                     }
-                }
-                else
-                {
-                    if (cardFliped[card])
+                    else
                     {
-                        cardObject.transform.localScale = new Vector3(100, 100, 100);
-                        cardObject.transform.Translate(Vector3.down * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
-                        cardFliped[card] = false;
+                        if (cardFliped[card])
+                        {
+                            cardObject.transform.localScale = new Vector3(100, 100, 100);
+                            cardObject.transform.Translate(Vector3.down * ((Plugin.FloatCheatCardSize.Value - 1f) / 10.8f), Space.Self);
+                            cardFliped[card] = false;
+                        }
                     }
                 }
             }

@@ -1,0 +1,11 @@
+[
+  {
+    "Name": "新建配置文件",
+    "Projects": [
+      {
+        "Path": "LiarsBarEnhance\\LiarsBarEnhance.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

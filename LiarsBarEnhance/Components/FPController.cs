@@ -315,7 +315,7 @@ namespace LiarsBarEnhance.Components
         private readonly string off = "<color=red>关</color>";
         private void OnGUI()
         {
-            if (charController.isOwned && (Plugin.KeyCustomShowHint.IsPressed() || guiShow > 0f))
+            if (charController.isOwned && (Plugin.KeyGameShowHint.IsPressed() || guiShow > 0f))
             {
                 if (guiShow > 0) guiShow -= Time.deltaTime;
                 var x = Plugin.IntHintPosX.Value;
@@ -343,7 +343,7 @@ namespace LiarsBarEnhance.Components
             }
             if ((Plugin.HintTypeSelect.Value & HintType.HintKey) != HintType.None)
             {
-                sb.AppendLine($"显示提示: {HintKey(Plugin.KeyCustomShowHint)}");
+                sb.AppendLine($"显示提示: {HintKey(Plugin.KeyGameShowHint)}");
                 sb.AppendLine($"疯狂转头: {HintKey(Plugin.KeyViewCrazyShakeHead)}");
                 sb.AppendLine($"张嘴: {HintKey(Plugin.KeyCustomBigMouth)}");
                 sb.AppendLine($"重置位置: {HintKey(Plugin.KeyMoveResetPosition)}");

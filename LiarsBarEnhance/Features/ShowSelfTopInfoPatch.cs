@@ -8,6 +8,21 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class ShowSelfTopInfoPatch
 {
+    [HarmonyPatch(typeof(PlayerStats), "Update")]
+    [HarmonyPrefix]
+    public static bool UpdatePrefix(PlayerStats __instance, TextMeshPro ___NameText)
+    {
+        if (__instance.isOwned)
+        {
+            ___NameText.transform.parent.gameObject.SetActive(!__instance.Winner && Plugin.BooleanCustomShowSelfInfo.Value);
+        }
+        if (__instance.Health == 0 && __instance.isServer)
+        {
+            __instance.NetworkDead = true;
+        }
+        return false;
+    }
+
     [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
     [HarmonyPostfix]
     public static void UpdateCallPostfix(BlorfGamePlay __instance, PlayerStats ___playerStats, GameObject ___KartKafaSprite, TextMeshPro ___RoundText)
