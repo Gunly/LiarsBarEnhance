@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace LiarsBarEnhance.Features;
@@ -9,29 +8,29 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class TestPatch
 {
-    [HarmonyPatch(typeof(LobbySlot), "SetGameLayerRecursive")]
+    [HarmonyPatch(typeof(LobbySlot), nameof(LobbySlot.SetGameLayerRecursive))]
     [HarmonyPrefix]
     public static bool SetGameLayerRecursivePrefix(GameObject _go)
     {
         return _go != null;
     }
 
-    [HarmonyPatch(typeof(UIAlwaysSelect), "Update")]
+    [HarmonyPatch(typeof(UIAlwaysSelect), nameof(UIAlwaysSelect.Update))]
     [HarmonyPrefix]
-    public static bool UpdatePrefix(EventSystem ___currentEventSystem, ref GameObject ___currentlySelected)
+    public static bool UpdatePrefix(UIAlwaysSelect __instance)
     {
-        if (___currentEventSystem.currentSelectedGameObject != null && ___currentlySelected != ___currentEventSystem.currentSelectedGameObject)
+        if (__instance.currentEventSystem.currentSelectedGameObject != null && __instance.currentlySelected != __instance.currentEventSystem.currentSelectedGameObject)
         {
-            ___currentlySelected = ___currentEventSystem.currentSelectedGameObject;
+            __instance.currentlySelected = __instance.currentEventSystem.currentSelectedGameObject;
         }
 
-        if (___currentEventSystem.currentSelectedGameObject == null)
+        if (__instance.currentEventSystem.currentSelectedGameObject == null)
         {
-            if (___currentlySelected == null)
+            if (__instance.currentlySelected == null)
             {
-                ___currentlySelected = ___currentEventSystem.firstSelectedGameObject;
+                __instance.currentlySelected = __instance.currentEventSystem.firstSelectedGameObject;
             }
-            ___currentlySelected?.GetComponent<Selectable>().Select();
+            __instance.currentlySelected?.GetComponent<Selectable>().Select();
         }
         return false;
     }

@@ -1,33 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using HarmonyLib;
+﻿using System.Collections.Generic;
 
 namespace LiarsBarEnhance.Utils;
 
 public static class PlayerLevelHelper
 {
     private static readonly List<int> xpNeededList = [];
-    private static readonly Action calculateNeeds;
 
     static PlayerLevelHelper()
     {
         var xpSave = DatabaseManager.instance.XP;
         var dbManager = DatabaseManager.instance;
-        calculateNeeds = (Action)AccessTools.Method(typeof(DatabaseManager), "CalculateNeeds")
-            .CreateDelegate(typeof(Action), dbManager);
 
         xpNeededList.Add(0);
         SetXp(0);
-        calculateNeeds();
+        CalculateNeeds();
         while (dbManager.needs != 0)
         {
             xpNeededList.Add(xpNeededList[^1] + dbManager.needs);
             SetXp(xpNeededList[^1]);
-            calculateNeeds();
+            dbManager.CalculateNeeds();
         }
 
         SetXp(xpSave);
-        calculateNeeds();
+        CalculateNeeds();
     }
 
     public static void SetXp(int xp)
@@ -37,7 +32,7 @@ public static class PlayerLevelHelper
         => SetXp(xpNeededList[(int)level] + xpMore);
 
     public static void CalculateNeeds()
-        => calculateNeeds();
+        => DatabaseManager.instance.CalculateNeeds();
 
     public static int GetNeedXp(DatabaseManager.Levels level)
         => xpNeededList[(int)level];

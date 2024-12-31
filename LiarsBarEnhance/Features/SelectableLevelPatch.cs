@@ -1,16 +1,37 @@
 ﻿using HarmonyLib;
-using LiarsBarEnhance.Components;
+
+using UnityEngine;
+using LiarsBarEnhance.Utils;
 
 namespace LiarsBarEnhance.Features;
 
 [HarmonyPatch]
 public class SelectableLevelPatch
 {
-    [HarmonyPatch(typeof(Statsui), "Start")]
+    [HarmonyPatch(typeof(Statsui), nameof(Statsui.Update))]
     [HarmonyPostfix]
-    public static void StartPostfix(Statsui __instance)
+    public static void UpdatePostfix(Statsui __instance)
     {
-        __instance.gameObject.AddComponent<SelectableLevelController>();
-        Plugin.Logger.LogDebug($"[{typeof(SelectableLevelPatch)}] Added {nameof(SelectableLevelController)} component to {__instance.gameObject.name}");
+        if (Input.GetMouseButtonDown(1) && __instance.RankParrentTable.gameObject.activeInHierarchy)
+        {
+            (float distance, RectTransform rank) best = (float.PositiveInfinity, null);
+            for (var i = 0; i < __instance.RankParrentTable.childCount; i++)
+            {
+                var rank = __instance.RankParrentTable.GetChild(i).GetComponent<RectTransform>();
+                if (!RectTransformUtility.RectangleContainsScreenPoint(rank, Input.mousePosition) ||
+                    !RectTransformUtility.ScreenPointToLocalPointInRectangle(rank, Input.mousePosition, null, out var localPos))
+                    continue;
+
+                var distance = localPos.magnitude;
+                if (distance < best.distance)
+                    best = (distance, rank);
+            }
+
+            if (best.rank == null || !int.TryParse(best.rank.name, out var selectedLevel))
+                return;
+
+            PlayerLevelHelper.SetLevel((DatabaseManager.Levels)selectedLevel);
+            DatabaseManager.instance.SaveDataUser();
+        }
     }
 }

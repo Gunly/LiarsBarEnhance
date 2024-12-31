@@ -13,7 +13,7 @@ public class CustomNamePatch
         if (Plugin.StringCustomName.Value != "")
         {
             __instance.name = "LocalGamePlayer";
-            AccessTools.Method("PlayerObjectController:CmdSetPlayerName", [typeof(string)]).Invoke(__instance, [Plugin.StringCustomName.Value]);
+            __instance.CmdSetPlayerName(Plugin.StringCustomName.Value);
             if (LobbyController.Instance != null)
             {
                 LobbyController.Instance.FindLocalPlayer();

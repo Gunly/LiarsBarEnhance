@@ -15,12 +15,15 @@ public class CharScalePatch
     {
         if (!__instance.isOwned) return;
         initScale = __instance.transform.localScale;
-        Plugin.FloatCustomPlayerScale.SettingChanged += (_, _) =>
-        {
-            var scale = (Plugin.FloatCustomPlayerScale.Value - 0.5f) * 8f;
-            if (scale > 0f) scale += 1f;
-            else scale = 1 / (1 - scale);
-            __instance.transform.localScale = initScale * scale;
-        };
+        ChScale(__instance.transform);
+        Plugin.FloatCustomPlayerScale.SettingChanged += (_, _) => ChScale(__instance.transform);
+    }
+
+    private static void ChScale(Transform transform)
+    {
+        var scale = (Plugin.FloatCustomPlayerScale.Value - 0.5f) * 8f;
+        if (scale > 0f) scale += 1f;
+        else scale = 1 / (1 - scale);
+        transform.localScale = initScale * scale;
     }
 }

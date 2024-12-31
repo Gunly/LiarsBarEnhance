@@ -9,29 +9,29 @@ public class DicePatch
 {
     [HarmonyPatch(typeof(Dice), "Start")]
     [HarmonyPostfix]
-    public static void StartPostfix(Dice __instance, ref bool ___Owned, MeshRenderer ___renderer)
+    public static void StartPostfix(Dice __instance)
     {
-        ___Owned = __instance.transform.root.GetComponent<CharController>().isOwned;
+        __instance.Owned = __instance.transform.root.GetComponent<CharController>().isOwned;
         if (Manager.Instance != null)
         {
-            if (___Owned)
+            if (__instance.Owned)
             {
-                ___renderer.material = Manager.Instance.zar1;
+                __instance.renderer.material = Manager.Instance.zar1;
             }
             else
             {
-                ___renderer.material = Manager.Instance.zar2;
+                __instance.renderer.material = Manager.Instance.zar2;
             }
         }
     }
 
     [HarmonyPatch(typeof(Dice), "Update")]
     [HarmonyPrefix]
-    public static bool UpdatePrefix(Dice __instance, int ___Face, bool ___Owned)
+    public static bool UpdatePrefix(Dice __instance)
     {
-        if (___Owned)
+        if (__instance.Owned)
         {
-            switch (___Face)
+            switch (__instance.Face)
             {
                 case 1:
                     __instance.transform.localEulerAngles = new Vector3(0f, 0f, 0f);
@@ -53,7 +53,7 @@ public class DicePatch
                     break;
             }
         }
-        __instance.dice.sprite = __instance.DiceIcons[___Face - 1];
+        __instance.dice.sprite = __instance.DiceIcons[__instance.Face - 1];
         return false;
     }
 }

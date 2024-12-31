@@ -18,10 +18,10 @@ public class AutoRotatePatch
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance, Manager ___manager)
+    public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        if (Plugin.KeyRotateAuto.IsDown() && ___manager.PluginControl()) Rotating = !Rotating;
+        if (Plugin.KeyRotateAuto.IsDown() && __instance.manager.PluginControl()) Rotating = !Rotating;
         if (!Rotating) return;
         var rotateSpeed = Plugin.FloatAutoRotateSpeed.Value * 6;
         if ((Plugin.DirectionRotateState.Value & RotateDirection.Pitch) != RotateDirection.None)
@@ -31,10 +31,10 @@ public class AutoRotatePatch
         if ((Plugin.DirectionRotateState.Value & RotateDirection.Yaw) != RotateDirection.None)
             __instance.transform.Rotate(rotateSpeed * Vector3.up, Space.Self);
         if ((Plugin.DirectionRotateState.Value & RotateDirection.HeadYaw) != RotateDirection.None)
-            __instance.AddYaw(rotateSpeed);
+            __instance._cinemachineTargetYaw += rotateSpeed;
         if ((Plugin.DirectionRotateState.Value & RotateDirection.HeadPitch) != RotateDirection.None)
-            __instance.AddPitch(rotateSpeed);
+            __instance._cinemachineTargetPitch += rotateSpeed;
         if ((Plugin.DirectionRotateState.Value & RotateDirection.HeadRoll) != RotateDirection.None)
-            CrazyShakeHeadPatch.CinemachineTargetRoll += rotateSpeed;
+            RemoveHeadRotationlimitPatch.CinemachineTargetRoll += rotateSpeed;
     }
 }

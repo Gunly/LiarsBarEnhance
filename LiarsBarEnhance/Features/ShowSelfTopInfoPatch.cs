@@ -10,11 +10,11 @@ public class ShowSelfTopInfoPatch
 {
     [HarmonyPatch(typeof(PlayerStats), "Update")]
     [HarmonyPrefix]
-    public static bool UpdatePrefix(PlayerStats __instance, TextMeshPro ___NameText)
+    public static bool UpdatePrefix(PlayerStats __instance)
     {
         if (__instance.isOwned)
         {
-            ___NameText.transform.parent.gameObject.SetActive(!__instance.Winner && Plugin.BooleanCustomShowSelfInfo.Value);
+            __instance.NameText.transform.parent.gameObject.SetActive(!__instance.Winner && Plugin.BooleanCustomShowSelfInfo.Value);
         }
         if (__instance.Health == 0 && __instance.isServer)
         {
@@ -25,51 +25,51 @@ public class ShowSelfTopInfoPatch
 
     [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(BlorfGamePlay __instance, PlayerStats ___playerStats, GameObject ___KartKafaSprite, TextMeshPro ___RoundText)
+    public static void UpdateCallPostfix(BlorfGamePlay __instance)
     {
         if (Plugin.BooleanCustomShowSelfInfo.Value)
         {
 #if CHEATRELEASE
-            ___RoundText.text = $"({__instance.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? __instance.Networkrevolverbulllet + 1 : 6)})";
+            __instance.RoundText.text = $"({__instance.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? __instance.Networkrevolverbulllet + 1 : 6)})";
 #else
-            ___RoundText.text = $"({__instance.Networkcurrentrevoler}|6)";
+            __instance.RoundText.text = $"({__instance.Networkcurrentrevoler}|6)";
 #endif
-            ___RoundText.gameObject.SetActive(true);
-            if (___playerStats.HaveTurn)
+            __instance.RoundText.gameObject.SetActive(true);
+            if (__instance.playerStats.HaveTurn)
             {
-                ___KartKafaSprite.SetActive(true);
+                __instance.KartKafaSprite.SetActive(true);
             }
         }
     }
 
     [HarmonyPatch(typeof(DiceGamePlay), "UpdateCall")]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(DiceGamePlay __instance, PlayerStats ___playerStats, GameObject ___ZarKafaSprite)
+    public static void UpdateCallPostfix(DiceGamePlay __instance)
     {
         if (Plugin.BooleanCustomShowSelfInfo.Value)
         {
-            if (___playerStats.HaveTurn)
+            if (__instance.playerStats.HaveTurn)
             {
-                ___ZarKafaSprite.SetActive(true);
+                __instance.ZarKafaSprite.SetActive(true);
             }
         }
     }
 
     [HarmonyPatch(typeof(ChaosGamePlay), "UpdateCall")]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(ChaosGamePlay __instance, PlayerStats ___playerStats, GameObject ___KartKafaSprite, TextMeshPro ___RoundText)
+    public static void UpdateCallPostfix(ChaosGamePlay __instance)
     {
         if (Plugin.BooleanCustomShowSelfInfo.Value)
         {
 #if CHEATRELEASE
-            ___RoundText.text = $"({__instance.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? __instance.Networkrevolverbulllet + 1 : 6)})";
+            __instance.RoundText.text = $"({__instance.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? __instance.Networkrevolverbulllet + 1 : 6)})";
 #else
-            ___RoundText.text = $"({__instance.Networkcurrentrevoler}|6)";
+            __instance.RoundText.text = $"({__instance.Networkcurrentrevoler}|6)";
 #endif
-            ___RoundText.gameObject.SetActive(true);
-            if (___playerStats.HaveTurn)
+            __instance.RoundText.gameObject.SetActive(true);
+            if (__instance.playerStats.HaveTurn)
             {
-                ___KartKafaSprite.SetActive(true);
+                __instance.KartKafaSprite.SetActive(true);
             }
         }
     }

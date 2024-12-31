@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using JetBrains.Annotations;
 
 namespace LiarsBarEnhance.Utils;
 
@@ -13,7 +12,7 @@ public static class FastMemberAccessor<TClass, TValue> where TClass : class
 
     private static readonly BindingFlags bindingAttr = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
-    public static TValue Get([CanBeNull] TClass instance, string memberName)
+    public static TValue Get(TClass instance, string memberName)
     {
         if (!getters.TryGetValue(memberName, out var getter))
         {
@@ -31,7 +30,7 @@ public static class FastMemberAccessor<TClass, TValue> where TClass : class
         return getter(instance);
     }
 
-    public static void Set([CanBeNull] TClass instance, string memberName, TValue value)
+    public static void Set(TClass instance, string memberName, TValue value)
     {
         if (!setters.TryGetValue(memberName, out var setter))
         {

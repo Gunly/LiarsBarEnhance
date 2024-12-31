@@ -13,7 +13,7 @@ public class GiraffePatch
     {
         if (Plugin.BooleanTestGiraffe.Value)
         {
-            var ntrs = __instance.gameObject.GetComponents<NetworkTransformReliable>();
+            var ntrs = __instance.GetComponents<NetworkTransformReliable>();
             foreach (var ntr in ntrs)
             {
                 ntr.syncPosition = true;

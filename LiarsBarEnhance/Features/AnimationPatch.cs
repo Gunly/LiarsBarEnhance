@@ -3,7 +3,6 @@
 using HarmonyLib;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,12 +24,12 @@ public class AnimationPatch
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance, Manager ___manager, PlayerStats ___playerStats)
+    public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        if (___manager.PluginControl())
+        if (__instance.manager.PluginControl())
         {
-            if (!___playerStats.HaveTurn)
+            if (!__instance.playerStats.HaveTurn)
             {
                 if (Input.GetKeyDown(KeyCode.Space)) __instance.animator.SetBool("Look", true);
                 if (Input.GetKeyUp(KeyCode.Space)) __instance.animator.SetBool("Look", false);
@@ -52,9 +51,9 @@ public class AnimationPatch
                         (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler == blorfGame.Networkrevolverbulllet))
                     {
                         __instance.animator.SetBool("Dead", true);
-                        blorfGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:waitforheadopen").Invoke(blorfGame, []));
-                        AccessTools.Method("BlorfGamePlay:CommandBeDead").Invoke(blorfGame, []);
-                        blorfGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:WaitforRevolverUI").Invoke(blorfGame, []));
+                        blorfGame.StartCoroutine("waitforheadopen");
+                        blorfGame.CommandBeDead();
+                        blorfGame.StartCoroutine("WaitforRevolverUI");
                     }
 #endif
                     __instance.animator.SetBool("Roulet", false);
@@ -72,15 +71,15 @@ public class AnimationPatch
                 if (Plugin.KeyAnimDrink.IsUp())
                 {
 #if CHEATRELEASE
-                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && ___playerStats.NetworkHealth == 2)
+                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && __instance.playerStats.NetworkHealth == 2)
                     {
-                        ___playerStats.NetworkHealth = 1;
+                        __instance.playerStats.NetworkHealth = 1;
                     }
                     else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
-                        (Plugin.RouletAnimType.Value == RouletType.Roulet && ___playerStats.NetworkHealth == 1))
+                        (Plugin.RouletAnimType.Value == RouletType.Roulet && __instance.playerStats.NetworkHealth == 1))
                     {
-                        ___playerStats.NetworkHealth = 0;
-                        ___playerStats.NetworkDead = true;
+                        __instance.playerStats.NetworkHealth = 0;
+                        __instance.playerStats.NetworkDead = true;
                     }
 #endif
                     __instance.animator.SetBool("Drink", false);
@@ -102,9 +101,9 @@ public class AnimationPatch
                         (Plugin.RouletAnimType.Value == RouletType.Roulet && chaosGame.Networkcurrentrevoler == chaosGame.Networkrevolverbulllet))
                     {
                         __instance.animator.SetBool("Dead", true);
-                        chaosGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:waitforheadopen").Invoke(chaosGame, []));
-                        AccessTools.Method("BlorfGamePlay:CommandBeDead").Invoke(chaosGame, []);
-                        chaosGame.StartCoroutine((IEnumerator)AccessTools.Method("BlorfGamePlay:WaitforRevolverUI").Invoke(chaosGame, []));
+                        chaosGame.StartCoroutine("waitforheadopen");
+                        chaosGame.CommandBeDead();
+                        chaosGame.StartCoroutine("WaitforRevolverUI");
                     }
 #endif
                     __instance.animator.SetBool("Roulet", false);

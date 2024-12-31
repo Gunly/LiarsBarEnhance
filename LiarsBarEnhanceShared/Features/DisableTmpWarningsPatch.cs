@@ -2,8 +2,6 @@
 
 using TMPro;
 
-using UnityEngine;
-
 namespace LiarsBarEnhance.Features;
 
 [HarmonyPatch]
@@ -17,10 +15,10 @@ public class DisableTmpWarningsPatch
         return false;
     }
 
-    [HarmonyPatch(typeof(Debug), nameof(Debug.LogWarning), [typeof(object), typeof(Object)])]
-    [HarmonyPrefix]
-    public static bool LogWarningPrefix()
-    {
-        return false;
-    }
+    //[HarmonyPatch(typeof(Debug), nameof(Debug.LogWarning), [typeof(object), typeof(Object)])]
+    //[HarmonyPrefix]
+    //public static bool LogWarningPrefix()
+    //{
+    //    return false;
+    //}
 }

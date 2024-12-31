@@ -12,9 +12,9 @@ public class ChaosCheatPatch
 {
     private static readonly Dictionary<Card, bool> cardFliped = [];
 
-    [HarmonyPatch(typeof(ChaosGamePlay), "UpdateCall")]
+    [HarmonyPatch(typeof(ChaosGamePlay), nameof(ChaosGamePlay.UpdateCall))]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(ChaosGamePlay __instance, Manager ___manager)
+    public static void UpdateCallPostfix(ChaosGamePlay __instance)
     {
         if (!Plugin.BooleanCheatDeck.Value) return;
         if (__instance.isOwned)
@@ -23,7 +23,7 @@ public class ChaosCheatPatch
             {
                 var cardObject = __instance.Cards[i];
                 if (!cardObject.gameObject.activeSelf) continue;
-                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && ___manager.PluginControl())
+                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && __instance.manager.PluginControl())
                 {
                     var card = cardObject.GetComponent<Card>();
                     if (card.cardtype == 4)
@@ -67,7 +67,7 @@ public class ChaosCheatPatch
                 {
                     card.GetComponent<MeshRenderer>().material = card.normal;
                 }
-                if (___manager.PluginControl())
+                if (__instance.manager.PluginControl())
                 {
                     if (Plugin.KeyCheatBlorfFlip.IsPressed())
                     {

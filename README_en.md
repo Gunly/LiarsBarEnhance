@@ -69,10 +69,11 @@ If ConfigurationManager window cannot be opened, you can try editing `BepInEx/co
 
 ## Installation
 
-1. Download [BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v5.4.23.2/BepInEx_win_x64_5.4.23.2.zip)  
+1. Download [BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.2/BepInEx-Unity.IL2CPP-win-x64-6.0.0-pre.2.zip)  
 2. Extract `BepInEx` to the game root directory ([official installation tutorial](https://docs.bepinex.dev/articles/user_guide/installation/index.html))  
-3. Download the latest DLL from [Release](https://github.com/gunly/LiarsBarEnhance/releases)[latest DLL](https://github.com/gunly/LiarsBarEnhance/releases/download/1.0.6/com.github.gunly.LiarsBarEnhance.dll)  
-4. Place the plugin DLL (`com.github.gunly.LiarsBarEnhance.dll`) in the plugin folder (i.e., `<game root directory>/BepInEx/plugins`), create the `plugins` folder if it doesn't exist  
+3. Download the latest DLL from [Release](https://github.com/gunly/LiarsBarEnhance/releases)[latest DLL](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.0/com.github.gunly.LiarsBarEnhance.dll) and [BepInEx.KeyboardShortcut](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.0/BepInEx.KeyboardShortcut.dll)  
+4. If only need Passive(Chinese Fix, Lobby Filter, etc. Not contains Remove camera angle restrictions), Download[com.github.gunly.LiarsBarEnhanceOnlyFix.dll](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.0/com.github.gunly.LiarsBarEnhanceOnlyFix.dll), No need for `BepInEx.KeyboardShortcut`
+5. Place the plugin DLL (`com.github.gunly.LiarsBarEnhance.dll` or `com.github.gunly.LiarsBarEnhanceOnlyFix.dll`) and `BepInEx.KeyboardShortcut.dll`(if need) in the plugin folder (i.e., `<game root directory>/BepInEx/plugins`), create the `plugins` folder if it doesn't exist  
 
 ## Building the Plugin Yourself
 

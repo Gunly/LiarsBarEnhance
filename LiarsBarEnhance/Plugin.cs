@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using BepInEx.Unity.IL2CPP;
 
 using HarmonyLib;
 
@@ -8,16 +9,17 @@ using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
 
 using System;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace LiarsBarEnhance;
 
-[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-public class Plugin : BaseUnityPlugin
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+public class Plugin : BasePlugin
 {
-    internal new static ManualLogSource Logger;
+    internal new static ManualLogSource Log;
     private static ConfigEntry<int> intPositionNum, intAnimationNum, intGammXP;
     public static ConfigEntry<int> IntHintPosX, IntHintPosY;
     public static int InitPositionNumValue, InitAnimationNumValue;
@@ -31,7 +33,7 @@ public class Plugin : BaseUnityPlugin
         KeyGameReturnMenu;
     public static ConfigEntry<KeyboardShortcut>[] KeyPosition;
     public static ConfigEntry<KeyboardShortcut>[] KeyAnims;
-    public static ConfigEntry<Vector3>[] VectorPosition, VectorRotation;
+    public static ConfigEntry<float>[][] VectorPosition, VectorRotation;
     public static ConfigEntry<float> FloatJumpHeight, FloatGravity, FloatMoveSpeed, FloatMoveHorizontalBodyRotate, FloatViewSpeed, FloatViewField,
         FloatAutoRotateSpeed, FloatCustomPlayerScale, FloatBigMouthAngle;
     public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewField,
@@ -49,9 +51,22 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<RouletType> RouletAnimType;
 #endif
 
-    private void Awake()
+    public override void Load()
     {
-        Logger = base.Logger;
+        LiarsBarEnhanceBehaviour.Plugin = this;
+        IL2CPPChainloader.AddUnityComponent(typeof(LiarsBarEnhanceBehaviour));
+    }
+    private class LiarsBarEnhanceBehaviour : MonoBehaviour
+    {
+        internal static Plugin Plugin;
+
+        private void Start() => Plugin.Start();
+        private void Update() => Plugin.Update();
+        //private void LateUpdate() => Plugin.LateUpdate();
+        private void OnGUI() => Plugin.OnGUI();
+    }
+    private void Start()
+    {
         BindConfig();
 
         Harmony.CreateAndPatchAll(typeof(ChatProPatch), nameof(ChatProPatch));
@@ -70,28 +85,33 @@ public class Plugin : BaseUnityPlugin
         Harmony.CreateAndPatchAll(typeof(AutoRotatePatch), nameof(AutoRotatePatch));
         Harmony.CreateAndPatchAll(typeof(CharScalePatch), nameof(CharScalePatch));
         Harmony.CreateAndPatchAll(typeof(ShowSelfTopInfoPatch), nameof(ShowSelfTopInfoPatch));
-        Harmony.CreateAndPatchAll(typeof(FOVPatch), nameof(FOVPatch));
+        Harmony.CreateAndPatchAll(typeof(FOVPatch), nameof(FOVPatch));//TODO
         Harmony.CreateAndPatchAll(typeof(CustomNamePatch), nameof(CustomNamePatch));
         Harmony.CreateAndPatchAll(typeof(AnimationPatch), nameof(AnimationPatch));
-        Harmony.CreateAndPatchAll(typeof(GiraffePatch), nameof(GiraffePatch));
+        //Harmony.CreateAndPatchAll(typeof(GiraffePatch), nameof(GiraffePatch));//TODO
         Harmony.CreateAndPatchAll(typeof(LobbyFilterPatch), nameof(LobbyFilterPatch));
+        Harmony.CreateAndPatchAll(typeof(HintPatch), nameof(HintPatch));
 
 #if CHEATRELEASE
         Harmony.CreateAndPatchAll(typeof(BlorfCheatPatch), nameof(BlorfCheatPatch));
         Harmony.CreateAndPatchAll(typeof(DiceCheatPatch), nameof(DiceCheatPatch));
         Harmony.CreateAndPatchAll(typeof(ChaosCheatPatch), nameof(ChaosCheatPatch));
 #else
-        Harmony.CreateAndPatchAll(typeof(BlorfAntiCheat), nameof(BlorfAntiCheat));
-        Harmony.CreateAndPatchAll(typeof(DiceAntiCheat), nameof(DiceAntiCheat));
         Harmony.CreateAndPatchAll(typeof(DicePatch), nameof(DicePatch));
 #endif
 
-        Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+        Log = base.Log;
+        Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
 
     private void Update()
     {
         if (KeyGameReturnMenu.IsDown()) SceneManager.LoadScene("SteamTest");
+    }
+
+    private void OnGUI()
+    {
+        HintPatch.OnGUI();
     }
 
     private void BindConfig()
@@ -177,8 +197,8 @@ public class Plugin : BaseUnityPlugin
         if (intPositionNum.Value > 0)
         {
             KeyPosition = new ConfigEntry<KeyboardShortcut>[intPositionNum.Value];
-            VectorPosition = new ConfigEntry<Vector3>[intPositionNum.Value];
-            VectorRotation = new ConfigEntry<Vector3>[intPositionNum.Value];
+            VectorPosition = new ConfigEntry<float>[intPositionNum.Value][];
+            VectorRotation = new ConfigEntry<float>[intPositionNum.Value][];
             Vector3[] DefaultPositions = [
                 new(0.36f, 0.3f, -9.79f),
                 new(1.69f, 0.3f, -8.46f),
@@ -188,7 +208,7 @@ public class Plugin : BaseUnityPlugin
                 new(17.59f, 0.39f, -36.16f),
                 new(16.26f, 0.39f, -34.83f),
                 new(14.93f, 0.39f, -36.16f),
-                new(0, 0f, 0f)
+                new(0f, 0f, 0f)
             ];
             Vector3[] DefaultRotations = [
                 new(0f, 0f, 0f),
@@ -204,8 +224,16 @@ public class Plugin : BaseUnityPlugin
             for (var i = 0; i < intPositionNum.Value; i++)
             {
                 KeyPosition[i] = Config.Bind("Position", $"Position{i + 1}", new KeyboardShortcut(KeyCode.Alpha1 + i), $"移动到坐标{i + 1}");
-                VectorPosition[i] = Config.Bind("Position", $"Position{i + 1}Position", DefaultPositions[i], $"坐标{i + 1}坐标");
-                VectorRotation[i] = Config.Bind("Position", $"Position{i + 1}Rotation", DefaultRotations[i], $"坐标{i + 1}角度");
+                //VectorPosition[i] = Config.Bind("Position", $"Position{i + 1}Position", DefaultPositions[i], $"坐标{i + 1}坐标");
+                //VectorRotation[i] = Config.Bind("Position", $"Position{i + 1}Rotation", DefaultRotations[i], $"坐标{i + 1}角度");
+                VectorPosition[i] = new ConfigEntry<float>[3];
+                VectorRotation[i] = new ConfigEntry<float>[3];
+                VectorPosition[i][0] = Config.Bind("Position", $"Position{i + 1}PositionX", DefaultPositions[i].x, $"坐标{i + 1}坐标X");
+                VectorPosition[i][1] = Config.Bind("Position", $"Position{i + 1}PositionY", DefaultPositions[i].y, $"坐标{i + 1}坐标Y");
+                VectorPosition[i][2] = Config.Bind("Position", $"Position{i + 1}PositionZ", DefaultPositions[i].z, $"坐标{i + 1}坐标Z");
+                VectorRotation[i][0] = Config.Bind("Position", $"Position{i + 1}RotationX", DefaultRotations[i].x, $"坐标{i + 1}角度X");
+                VectorRotation[i][1] = Config.Bind("Position", $"Position{i + 1}RotationY", DefaultRotations[i].y, $"坐标{i + 1}角度Y");
+                VectorRotation[i][2] = Config.Bind("Position", $"Position{i + 1}RotationZ", DefaultRotations[i].z, $"坐标{i + 1}角度Z");
             }
         }
 
@@ -231,11 +259,11 @@ public class Plugin : BaseUnityPlugin
         KeyAnimDrink = Config.Bind("Anim", "Drink", new KeyboardShortcut(KeyCode.None), "喝酒 (仅Dice)");
         KeyAnimReload = Config.Bind("Anim", "Reload", new KeyboardShortcut(KeyCode.None), "装弹 (按住, 手里没牌时可用)(Deck/Chaos)");
         KeyAnimShake = Config.Bind("Anim", "Shake", new KeyboardShortcut(KeyCode.None), "摇骰子 (仅Dice)");
-        KeyAnimTakeAim= Config.Bind("Anim", "Aim", new KeyboardShortcut(KeyCode.None), "举枪(对他人) (仅Chaos)");
-        KeyAnimFire= Config.Bind("Anim", "Fire", new KeyboardShortcut(KeyCode.None), "开枪(对他人) (仅Chaos)");
-        KeyAnimEmpty= Config.Bind("Anim", "Empty", new KeyboardShortcut(KeyCode.None), "空枪(对他人) (仅Chaos)");
+        KeyAnimTakeAim = Config.Bind("Anim", "Aim", new KeyboardShortcut(KeyCode.None), "举枪(对他人) (仅Chaos)");
+        KeyAnimFire = Config.Bind("Anim", "Fire", new KeyboardShortcut(KeyCode.None), "开枪(对他人) (仅Chaos)");
+        KeyAnimEmpty = Config.Bind("Anim", "Empty", new KeyboardShortcut(KeyCode.None), "空枪(对他人) (仅Chaos)");
 
-        BooleanTestGiraffe = Config.Bind("Test", "Giraffe", false, "修复伸头(服务器和客户端都需要, 先开启再开始游戏)");
+        //BooleanTestGiraffe = Config.Bind("Test", "Giraffe", false, "修复伸头(服务器和客户端都需要, 先开启再开始游戏)");
 
         intGammXP.SettingChanged += (_, _) =>
         {
@@ -278,11 +306,11 @@ public enum HintType
 #if CHEATRELEASE
 public enum RouletType
 {
-    [Description("仅动画")]
+    //[Description("仅动画")]
     AnimOnly,
-    [Description("开枪")]
+    //[Description("开枪")]
     Roulet,
-    [Description("自杀")]
+    //[Description("自杀")]
     Suicide
 }
 #endif

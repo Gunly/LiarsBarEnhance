@@ -10,7 +10,7 @@ namespace LiarsBarEnhance.Features;
 public class FOVPatch
 {
     private static CinemachineVirtualCamera cam;
-    public static float Fov = 60f;
+    public static float Fov { get; set; }
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
     [HarmonyPostfix]
@@ -22,17 +22,18 @@ public class FOVPatch
         {
             cam = __instance.HeadPivot.Find(cameraPath)?.GetComponent<CinemachineVirtualCamera>();
             if (cam == null) continue;
-            cam.m_Lens.FieldOfView = Fov = Plugin.FloatViewField.Value;
+            var camLens = cam.m_Lens;
+            camLens.FieldOfView = Fov = Plugin.FloatViewField.Value;
             break;
         }
     }
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
     [HarmonyPostfix]
-    public static void UpdatePostfix(CharController __instance, PlayerStats ___playerStats, Manager ___manager)
+    public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned || cam == null) return;
-        if (Plugin.BooleanViewField.Value && ___manager.PluginControl())
+        if (Plugin.BooleanViewField.Value && __instance.manager.PluginControl())
         {
             var mouseScroll = Input.GetAxis("Mouse ScrollWheel");
             if (mouseScroll != 0f)
@@ -54,15 +55,17 @@ public class FOVPatch
         {
             Fov += Mathf.Min(-0.1f, d / 5);
         }
-        if (!___playerStats.Dead)
+        if (!__instance.playerStats.Dead)
         {
-            cam.m_Lens.FieldOfView = Fov;
+            var lens = cam.m_Lens;
+            lens.FieldOfView = Fov;
         }
         else
         {
-            for (var i = 0; i < ___manager.SpectatorCameraParrent.transform.childCount; i++)
+            for (var i = 0; i < __instance.manager.SpectatorCameraParrent.transform.childCount; i++)
             {
-                ___manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = Fov;
+                var lens = __instance.manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens;
+                lens.FieldOfView = Fov;
             }
         }
     }

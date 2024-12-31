@@ -29,7 +29,6 @@ public class BigMouthPatch
         if (mouthOpen > 0f || Plugin.KeyCustomBigMouth.IsPressed())
         {
             if (mouthOpen > 0f) mouthOpen -= Time.deltaTime;
-            //var pos = __instance.Mouth.transform.localPosition;
             __instance.Mouth.transform.localEulerAngles = new Vector3(0f, 0f, -Plugin.FloatBigMouthAngle.Value);
         }
     }
