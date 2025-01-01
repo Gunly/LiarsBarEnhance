@@ -10,6 +10,7 @@ using LiarsBarEnhance.Utils;
 
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,7 +34,7 @@ public class Plugin : BasePlugin
         KeyGameReturnMenu;
     public static ConfigEntry<KeyboardShortcut>[] KeyPosition;
     public static ConfigEntry<KeyboardShortcut>[] KeyAnims;
-    public static ConfigEntry<float>[][] VectorPosition, VectorRotation;
+    public static ConfigEntry<Vector3>[] VectorPosition, VectorRotation;
     public static ConfigEntry<float> FloatJumpHeight, FloatGravity, FloatMoveSpeed, FloatMoveHorizontalBodyRotate, FloatViewSpeed, FloatViewField,
         FloatAutoRotateSpeed, FloatCustomPlayerScale, FloatBigMouthAngle;
     public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewField,
@@ -85,7 +86,7 @@ public class Plugin : BasePlugin
         Harmony.CreateAndPatchAll(typeof(AutoRotatePatch), nameof(AutoRotatePatch));
         Harmony.CreateAndPatchAll(typeof(CharScalePatch), nameof(CharScalePatch));
         Harmony.CreateAndPatchAll(typeof(ShowSelfTopInfoPatch), nameof(ShowSelfTopInfoPatch));
-        Harmony.CreateAndPatchAll(typeof(FOVPatch), nameof(FOVPatch));//TODO
+        Harmony.CreateAndPatchAll(typeof(FOVPatch), nameof(FOVPatch));
         Harmony.CreateAndPatchAll(typeof(CustomNamePatch), nameof(CustomNamePatch));
         Harmony.CreateAndPatchAll(typeof(AnimationPatch), nameof(AnimationPatch));
         //Harmony.CreateAndPatchAll(typeof(GiraffePatch), nameof(GiraffePatch));//TODO
@@ -116,6 +117,17 @@ public class Plugin : BasePlugin
 
     private void BindConfig()
     {
+        TomlTypeConverter.AddConverter(typeof(Vector3), new TypeConverter {
+            ConvertToString = (o, type) => ((Vector3)o).ToString(),
+            ConvertToObject = (s, type) =>
+            {
+                var pattern = @"(-?\d+)(\.\d+)?";
+                var numbers = Regex.Matches(s, pattern).Select((Match m) => float.Parse(m.Value)).ToList();
+                if (numbers.Count < 3) return Vector3.zero;
+                return new Vector3(numbers[0], numbers[1], numbers[2]);
+            }
+        });
+
         intPositionNum = Config.Bind("AAARepeatConfigNum", "PositionNum", 4, new ConfigDescription("可传送坐标数量(需要重启游戏)", new AcceptableValueRange<int>(0, 9)));
         intAnimationNum = Config.Bind("AAARepeatConfigNum", "AnimationNum", 0, new ConfigDescription("可使用动画数量(需要重启游戏)", new AcceptableValueRange<int>(0, 9)));
         InitPositionNumValue = intPositionNum.Value;
@@ -197,8 +209,8 @@ public class Plugin : BasePlugin
         if (intPositionNum.Value > 0)
         {
             KeyPosition = new ConfigEntry<KeyboardShortcut>[intPositionNum.Value];
-            VectorPosition = new ConfigEntry<float>[intPositionNum.Value][];
-            VectorRotation = new ConfigEntry<float>[intPositionNum.Value][];
+            VectorPosition = new ConfigEntry<Vector3>[intPositionNum.Value];
+            VectorRotation = new ConfigEntry<Vector3>[intPositionNum.Value];
             Vector3[] DefaultPositions = [
                 new(0.36f, 0.3f, -9.79f),
                 new(1.69f, 0.3f, -8.46f),
@@ -224,16 +236,8 @@ public class Plugin : BasePlugin
             for (var i = 0; i < intPositionNum.Value; i++)
             {
                 KeyPosition[i] = Config.Bind("Position", $"Position{i + 1}", new KeyboardShortcut(KeyCode.Alpha1 + i), $"移动到坐标{i + 1}");
-                //VectorPosition[i] = Config.Bind("Position", $"Position{i + 1}Position", DefaultPositions[i], $"坐标{i + 1}坐标");
-                //VectorRotation[i] = Config.Bind("Position", $"Position{i + 1}Rotation", DefaultRotations[i], $"坐标{i + 1}角度");
-                VectorPosition[i] = new ConfigEntry<float>[3];
-                VectorRotation[i] = new ConfigEntry<float>[3];
-                VectorPosition[i][0] = Config.Bind("Position", $"Position{i + 1}PositionX", DefaultPositions[i].x, $"坐标{i + 1}坐标X");
-                VectorPosition[i][1] = Config.Bind("Position", $"Position{i + 1}PositionY", DefaultPositions[i].y, $"坐标{i + 1}坐标Y");
-                VectorPosition[i][2] = Config.Bind("Position", $"Position{i + 1}PositionZ", DefaultPositions[i].z, $"坐标{i + 1}坐标Z");
-                VectorRotation[i][0] = Config.Bind("Position", $"Position{i + 1}RotationX", DefaultRotations[i].x, $"坐标{i + 1}角度X");
-                VectorRotation[i][1] = Config.Bind("Position", $"Position{i + 1}RotationY", DefaultRotations[i].y, $"坐标{i + 1}角度Y");
-                VectorRotation[i][2] = Config.Bind("Position", $"Position{i + 1}RotationZ", DefaultRotations[i].z, $"坐标{i + 1}角度Z");
+                VectorPosition[i] = Config.Bind("Position", $"Position{i + 1}Position", DefaultPositions[i], $"坐标{i + 1}坐标");
+                VectorRotation[i] = Config.Bind("Position", $"Position{i + 1}Rotation", DefaultRotations[i], $"坐标{i + 1}角度");
             }
         }
 

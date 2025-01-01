@@ -14,7 +14,7 @@ public class LobbyFilterPatch
 
     public static System.Func<string> FilterWords;
 
-    [HarmonyPatch(typeof(LobbyListManager), "Awake")]
+    [HarmonyPatch(typeof(LobbyListManager), nameof(LobbyListManager.Awake))]
     [HarmonyPostfix]
     public static void AwakePostfix()
     {

@@ -59,13 +59,16 @@ public class FOVPatch
         {
             var lens = cam.m_Lens;
             lens.FieldOfView = Fov;
+            cam.m_Lens = lens;
         }
         else
         {
             for (var i = 0; i < __instance.manager.SpectatorCameraParrent.transform.childCount; i++)
             {
-                var lens = __instance.manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens;
+                var camera = __instance.manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>();
+                var lens = camera.m_Lens;
                 lens.FieldOfView = Fov;
+                camera.m_Lens = lens;
             }
         }
     }
