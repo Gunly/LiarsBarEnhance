@@ -13,9 +13,10 @@
       https://nuget.samboy.dev/v3/index.json
     </RestoreAdditionalProjectSources>
     <RootNamespace>LiarsBarEnhanceOnlyFix</RootNamespace>
-    <PackageProjectUrl>https://github.com/Gunly/LiarsBarEnhance</PackageProjectUrl>
+    <PackageProjectUrl></PackageProjectUrl>
     <Description>A BepInEx plugin help to enhance your playing experience in game Liar's Bar</Description>
     <OutDir>./Output</OutDir>
+    <Company>https://github.com/Gunly/LiarsBarEnhance</Company>
   </PropertyGroup>
 
   <ItemGroup>
