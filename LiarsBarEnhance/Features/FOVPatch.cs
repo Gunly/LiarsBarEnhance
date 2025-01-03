@@ -22,8 +22,9 @@ public class FOVPatch
         {
             cam = __instance.HeadPivot.Find(cameraPath)?.GetComponent<CinemachineVirtualCamera>();
             if (cam == null) continue;
-            var camLens = cam.m_Lens;
-            camLens.FieldOfView = Fov = Plugin.FloatViewField.Value;
+            var lens = cam.m_Lens;
+            lens.FieldOfView = Fov = Plugin.FloatViewField.Value;
+            cam.m_Lens = lens;
             break;
         }
     }

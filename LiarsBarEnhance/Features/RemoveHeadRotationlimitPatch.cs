@@ -20,7 +20,7 @@ public class RemoveHeadRotationlimitPatch
             pitch = __instance._cinemachineTargetPitch;
         }
 
-        if (!__instance.playerStats.Dead || !Plugin.BooleanViewRemoveRotationLimit.Value)
+        if (!__instance.playerStats.Dead || !Plugin.BooleanViewRemoveRotationLimit.Value && __instance.manager.PluginControl())
         {
             if (Plugin.KeyViewClockwise.IsPressed()) CinemachineTargetRoll -= 2f;
             if (Plugin.KeyViewAnticlockwise.IsPressed()) CinemachineTargetRoll += 2f;
@@ -31,7 +31,7 @@ public class RemoveHeadRotationlimitPatch
     [HarmonyPostfix]
     public static void UpdatePostfix(CharController __instance)
     {
-        if (__instance.isOwned && Plugin.BooleanViewRemoveRotationLimit.Value && __instance.manager.PluginControl())
+        if (__instance.isOwned && (__instance.playerStats.Dead ^ Plugin.BooleanViewRemoveRotationLimit.Value) && __instance.manager.PluginControl())
         {
             var sensivty = PlayerPrefs.GetFloat("MouseSensivity", 50f);
             var x = Input.GetAxis("Mouse X") * Time.deltaTime * sensivty;

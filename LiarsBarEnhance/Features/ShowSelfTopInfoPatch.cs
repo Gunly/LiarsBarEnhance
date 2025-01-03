@@ -1,14 +1,11 @@
 ﻿using HarmonyLib;
 
-using TMPro;
-using UnityEngine;
-
 namespace LiarsBarEnhance.Features;
 
 [HarmonyPatch]
 public class ShowSelfTopInfoPatch
 {
-    [HarmonyPatch(typeof(PlayerStats), "Update")]
+    [HarmonyPatch(typeof(PlayerStats), nameof(PlayerStats.Update))]
     [HarmonyPrefix]
     public static bool UpdatePrefix(PlayerStats __instance)
     {
@@ -23,7 +20,7 @@ public class ShowSelfTopInfoPatch
         return false;
     }
 
-    [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
+    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.UpdateCall))]
     [HarmonyPostfix]
     public static void UpdateCallPostfix(BlorfGamePlay __instance)
     {
@@ -42,7 +39,7 @@ public class ShowSelfTopInfoPatch
         }
     }
 
-    [HarmonyPatch(typeof(DiceGamePlay), "UpdateCall")]
+    [HarmonyPatch(typeof(DiceGamePlay), nameof(DiceGamePlay.UpdateCall))]
     [HarmonyPostfix]
     public static void UpdateCallPostfix(DiceGamePlay __instance)
     {
@@ -55,9 +52,28 @@ public class ShowSelfTopInfoPatch
         }
     }
 
-    [HarmonyPatch(typeof(ChaosGamePlay), "UpdateCall")]
+    [HarmonyPatch(typeof(ChaosGamePlay), nameof(ChaosGamePlay.UpdateCall))]
     [HarmonyPostfix]
     public static void UpdateCallPostfix(ChaosGamePlay __instance)
+    {
+        if (Plugin.BooleanCustomShowSelfInfo.Value)
+        {
+#if CHEATRELEASE
+            __instance.RoundText.text = $"({__instance.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? __instance.Networkrevolverbulllet + 1 : 6)})";
+#else
+            __instance.RoundText.text = $"({__instance.Networkcurrentrevoler}|6)";
+#endif
+            __instance.RoundText.gameObject.SetActive(true);
+            if (__instance.playerStats.HaveTurn)
+            {
+                __instance.KartKafaSprite.SetActive(true);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(BlorfGamePlayMatchMaking), nameof(BlorfGamePlayMatchMaking.UpdateCall))]
+    [HarmonyPostfix]
+    public static void UpdateCallPostfix(BlorfGamePlayMatchMaking __instance)
     {
         if (Plugin.BooleanCustomShowSelfInfo.Value)
         {

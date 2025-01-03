@@ -7,7 +7,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class DicePatch
 {
-    [HarmonyPatch(typeof(Dice), "Start")]
+    [HarmonyPatch(typeof(Dice), nameof(Dice.Start))]
     [HarmonyPostfix]
     public static void StartPostfix(Dice __instance)
     {
@@ -25,7 +25,7 @@ public class DicePatch
         }
     }
 
-    [HarmonyPatch(typeof(Dice), "Update")]
+    [HarmonyPatch(typeof(Dice), nameof(Dice.Update))]
     [HarmonyPrefix]
     public static bool UpdatePrefix(Dice __instance)
     {

@@ -9,7 +9,7 @@ public class BigMouthPatch
 {
     private static float mouthOpen = 0f;
 
-    [HarmonyPatch(typeof(FaceAnimator), "Start")]
+    [HarmonyPatch(typeof(FaceAnimator), nameof(FaceAnimator.Start))]
     [HarmonyPostfix]
     public static void StartPostfix(FaceAnimator __instance)
     {
@@ -20,7 +20,7 @@ public class BigMouthPatch
         };
     }
 
-    [HarmonyPatch(typeof(FaceAnimator), "Update")]
+    [HarmonyPatch(typeof(FaceAnimator), nameof(FaceAnimator.Update))]
     [HarmonyPostfix]
     public static void UpdatePostfix(FaceAnimator __instance)
     {

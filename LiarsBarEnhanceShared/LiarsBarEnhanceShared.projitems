@@ -6,7 +6,7 @@
     <SharedGUID>eb3b7ce5-85b6-49eb-9d92-bafb8f6a636c</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>LiarsBarEnhanceShared</Import_RootNamespace>
+    <Import_RootNamespace>LiarsBarEnhance</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Features\ChatProPatch.cs" />

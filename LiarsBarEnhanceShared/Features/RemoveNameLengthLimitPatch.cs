@@ -5,7 +5,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class RemoveNameLengthLimitPatch
 {
-    [HarmonyPatch(typeof(PlayerStats), "Update")]
+    [HarmonyPatch(typeof(PlayerStats), nameof(PlayerStats.Update))]
     [HarmonyPostfix]
     public static void UpdatePostfix(PlayerStats __instance)
     {

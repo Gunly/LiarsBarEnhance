@@ -1,71 +1,62 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>com.github.gunly.LiarsBarEnhanceOnlyFix</AssemblyName>
-    <Product>LiarsBarEnhanceOnlyFix</Product>
-    <Version>1.1.0</Version>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
-    <RestoreAdditionalProjectSources>
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json
-    </RestoreAdditionalProjectSources>
-    <RootNamespace>LiarsBarEnhanceOnlyFix</RootNamespace>
-    <PackageProjectUrl></PackageProjectUrl>
-    <Description>A BepInEx plugin help to enhance your playing experience in game Liar's Bar</Description>
-    <OutDir>./Output</OutDir>
-    <Company>https://github.com/Gunly/LiarsBarEnhance</Company>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <AssemblyName>com.github.gunly.LiarsBarEnhanceOnlyFix</AssemblyName>
+        <Product>LiarsBarEnhanceOnlyFix</Product>
+        <Version>1.1.0</Version>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+        <RestoreAdditionalProjectSources>
+            https://api.nuget.org/v3/index.json;
+            https://nuget.bepinex.dev/v3/index.json;
+            https://nuget.samboy.dev/v3/index.json
+        </RestoreAdditionalProjectSources>
+        <RootNamespace>LiarsBarEnhanceOnlyFix</RootNamespace>
+        <PackageProjectUrl></PackageProjectUrl>
+        <Description>A BepInEx plugin help to enhance your playing experience in game Liar's Bar</Description>
+        <OutDir>./Output</OutDir>
+        <Company>https://github.com/Gunly/LiarsBarEnhance</Company>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.729" IncludeAssets="compile" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
-      <PackageReference Include="UnityEngine.Modules" Version="2022.3.27" IncludeAssets="compile" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.729" IncludeAssets="compile" />
+        <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
+        <PackageReference Include="UnityEngine.Modules" Version="2022.3.27" IncludeAssets="compile" PrivateAssets="none" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Output\**" />
-    <EmbeddedResource Remove="Output\**" />
-    <None Remove="Output\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Output\**" />
+        <EmbeddedResource Remove="Output\**" />
+        <None Remove="Output\**" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\lib\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="BepInEx.Preloader.Core">
-      <HintPath>..\lib\BepInEx.Preloader.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Cinemachine">
-      <HintPath>..\lib\Cinemachine.dll</HintPath>
-    </Reference>
-    <Reference Include="Il2CppMono.Security">
-      <HintPath>..\lib\Il2CppMono.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Il2Cppmscorlib">
-      <HintPath>..\lib\Il2Cppmscorlib.dll</HintPath>
-    </Reference>
-    <Reference Include="Mirror">
-      <HintPath>..\lib\Mirror.dll</HintPath>
-    </Reference>
-    <Reference Include="Mirror.Components">
-      <HintPath>..\lib\Mirror.Components.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Localization">
-      <HintPath>..\lib\Unity.Localization.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\lib\Unity.TextMeshPro.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>..\lib\UnityEngine.UI.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Il2Cppmscorlib">
+            <HintPath>..\lib\Il2Cppmscorlib.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Mirror">
+            <HintPath>..\lib\Mirror.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Unity.Localization">
+            <HintPath>..\lib\Unity.Localization.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Unity.TextMeshPro">
+            <HintPath>..\lib\Unity.TextMeshPro.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>..\lib\UnityEngine.UI.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
 
-  <Import Project="..\LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems" Label="Shared" />
+    <Import Project="..\LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems" Label="Shared" />
 </Project>

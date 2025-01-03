@@ -24,6 +24,14 @@ public class ChineseNameFixPatch
         __instance.LastbidName2.gameObject.AddComponentIfNotExist<FontChanger>();
     }
 
+    [HarmonyPatch(typeof(BlorfMatchMakingGamePlayManager), nameof(BlorfMatchMakingGamePlayManager.Start))]
+    [HarmonyPostfix]
+    public static void BlorfMatchMakingGamePlayManagerStartPostfix(BlorfMatchMakingGamePlayManager __instance)
+    {
+        __instance.LastBidName1.gameObject.AddComponentIfNotExist<FontChanger>();
+        __instance.LastbidName2.gameObject.AddComponentIfNotExist<FontChanger>();
+    }
+
     [HarmonyPatch(typeof(DiceGamePlayManager), nameof(DiceGamePlayManager.Start))]
     [HarmonyPostfix]
     public static void DiceGamePlayManagerStartPostfix(DiceGamePlayManager __instance)

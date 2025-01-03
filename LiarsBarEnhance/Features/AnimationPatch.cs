@@ -35,7 +35,7 @@ public class AnimationPatch
                 if (Input.GetKeyUp(KeyCode.Space)) __instance.animator.SetBool("Look", false);
             }
             if (Plugin.KeyAnimCallLiar.IsDown()) __instance.animator.SetTrigger("CallLiar");
-            if (__instance is BlorfGamePlay blorfGame)
+            if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
             {
                 if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
                 if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
@@ -43,17 +43,37 @@ public class AnimationPatch
                 if (Plugin.KeyAnimRoulet.IsUp())
                 {
 #if CHEATRELEASE
-                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler < blorfGame.Networkrevolverbulllet)
+                    var blorfGame = __instance.playerStats.GetComponent<BlorfGamePlay>();
+                    if (blorfGame)
                     {
-                        blorfGame.Networkcurrentrevoler++;
+                        if (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler < blorfGame.Networkrevolverbulllet)
+                        {
+                            blorfGame.Networkcurrentrevoler++;
+                        }
+                        else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
+                            (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler == blorfGame.Networkrevolverbulllet))
+                        {
+                            __instance.animator.SetBool("Dead", true);
+                            blorfGame.StartCoroutine("waitforheadopen");
+                            blorfGame.CommandBeDead();
+                            blorfGame.StartCoroutine("WaitforRevolverUI");
+                        }
                     }
-                    else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
-                        (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler == blorfGame.Networkrevolverbulllet))
+                    else
                     {
-                        __instance.animator.SetBool("Dead", true);
-                        blorfGame.StartCoroutine("waitforheadopen");
-                        blorfGame.CommandBeDead();
-                        blorfGame.StartCoroutine("WaitforRevolverUI");
+                        var blorfGameMatchMaking = __instance.playerStats.GetComponent<BlorfGamePlayMatchMaking>();
+                        if (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGameMatchMaking.Networkcurrentrevoler < blorfGameMatchMaking.Networkrevolverbulllet)
+                        {
+                            blorfGameMatchMaking.Networkcurrentrevoler++;
+                        }
+                        else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
+                            (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGameMatchMaking.Networkcurrentrevoler == blorfGameMatchMaking.Networkrevolverbulllet))
+                        {
+                            __instance.animator.SetBool("Dead", true);
+                            blorfGameMatchMaking.StartCoroutine("waitforheadopen");
+                            blorfGameMatchMaking.CommandBeDead();
+                            blorfGameMatchMaking.StartCoroutine("WaitforRevolverUI");
+                        }
                     }
 #endif
                     __instance.animator.SetBool("Roulet", false);
@@ -61,7 +81,7 @@ public class AnimationPatch
                 if (Plugin.KeyAnimReload.IsDown()) __instance.animator.SetBool("Reload", true);
                 if (Plugin.KeyAnimReload.IsUp()) __instance.animator.SetBool("Reload", false);
             }
-            else if (__instance is DiceGamePlay)
+            else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDice)
             {
                 if (Plugin.KeyAnimSpotOn.IsDown()) __instance.animator.SetTrigger("SpotOn");
                 if (Plugin.KeyAnimShake.IsDown()) __instance.animator.SetTrigger("Shake");
@@ -85,8 +105,9 @@ public class AnimationPatch
                     __instance.animator.SetBool("Drink", false);
                 }
             }
-            else if (__instance is ChaosGamePlay chaosGame)
+            else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsChaos)
             {
+                var chaosGame = __instance.playerStats.GetComponent<ChaosGamePlay>();
                 if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
                 if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
                 if (Plugin.KeyAnimRoulet.IsDown()) __instance.animator.SetBool("Roulet", true);
@@ -200,15 +221,15 @@ public class AnimationPatch
             {
                 if (Plugin.KeyAnims[i].IsDown())
                 {
-                    if (__instance is BlorfGamePlay && charAnimBoolsBlorf.Contains(Plugin.StringAnims[i].Value))
+                    if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDeck && charAnimBoolsBlorf.Contains(Plugin.StringAnims[i].Value))
                     {
                         __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }
-                    else if (__instance is DiceGamePlay && charAnimBoolsDice.Contains(Plugin.StringAnims[i].Value))
+                    else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDice && charAnimBoolsDice.Contains(Plugin.StringAnims[i].Value))
                     {
                         __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }
-                    else if (__instance is ChaosGamePlay && charAnimBoolsChaos.Contains(Plugin.StringAnims[i].Value))
+                    else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsChaos && charAnimBoolsChaos.Contains(Plugin.StringAnims[i].Value))
                     {
                         __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }

@@ -97,6 +97,7 @@ public class Plugin : BasePlugin
         Harmony.CreateAndPatchAll(typeof(BlorfCheatPatch), nameof(BlorfCheatPatch));
         Harmony.CreateAndPatchAll(typeof(DiceCheatPatch), nameof(DiceCheatPatch));
         Harmony.CreateAndPatchAll(typeof(ChaosCheatPatch), nameof(ChaosCheatPatch));
+        Harmony.CreateAndPatchAll(typeof(BlorfMatchMakingCheatPatch), nameof(BlorfMatchMakingCheatPatch));
 #else
         Harmony.CreateAndPatchAll(typeof(DicePatch), nameof(DicePatch));
 #endif

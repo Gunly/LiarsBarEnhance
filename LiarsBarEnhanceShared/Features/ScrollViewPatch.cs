@@ -8,7 +8,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class ScrollViewPatch
 {
-    [HarmonyPatch(typeof(StateController), "OnEnable")]
+    [HarmonyPatch(typeof(StateController), nameof(StateController.OnEnable))]
     [HarmonyPostfix]
     public static void OnEnablePostfix(StateController __instance)
     {
