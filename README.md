@@ -44,7 +44,7 @@
 - 回到主菜单(解决卡死)
 
 #### 按键列表
-大多数按键可以更改，建议使用[ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.1/ConfigurationManager.dll)  
+大多数按键可以更改，建议使用[ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.2/ConfigurationManager.dll)  
 传送坐标和快捷键可编辑，默认4个，最高9个  
 动画快捷键默认未设置，可编辑`BepInEx\config\com.github.gunly.LiarsBarEnhance.cfg`后启动游戏，或使用`ConfigurationManager`在游戏内修改快捷键  
 
@@ -76,10 +76,10 @@
 
 1. 下载[BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.2/BepInEx-Unity.IL2CPP-win-x64-6.0.0-pre.2.zip)
 2. 将`BepInEx`解压至游戏根目录（[官方安装教程](https://docs.bepinex.dev/articles/user_guide/installation/index.html)）
-3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.1/com.github.gunly.LiarsBarEnhance.dll)以及[BepInEx.KeyboardShortcut](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.1/BepInEx.KeyboardShortcut.dll)
-4. 如果仅需要被动技（修复中文、过滤大厅等，不包含移除视角限制）请下载[LiarsBarEnhanceOnlyFix](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.1/com.github.gunly.LiarsBarEnhanceOnlyFix.dll)，无需`BepInEx.KeyboardShortcut`
+3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/com.github.gunly.LiarsBarEnhance.dll)以及[BepInEx.KeyboardShortcut](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/BepInEx.KeyboardShortcut.dll)
+4. 如果仅需要被动技（修复中文、过滤大厅等，不包含移除视角限制）请下载[LiarsBarEnhanceOnlyFix](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/com.github.gunly.LiarsBarEnhanceOnlyFix.dll)，无需`BepInEx.KeyboardShortcut`
 5. 将插件本体(`com.github.gunly.LiarsBarEnhance.dll`或`com.github.gunly.LiarsBarEnhanceOnlyFix.dll`)和`BepInEx.KeyboardShortcut.dll`(如果需要)放置在插件文件夹（即`<游戏根目录>/BepInEx/plugins`）（没有`plugins`文件夹请手动创建）
-6. 可选，下载[ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.1/ConfigurationManager.dll)放置在插件文件夹
+6. 可选，下载[ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.2/ConfigurationManager.dll)放置在插件文件夹
 
 ## 自行构建插件
 

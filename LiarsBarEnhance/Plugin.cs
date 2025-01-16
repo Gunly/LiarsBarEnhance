@@ -38,11 +38,12 @@ public class Plugin : BasePlugin
     public static ConfigEntry<float> FloatJumpHeight, FloatGravity, FloatMoveSpeed, FloatMoveHorizontalBodyRotate, FloatViewSpeed, FloatViewField,
         FloatAutoRotateSpeed, FloatCustomPlayerScale, FloatBigMouthAngle;
     public static ConfigEntry<bool> BooleanMoveFollowHead, BooleanViewRemoveRotationLimit, BooleanViewField,
-        BooleanTestGiraffe, BooleanCustomShowSelfInfo;
+        BooleanTestGiraffe, BooleanCustomShowSelfInfo, BooleanGameAutoReady;
     public static ConfigEntry<string> StringCustomName, StringGameLobbyFilterWords;
     public static ConfigEntry<string>[] StringAnims;
     public static ConfigEntry<RotateDirection> DirectionRotateState;
     public static ConfigEntry<HintType> HintTypeSelect;
+    public static ConfigEntry<SkinName> DefaultSkin;
 #if CHEATRELEASE
     public static ConfigEntry<bool> BooleanCheatDeck, BooleanCheatDice, BooleanCheatDeckHealth, BooleanCheatBlorfLastRoundCard, BooleanCheatDiceTotalDice;
     public static ConfigEntry<KeyboardShortcut> KeyCheatBlorfFlip, KeyCheatDiceShow, KeyAnimRouletType;
@@ -92,6 +93,8 @@ public class Plugin : BasePlugin
         //Harmony.CreateAndPatchAll(typeof(GiraffePatch), nameof(GiraffePatch));//TODO
         Harmony.CreateAndPatchAll(typeof(LobbyFilterPatch), nameof(LobbyFilterPatch));
         Harmony.CreateAndPatchAll(typeof(HintPatch), nameof(HintPatch));
+        Harmony.CreateAndPatchAll(typeof(DefaultSkinPatch), nameof(DefaultSkinPatch));
+        Harmony.CreateAndPatchAll(typeof(AutoReadyPatch), nameof(AutoReadyPatch));
 
 #if CHEATRELEASE
         Harmony.CreateAndPatchAll(typeof(BlorfCheatPatch), nameof(BlorfCheatPatch));
@@ -118,7 +121,8 @@ public class Plugin : BasePlugin
 
     private void BindConfig()
     {
-        TomlTypeConverter.AddConverter(typeof(Vector3), new TypeConverter {
+        TomlTypeConverter.AddConverter(typeof(Vector3), new BepInEx.Configuration.TypeConverter
+        {
             ConvertToString = (o, type) => ((Vector3)o).ToString(),
             ConvertToObject = (s, type) =>
             {
@@ -157,6 +161,7 @@ public class Plugin : BasePlugin
         StringCustomName = Config.Bind("Custom", "CustomName", "", "自定义名称");
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "显示自身头顶信息");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放", new AcceptableValueRange<float>(0f, 1f)));
+        DefaultSkin = Config.Bind("Custom", "DefaultSkin", SkinName.Scubby, "默认角色，进入房间时自动选择");
 
         KeyGameShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "启用提示");
         KeyMoveResetPosition = Config.Bind("Game", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
@@ -170,6 +175,7 @@ public class Plugin : BasePlugin
             "@[Qq]\\d{5,}|@[a-zA-Z0-9]{3,}\\.[a-zA-Z]{2,}", "大厅过滤词");
         LobbyFilterPatch.FilterWords = () => StringGameLobbyFilterWords.Value;
         StringGameLobbyFilterWords.SettingChanged += (_, _) => LobbyFilterPatch.FilterWordsChanged();
+        BooleanGameAutoReady = Config.Bind("Game", "AutoReady", false, "自动准备");
 
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
         KeyMoveFollowHeadShortcut = Config.Bind("Move", "MoveFollowHeadShortcut", new KeyboardShortcut(KeyCode.H), "切换移动方向跟随头部视角快捷键");
@@ -311,11 +317,19 @@ public enum HintType
 #if CHEATRELEASE
 public enum RouletType
 {
-    //[Description("仅动画")]
     AnimOnly,
-    //[Description("开枪")]
     Roulet,
-    //[Description("自杀")]
     Suicide
 }
 #endif
+
+public enum SkinName
+{
+    Scubby = 0,
+    Foxy = 1,
+    Bristle = 2,
+    Toar = 3,
+    Cupcake = 4,
+    Gerk = 5,
+    Kudo = 6
+}
