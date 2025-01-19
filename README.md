@@ -74,12 +74,19 @@
 
 ## 安装
 
+### 直接安装(2选1)
+
+1. 下载[LiarsBarEnhance.zip](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/LiarsBarEnhance.zip)解压至游戏根目录
+2. 仅包含被动技: 下载[LiarsBarEnhanceOnlyFix.zip](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/LiarsBarEnhanceOnlyFix.zip)解压至游戏根目录
+
+### 手动安装
+
 1. 下载[BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.2/BepInEx-Unity.IL2CPP-win-x64-6.0.0-pre.2.zip)
 2. 将`BepInEx`解压至游戏根目录（[官方安装教程](https://docs.bepinex.dev/articles/user_guide/installation/index.html)）
-3. 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/com.github.gunly.LiarsBarEnhance.dll)以及[BepInEx.KeyboardShortcut](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/BepInEx.KeyboardShortcut.dll)
-4. 如果仅需要被动技（修复中文、过滤大厅等，不包含移除视角限制）请下载[LiarsBarEnhanceOnlyFix](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/com.github.gunly.LiarsBarEnhanceOnlyFix.dll)，无需`BepInEx.KeyboardShortcut`
-5. 将插件本体(`com.github.gunly.LiarsBarEnhance.dll`或`com.github.gunly.LiarsBarEnhanceOnlyFix.dll`)和`BepInEx.KeyboardShortcut.dll`(如果需要)放置在插件文件夹（即`<游戏根目录>/BepInEx/plugins`）（没有`plugins`文件夹请手动创建）
-6. 可选，下载[ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.2/ConfigurationManager.dll)放置在插件文件夹
+3. 3和4二选一: 从[Release](https://github.com/gunly/LiarsBarEnhance/releases)下载[最新Dll本体](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/com.github.gunly.LiarsBarEnhance.dll)以及[BepInEx.KeyboardShortcut](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/BepInEx.KeyboardShortcut.dll)
+4. 3和4二选一: 仅包含被动技, 下载[LiarsBarEnhanceOnlyFix](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/com.github.gunly.LiarsBarEnhanceOnlyFix.dll)
+5. 将插件放置在插件文件夹（即`<游戏根目录>/BepInEx/plugins`）（没有`plugins`文件夹请手动创建）
+6. 可选: 下载[ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.3/ConfigurationManager.dll)放置在插件文件夹
 
 ## 自行构建插件
 

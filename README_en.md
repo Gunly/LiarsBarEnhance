@@ -68,12 +68,19 @@ Key Bindings is configurable. Suggest using [ConfigurationManager](https://githu
 
 ## Installation
 
+### Direct installation (choose 1 from 2)
+
+1. Download [LiarsBarEnhance.zip](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/LiarsBarEnhance.zip) and unzip it to the game root directory
+2. Only includes passive skills: Download [LiarsBarEnhanceOnlyFix.zip](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/LiarsBarEnhanceOnlyFix.zip) and unzip it to the game root directory
+
+### Manual Install
+
 1. Download [BepInEx](https://github.com/BepInEx/BepInEx/releases/download/v6.0.0-pre.2/BepInEx-Unity.IL2CPP-win-x64-6.0.0-pre.2.zip)  
 2. Extract `BepInEx` to the game root directory ([official installation tutorial](https://docs.bepinex.dev/articles/user_guide/installation/index.html))  
-3. Download the latest DLL from [Release](https://github.com/gunly/LiarsBarEnhance/releases)[latest DLL](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/com.github.gunly.LiarsBarEnhance.dll) and [BepInEx.KeyboardShortcut](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/BepInEx.KeyboardShortcut.dll)  
-4. If only need Passive(Chinese Fix, Lobby Filter, etc. Not contains Remove camera angle restrictions), Download[com.github.gunly.LiarsBarEnhanceOnlyFix.dll](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.2/com.github.gunly.LiarsBarEnhanceOnlyFix.dll), No need for `BepInEx.KeyboardShortcut`
-5. Place the plugin DLL (`com.github.gunly.LiarsBarEnhance.dll` or `com.github.gunly.LiarsBarEnhanceOnlyFix.dll`) and `BepInEx.KeyboardShortcut.dll`(if need) in the plugin folder (i.e., `<game root directory>/BepInEx/plugins`), create the `plugins` folder if it doesn't exist  
-6. Optional，Download [ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.2/ConfigurationManager.dll)
+3. Choose between 3 and 4: Download [latest DLL](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/com.github.gunly.LiarsBarEnhance.dll) and [BepInEx.KeyboardShortcut](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/BepInEx.KeyboardShortcut.dll) from [Release](https://github.com/gunly/LiarsBarEnhance/releases)  
+4. Choose between 3 and 4: Only includes passive skills. Download[com.github.gunly.LiarsBarEnhanceOnlyFix.dll](https://github.com/gunly/LiarsBarEnhance/releases/download/1.1.3/com.github.gunly.LiarsBarEnhanceOnlyFix.dll)
+5. Place the plugin DLL in the plugin folder (i.e., `<game root directory>/BepInEx/plugins`), create the `plugins` folder if it doesn't exist  
+6. Optional. Download [ConfigurationManager](https://github.com/Gunly/LiarsBarEnhance/releases/download/1.1.3/ConfigurationManager.dll) and place it in the plugin folder
 
 ## Building the Plugin Yourself
 

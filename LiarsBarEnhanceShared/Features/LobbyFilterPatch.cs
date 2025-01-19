@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 
+//using LiarsBarEnhanceOnlyFix;
+
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -12,26 +14,12 @@ public class LobbyFilterPatch
 {
     private static readonly List<string> filterList = [];
 
-    public static System.Func<string> FilterWords;
-
-    [HarmonyPatch(typeof(LobbyListManager), nameof(LobbyListManager.Awake))]
-    [HarmonyPostfix]
-    public static void AwakePostfix()
-    {
-        getFilterWords();
-    }
-
-    public static void FilterWordsChanged()
-    {
-        getFilterWords();
-    }
-
-    private static void getFilterWords()
+    public static void GetFilterWords()
     {
         filterList.Clear();
-        if (FilterWords != null && FilterWords().Length > 0)
+        if (Plugin.StringGameLobbyFilterWords.Value != null && Plugin.StringGameLobbyFilterWords.Value.Length > 0)
         {
-            foreach (var word in FilterWords().Split('|'))
+            foreach (var word in Plugin.StringGameLobbyFilterWords.Value.Split('|'))
             {
                 filterList.Add(word);
             }

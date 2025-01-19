@@ -10,7 +10,7 @@ public class TeleportPatch
     public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        for (var i = 0; i < Plugin.InitPositionNumValue; i++)
+        for (var i = 0; i < Plugin.IntAnimationNum.Value; i++)
         {
             if (Plugin.KeyPosition[i].IsDown() && __instance.manager.PluginControl())
             {

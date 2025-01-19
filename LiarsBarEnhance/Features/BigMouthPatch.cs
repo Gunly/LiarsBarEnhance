@@ -7,18 +7,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class BigMouthPatch
 {
-    private static float mouthOpen = 0f;
-
-    [HarmonyPatch(typeof(FaceAnimator), nameof(FaceAnimator.Start))]
-    [HarmonyPostfix]
-    public static void StartPostfix(FaceAnimator __instance)
-    {
-        if (!__instance.isOwned) return;
-        Plugin.FloatBigMouthAngle.SettingChanged += (_, _) =>
-        {
-            mouthOpen = 1f;
-        };
-    }
+    public static float MouthOpen { get; set; }
 
     [HarmonyPatch(typeof(FaceAnimator), nameof(FaceAnimator.Update))]
     [HarmonyPostfix]
@@ -26,9 +15,9 @@ public class BigMouthPatch
     {
         if (!__instance.isOwned) return;
 
-        if (mouthOpen > 0f || Plugin.KeyCustomBigMouth.IsPressed())
+        if (MouthOpen > 0f || Plugin.KeyCustomBigMouth.IsPressed())
         {
-            if (mouthOpen > 0f) mouthOpen -= Time.deltaTime;
+            if (MouthOpen > 0f) MouthOpen -= Time.deltaTime;
             __instance.Mouth.transform.localEulerAngles = new Vector3(0f, 0f, -Plugin.FloatBigMouthAngle.Value);
         }
     }

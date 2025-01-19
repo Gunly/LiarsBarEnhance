@@ -17,7 +17,7 @@ public class AutoReadyPatch
 
     [HarmonyPatch(typeof(PlayerObjectController), nameof(PlayerObjectController.Update))]
     [HarmonyPostfix]
-    public static void SetLoadedPostfix(PlayerObjectController __instance)
+    public static void UpdatePostfix(PlayerObjectController __instance)
     {
         if (__instance.isOwned && Plugin.BooleanGameAutoReady.Value && !__instance.Loaded && !__instance.NetworkReady)
         {

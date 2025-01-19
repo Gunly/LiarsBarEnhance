@@ -2,7 +2,6 @@
 
 using HarmonyLib;
 
-using System;
 using System.Linq;
 using System.Text;
 
@@ -13,11 +12,12 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class HintPatch
 {
+    public static float GuiShow { get; set; }
     private static CharController charController;
-    private static float guiShow = 0f;
+    private static bool isChinese;
     private static string hintTitle;
-    private static readonly string on = "<color=lime>开</color>";
-    private static readonly string off = "<color=red>关</color>";
+    private static string on;
+    private static string off;
 
     [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
     [HarmonyPostfix]
@@ -26,24 +26,33 @@ public class HintPatch
         if (!__instance.isOwned) return;
         charController = __instance;
         hintTitle = HintTitle(__instance);
-
-        Plugin.IntHintPosX.SettingChanged += hintGuiEvent;
-        Plugin.IntHintPosY.SettingChanged += hintGuiEvent;
-        Plugin.HintTypeSelect.SettingChanged += hintGuiEvent;
     }
 
-    private static void hintGuiEvent(object sender, EventArgs args) => guiShow = 1f;
+    public static void SelectedLocaleChanged(bool isChinese)
+    {
+        HintPatch.isChinese = isChinese;
+        if (isChinese)
+        {
+            on = "<color=lime>开</color>";
+            off = "<color=red>关</color>";
+        }
+        else
+        {
+            on = "<color=lime>On</color>";
+            off = "<color=red>Off</color>";
+        }
+    }
 
     public static void OnGUI()
     {
-        if (charController && (Plugin.KeyGameShowHint.IsPressed() || guiShow > 0f))
+        if (charController && (Plugin.KeyGameShowHint.IsPressed() || GuiShow > 0f))
         {
-            if (guiShow > 0) guiShow -= Time.deltaTime;
+            if (GuiShow > 0) GuiShow -= Time.deltaTime;
             var x = Plugin.IntHintPosX.Value;
             if (x < 0) x += Screen.width;
             var y = Plugin.IntHintPosY.Value;
             if (y < 0) y += Screen.height;
-            GUI.Label(new Rect(x, y, 240, 480), buildHint(),
+            GUI.Label(new Rect(x, y, 240, 480), isChinese ? buildHint() : buildHintEnglish(),
                 new GUIStyle
                 {
                     fontSize = 15,
@@ -150,6 +159,67 @@ public class HintPatch
         return sb.ToString();
     }
 
+    private static string buildHintEnglish()
+    {
+        var sb = new StringBuilder();
+        if ((Plugin.HintTypeSelect.Value & HintType.TitleName) != HintType.None)
+        {
+            sb.AppendLine(hintTitle);
+            sb.AppendLine($"{charController.playerStats.PlayerName}{HintHealth()}");
+            sb.AppendLine();
+        }
+        if ((Plugin.HintTypeSelect.Value & HintType.HintKey) != HintType.None)
+        {
+            sb.AppendLine($"Show Hint: {HintKey(Plugin.KeyGameShowHint)}");
+            sb.AppendLine($"Crazy Shake Head: {HintKey(Plugin.KeyViewCrazyShakeHead)}");
+            sb.AppendLine($"Big Mouth: {HintKey(Plugin.KeyCustomBigMouth)}");
+            sb.AppendLine($"Reset Position: {HintKey(Plugin.KeyMoveResetPosition)}");
+            sb.AppendLine($"Reset View: {HintKey(Plugin.KeyViewReset)}");
+            sb.AppendLine($"Body Move: {HintKey(Plugin.KeyMoveForward, Plugin.KeyMoveBack, Plugin.KeyMoveLeft, Plugin.KeyMoveRight)}");
+            sb.AppendLine($"Body Rotate: {HintKey(Plugin.KeyRotateYaw, Plugin.KeyRotateRoll, Plugin.KeyRotatePitch)}");
+            sb.AppendLine($"Head Move: {HintKey(Plugin.KeyViewForward, Plugin.KeyViewBack, Plugin.KeyViewLeft, Plugin.KeyViewRight, Plugin.KeyViewUp, Plugin.KeyViewDown)}");
+            sb.AppendLine($"Head Rotate: {HintKey(Plugin.KeyViewAnticlockwise, Plugin.KeyViewClockwise)}");
+            sb.AppendLine($"Jump: {HintKey(Plugin.KeyMoveJump)}");
+            sb.AppendLine($"Squat: {HintKey(Plugin.KeyMoveSquat)}");
+            sb.AppendLine($"Teleport: {HintKey(Plugin.KeyPosition)}");
+            sb.AppendLine();
+        }
+        if ((Plugin.HintTypeSelect.Value & HintType.PluginInfo) != HintType.None)
+        {
+            sb.AppendLine($"Auto Rotate({HintKey(Plugin.KeyRotateAuto)}): {(AutoRotatePatch.Rotating ? on : off)}");
+            sb.AppendLine($"Remove View Limit({HintKey(Plugin.KeyViewRemoveRotationLimit)}): {(Plugin.BooleanViewRemoveRotationLimit.Value ? on : off)}");
+            sb.AppendLine($"Move Direction Follow Head({HintKey(Plugin.KeyMoveFollowHeadShortcut)}): {(Plugin.BooleanMoveFollowHead.Value ? on : off)}");
+            sb.AppendLine($"FOV({HintKey(Plugin.KeyViewField)}, {FOVPatch.Fov:0.00}): {(Plugin.BooleanViewField.Value ? on : off)}");
+            sb.AppendLine($"Show Self Top Info: {(Plugin.BooleanCustomShowSelfInfo.Value ? on : off)}");
+            sb.AppendLine();
+        }
+        if ((Plugin.HintTypeSelect.Value & HintType.AnimKey) != HintType.None)
+        {
+            sb.AppendLine($"Liar: {HintKey(Plugin.KeyAnimCallLiar)}  SpotOn: {HintKey(Plugin.KeyAnimSpotOn)}");
+            sb.AppendLine($"Throw: {HintKey(Plugin.KeyAnimThrow)}  Show: {HintKey(Plugin.KeyAnimShow)}");
+#if CHEATRELEASE
+            sb.Append($"");
+            sb.AppendLine($"Roulet: {HintKey(Plugin.KeyAnimRoulet)}  Drink: {HintKey(Plugin.KeyAnimDrink)}  " +
+                $"Type({HintKey(Plugin.KeyAnimRouletType)}): {Plugin.RouletAnimType.Value}");
+#else
+            sb.AppendLine($"Roulet: {HintKey(Plugin.KeyAnimRoulet)}  Drink: {HintKey(Plugin.KeyAnimDrink)}");
+#endif
+            sb.AppendLine($"Reload: {HintKey(Plugin.KeyAnimReload)}  Shake: {HintKey(Plugin.KeyAnimShake)}");
+            sb.AppendLine($"TakeAim: {HintKey(Plugin.KeyAnimTakeAim)}  Fire: {HintKey(Plugin.KeyAnimFire)}  Empty: {HintKey(Plugin.KeyAnimEmpty)}");
+            sb.AppendLine();
+        }
+        if ((Plugin.HintTypeSelect.Value & HintType.DebugInfo) != HintType.None)
+        {
+            sb.AppendLine($"Position:  X: {charController.transform.localPosition.x:0.00}  Y: {charController.transform.localPosition.y:0.00}  Z: {charController.transform.localPosition.z:0.00}");
+            sb.AppendLine($"Rotation:  X: {charController.transform.localEulerAngles.x:0.00}  Y: {charController.transform.localEulerAngles.y:0.00}  Z: {charController.transform.localEulerAngles.z:0.00}");
+            sb.AppendLine($"Pitch: {charController._cinemachineTargetPitch:0.00}  Yaw: {charController._cinemachineTargetYaw:0.00}  Roll: {RemoveHeadRotationlimitPatch.CinemachineTargetRoll:0.00}");
+        }
+#if CHEATRELEASE
+        CheatText(sb);
+#endif
+        return sb.ToString();
+    }
+
     private static string HintHealth()
     {
         if (charController.manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
@@ -199,7 +269,7 @@ public class HintPatch
 
     private static string KeyboardShortcutString(KeyboardShortcut shortcut)
     {
-        if (shortcut.MainKey == KeyCode.None) return "<color=yellow>未设置</color>";
+        if (shortcut.MainKey == KeyCode.None) return "<color=yellow>Not set</color>";
         if (!shortcut.Modifiers.Any()) return $"<color=yellow>{KeycodeString(shortcut.MainKey)}</color>";
         return $"<color=yellow>{shortcut.Modifiers.Join(KeycodeString, "+")}+{KeycodeString(shortcut.MainKey)}</color>";
     }
@@ -245,9 +315,6 @@ public class HintPatch
             KeyCode.LeftControl => "LCtrl",
             KeyCode.RightAlt => "RAlt",
             KeyCode.LeftAlt => "LAlt",
-            KeyCode.Mouse0 => "左键",
-            KeyCode.Mouse1 => "右键",
-            KeyCode.Mouse2 => "中键",
             _ => key.ToString()
         };
     }
@@ -280,7 +347,7 @@ public class HintPatch
         {
             for (var i = 0; i < 6; i++)
             {
-                sb.AppendLine($"{DiceCheatPatch.diceCounts[i],2}个{i + 1}");
+                sb.AppendLine($"{DiceCheatPatch.diceCounts[i],2}{(isChinese ? "个" : " of ")}{i + 1}");
             }
         }
         if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController.manager.mode == CustomNetworkManager.GameMode.LiarsChaos)

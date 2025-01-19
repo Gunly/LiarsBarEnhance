@@ -217,7 +217,7 @@ public class AnimationPatch
 #endif
                 }
             }
-            for (var i = 0; i < Plugin.InitAnimationNumValue; i++)
+            for (var i = 0; i < Plugin.IntAnimationNum.Value; i++)
             {
                 if (Plugin.KeyAnims[i].IsDown())
                 {

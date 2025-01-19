@@ -35,7 +35,7 @@ public class DiceCheatPatch
                 Array.Fill(diceCounts, 0);
                 foreach (var player in __instance.manager.Players)
                 {
-                    if (player.Dead) continue;
+                    if (!player || player.Dead) continue;
                     foreach (var diceValue in player.GetComponent<DiceGamePlay>().DiceValues)
                     {
                         if (diceValue != 1 || __instance.manager.DiceGame.DiceMode == DiceGamePlayManager.dicemode.Basic)

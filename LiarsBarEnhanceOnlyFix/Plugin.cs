@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 
@@ -15,6 +16,7 @@ namespace LiarsBarEnhanceOnlyFix;
 public class Plugin : BasePlugin
 {
     internal new static ManualLogSource Log;
+    public static ConfigEntry<string> StringGameLobbyFilterWords;
 
     public override void Load()
     {
@@ -28,8 +30,6 @@ public class Plugin : BasePlugin
 
         private void Start() => Plugin.Start();
         private void Update() => Plugin.Update();
-        //private void LateUpdate() => Plugin.LateUpdate();
-        //private void OnGUI() => Plugin.OnGUI();
     }
 
     public void Start()
@@ -43,10 +43,8 @@ public class Plugin : BasePlugin
         Harmony.CreateAndPatchAll(typeof(ScrollViewPatch), nameof(ScrollViewPatch));
         Harmony.CreateAndPatchAll(typeof(TestPatch), nameof(TestPatch));
 
-        var StringGameLobbyFilterWords = Config.Bind("Game", "LobbyFilterWords", "透视|改牌|透牌|修改|枪数|无敌|低价|稳定|免费|开g|加q|加群|售后|看片|网址|国产|少妇|" +
+        StringGameLobbyFilterWords = Config.Bind("Game", "LobbyFilterWords", "透视|改牌|透牌|修改|枪数|无敌|低价|稳定|免费|开g|加q|加群|售后|看片|网址|国产|少妇|" +
             "@[Qq]\\d{5,}|@[a-zA-Z0-9]{3,}\\.[a-zA-Z]{2,}", "大厅过滤词");
-        LobbyFilterPatch.FilterWords = () => StringGameLobbyFilterWords.Value;
-        StringGameLobbyFilterWords.SettingChanged += (_, _) => LobbyFilterPatch.FilterWordsChanged();
 
         Log = base.Log;
         Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
