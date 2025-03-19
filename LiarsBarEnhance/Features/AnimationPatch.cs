@@ -22,20 +22,20 @@ public class AnimationPatch
     private static readonly string[] charAnimBoolsDice = ["Look", "Show", "Drink", "Dead", "Winner"];
     private static readonly string[] charAnimBoolsChaos = ["Look", "Throw", "Dead", "Roulet", "HaveCard", "Reload", "Winner", "Fire", "Empty", "TakeAim"];
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
+    [HarmonyPatch(typeof(CharController), "Update")]
     [HarmonyPostfix]
     public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        if (__instance.manager.PluginControl())
+        if (__instance.manager().PluginControl())
         {
-            if (!__instance.playerStats.HaveTurn)
+            if (!__instance.playerStats().HaveTurn)
             {
                 if (Input.GetKeyDown(KeyCode.Space)) __instance.animator.SetBool("Look", true);
                 if (Input.GetKeyUp(KeyCode.Space)) __instance.animator.SetBool("Look", false);
             }
             if (Plugin.KeyAnimCallLiar.IsDown()) __instance.animator.SetTrigger("CallLiar");
-            if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
+            if (__instance.manager().mode == CustomNetworkManager.GameMode.LiarsDeck)
             {
                 if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
                 if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
@@ -81,7 +81,7 @@ public class AnimationPatch
                 if (Plugin.KeyAnimReload.IsDown()) __instance.animator.SetBool("Reload", true);
                 if (Plugin.KeyAnimReload.IsUp()) __instance.animator.SetBool("Reload", false);
             }
-            else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDice)
+            else if (__instance.manager().mode == CustomNetworkManager.GameMode.LiarsDice)
             {
                 if (Plugin.KeyAnimSpotOn.IsDown()) __instance.animator.SetTrigger("SpotOn");
                 if (Plugin.KeyAnimShake.IsDown()) __instance.animator.SetTrigger("Shake");
@@ -105,9 +105,9 @@ public class AnimationPatch
                     __instance.animator.SetBool("Drink", false);
                 }
             }
-            else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsChaos)
+            else if (__instance.manager().mode == CustomNetworkManager.GameMode.LiarsChaos)
             {
-                var chaosGame = __instance.playerStats.GetComponent<ChaosGamePlay>();
+                var chaosGame = __instance.playerStats().GetComponent<ChaosGamePlay>();
                 if (Plugin.KeyAnimThrow.IsDown()) __instance.animator.SetBool("Throw", true);
                 if (Plugin.KeyAnimThrow.IsUp()) __instance.animator.SetBool("Throw", false);
                 if (Plugin.KeyAnimRoulet.IsDown()) __instance.animator.SetBool("Roulet", true);
@@ -221,15 +221,15 @@ public class AnimationPatch
             {
                 if (Plugin.KeyAnims[i].IsDown())
                 {
-                    if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDeck && charAnimBoolsBlorf.Contains(Plugin.StringAnims[i].Value))
+                    if (__instance.manager().mode == CustomNetworkManager.GameMode.LiarsDeck && charAnimBoolsBlorf.Contains(Plugin.StringAnims[i].Value))
                     {
                         __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }
-                    else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDice && charAnimBoolsDice.Contains(Plugin.StringAnims[i].Value))
+                    else if (__instance.manager().mode == CustomNetworkManager.GameMode.LiarsDice && charAnimBoolsDice.Contains(Plugin.StringAnims[i].Value))
                     {
                         __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }
-                    else if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsChaos && charAnimBoolsChaos.Contains(Plugin.StringAnims[i].Value))
+                    else if (__instance.manager().mode == CustomNetworkManager.GameMode.LiarsChaos && charAnimBoolsChaos.Contains(Plugin.StringAnims[i].Value))
                     {
                         __instance.animator.SetBool(Plugin.StringAnims[i].Value, !__instance.animator.GetBool(Plugin.StringAnims[i].Value));
                     }

@@ -7,7 +7,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class GiraffePatch
 {
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPatch(typeof(CharController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {

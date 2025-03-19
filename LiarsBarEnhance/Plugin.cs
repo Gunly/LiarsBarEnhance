@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using BepInEx.Unity.IL2CPP;
 
 using HarmonyLib;
 
@@ -18,10 +17,10 @@ using UnityEngine.SceneManagement;
 
 namespace LiarsBarEnhance;
 
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-public class Plugin : BasePlugin
+[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+public class Plugin : BaseUnityPlugin
 {
-    internal new static ManualLogSource Log;
+    internal new static ManualLogSource Logger;
     private static bool bind = false, isChinese;
     public static ConfigEntry<int> IntPositionNum, IntAnimationNum, IntGammXP, IntHintPosX, IntHintPosY, IntDefaultSkin;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyGameShowHint,
@@ -52,38 +51,13 @@ public class Plugin : BasePlugin
     public static ConfigEntry<RouletType> RouletAnimType;
 #endif
 
-    public override void Load()
-    {
-        LiarsBarEnhanceBehaviour.Plugin = this;
-        IL2CPPChainloader.AddUnityComponent(typeof(LiarsBarEnhanceBehaviour));
-    }
-    private class LiarsBarEnhanceBehaviour : MonoBehaviour
-    {
-        internal static Plugin Plugin;
-
-        private void Start() => Plugin.Start();
-        private void Update() => Plugin.Update();
-        //private void LateUpdate() => Plugin.LateUpdate();
-        private void OnGUI() => Plugin.OnGUI();
-    }
     private void Start()
     {
-        TomlTypeConverter.AddConverter(typeof(Vector3), new TypeConverter
-        {
-            ConvertToString = (o, type) => ((Vector3)o).ToString(),
-            ConvertToObject = (s, type) =>
-            {
-                var pattern = @"(-?\d+)(\.\d+)?";
-                var numbers = Regex.Matches(s, pattern).Select((Match m) => float.Parse(m.Value)).ToList();
-                if (numbers.Count < 3) return Vector3.zero;
-                return new Vector3(numbers[0], numbers[1], numbers[2]);
-            }
-        });
-        LocalizationSettings.add_SelectedLocaleChanged((Il2CppSystem.Action<UnityEngine.Localization.Locale>)SelectedLocaleChanged);
+        LocalizationSettings.SelectedLocaleChanged += SelectedLocaleChanged;
 
         PatchAll();
-        Log = base.Log;
-        Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+        Logger = base.Logger;
+        Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
     }
 
     private void Update()
@@ -105,7 +79,11 @@ public class Plugin : BasePlugin
         if (bind && isChinese == b) return;
         isChinese = b;
         Config.Clear();
-        Config.Reload();
+        try
+        {
+            Config.Reload();
+        }
+        catch (Exception) { }
         if (isChinese) BindConfig();
         else BindConfigEnglish();
         IntPositionNum.SettingChanged += (_, _) =>
@@ -212,7 +190,7 @@ public class Plugin : BasePlugin
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "显示自身头顶信息");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放", new AcceptableValueRange<float>(0f, 1f)));
         DefaultSkin = Config.Bind("Custom", "DefaultSkin", SkinName.Scubby, "默认角色，进入房间时自动选择");
-        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("如果下拉框无法使用，用这个", new AcceptableValueRange<int>(0, Enum.GetValues<SkinName>().Length - 1)));
+        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("如果下拉框无法使用，用这个", new AcceptableValueRange<int>(0, Enum.GetValues(typeof(SkinName)).Length - 1)));
 
         KeyGameShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "启用提示");
         KeyMoveResetPosition = Config.Bind("Game", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
@@ -358,7 +336,7 @@ public class Plugin : BasePlugin
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "Display personal overhead information");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("Player Scale", new AcceptableValueRange<float>(0f, 1f)));
         DefaultSkin = Config.Bind("Custom", "DefaultSkin", SkinName.Scubby, "Default role, automatically selected when entering the room");
-        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("If the dropdown menu cannot be used, use this", new AcceptableValueRange<int>(0, Enum.GetValues<SkinName>().Length - 1)));
+        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("If the dropdown menu cannot be used, use this", new AcceptableValueRange<int>(0, Enum.GetValues(typeof(SkinName)).Length - 1)));
 
         KeyGameShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "Enable prompt");
         KeyMoveResetPosition = Config.Bind("Game", "ResetPosition", new KeyboardShortcut(KeyCode.R), "Reset coordinates");
@@ -521,5 +499,7 @@ public enum SkinName
     Toar = 3,
     Cupcake = 4,
     Gerk = 5,
-    Kudo = 6
+    Kudo = 6,
+    Ejder = 7,
+    Tusk = 8
 }

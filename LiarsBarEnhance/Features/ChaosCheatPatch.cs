@@ -12,7 +12,7 @@ public class ChaosCheatPatch
 {
     private static readonly Dictionary<Card, bool> cardFliped = [];
 
-    [HarmonyPatch(typeof(ChaosGamePlay), nameof(ChaosGamePlay.UpdateCall))]
+    [HarmonyPatch(typeof(ChaosGamePlay), "UpdateCall")]
     [HarmonyPostfix]
     public static void UpdateCallPostfix(ChaosGamePlay __instance)
     {
@@ -92,7 +92,7 @@ public class ChaosCheatPatch
         }
     }
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPatch(typeof(CharController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {

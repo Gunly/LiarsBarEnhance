@@ -18,7 +18,7 @@ public static class PlayerLevelHelper
         {
             xpNeededList.Add(xpNeededList[^1] + dbManager.needs);
             SetXp(xpNeededList[^1]);
-            dbManager.CalculateNeeds();
+            dbManager.CallMethod("CalculateNeeds");
         }
 
         SetXp(xpSave);
@@ -32,7 +32,7 @@ public static class PlayerLevelHelper
         => SetXp(xpNeededList[(int)level] + xpMore);
 
     public static void CalculateNeeds()
-        => DatabaseManager.instance.CalculateNeeds();
+        => DatabaseManager.instance.CallMethod("CalculateNeeds");
 
     public static int GetNeedXp(DatabaseManager.Levels level)
         => xpNeededList[(int)level];

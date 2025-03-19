@@ -12,7 +12,7 @@ public class FOVPatch
     private static CinemachineVirtualCamera cam;
     public static float Fov { get; set; }
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPatch(typeof(CharController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {
@@ -29,12 +29,12 @@ public class FOVPatch
         }
     }
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
+    [HarmonyPatch(typeof(CharController), "Update")]
     [HarmonyPostfix]
     public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned || cam == null) return;
-        if (Plugin.BooleanViewField.Value && __instance.manager.PluginControl())
+        if (Plugin.BooleanViewField.Value && __instance.manager().PluginControl())
         {
             var mouseScroll = Input.GetAxis("Mouse ScrollWheel");
             if (mouseScroll != 0f)
@@ -56,7 +56,7 @@ public class FOVPatch
         {
             Fov += Mathf.Min(-0.1f, d / 5);
         }
-        if (!__instance.playerStats.Dead)
+        if (!__instance.playerStats().Dead)
         {
             var lens = cam.m_Lens;
             lens.FieldOfView = Fov;
@@ -64,9 +64,9 @@ public class FOVPatch
         }
         else
         {
-            for (var i = 0; i < __instance.manager.SpectatorCameraParrent.transform.childCount; i++)
+            for (var i = 0; i < __instance.manager().SpectatorCameraParrent.transform.childCount; i++)
             {
-                var camera = __instance.manager.SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>();
+                var camera = __instance.manager().SpectatorCameraParrent.transform.GetChild(i).gameObject.GetComponent<CinemachineVirtualCamera>();
                 var lens = camera.m_Lens;
                 lens.FieldOfView = Fov;
                 camera.m_Lens = lens;

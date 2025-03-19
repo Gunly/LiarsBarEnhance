@@ -10,7 +10,7 @@ public class DiceCheatPatch
 {
     public static readonly int[] diceCounts = new int[6];
 
-    [HarmonyPatch(typeof(Dice), nameof(Dice.Update))]
+    [HarmonyPatch(typeof(Dice), "Update")]
     [HarmonyPostfix]
     public static void UpdatePostfix(Dice __instance)
     {
@@ -20,7 +20,7 @@ public class DiceCheatPatch
         }
     }
 
-    [HarmonyPatch(typeof(DiceGamePlay), nameof(DiceGamePlay.UpdateCall))]
+    [HarmonyPatch(typeof(DiceGamePlay), "UpdateCall")]
     [HarmonyPostfix]
     public static void UpdateCallPostfix(DiceGamePlay __instance)
     {

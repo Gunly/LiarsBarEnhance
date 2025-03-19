@@ -5,7 +5,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class AutoReadyPatch
 {
-    [HarmonyPatch(typeof(PlayerObjectController), nameof(PlayerObjectController.Start))]
+    [HarmonyPatch(typeof(PlayerObjectController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(PlayerObjectController __instance)
     {
@@ -15,7 +15,7 @@ public class AutoReadyPatch
         }
     }
 
-    [HarmonyPatch(typeof(PlayerObjectController), nameof(PlayerObjectController.Update))]
+    [HarmonyPatch(typeof(PlayerObjectController), "Update")]
     [HarmonyPostfix]
     public static void UpdatePostfix(PlayerObjectController __instance)
     {

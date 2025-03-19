@@ -18,7 +18,7 @@ public class CharMoveablePatch
     private static Vector3 initBodyPosition;
     private static Quaternion initBodyRotation;
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPatch(typeof(CharController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {
@@ -31,12 +31,12 @@ public class CharMoveablePatch
         playerY = groundY;
     }
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Update))]
+    [HarmonyPatch(typeof(CharController), "Update")]
     [HarmonyPostfix]
     public static void UpdatePostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        if (__instance.manager.PluginControl())
+        if (__instance.manager().PluginControl())
         {
             MoveHead(__instance);
             MouseRotate(__instance);
@@ -56,8 +56,8 @@ public class CharMoveablePatch
         if (Plugin.KeyViewReset.IsDown())
         {
             __instance.HeadPivot.transform.localPosition = initHeadPosition;
-            __instance._cinemachineTargetYaw = 0f;
-            __instance._cinemachineTargetPitch = 0f;
+            __instance.SetYaw(0f);
+            __instance.SetPitch(0f);
             RemoveHeadRotationlimitPatch.CinemachineTargetRoll = 0f;
             Plugin.FloatViewField.Value = 60f;
         }
@@ -89,7 +89,7 @@ public class CharMoveablePatch
 
     private static void MoveHead(CharController charController)
     {
-        if (!charController.playerStats.Dead || !Plugin.BooleanViewRemoveRotationLimit.Value)
+        if (!charController.playerStats().Dead || !Plugin.BooleanViewRemoveRotationLimit.Value)
         {
             if (Plugin.KeyViewForward.IsPressed())
                 charController.HeadPivot.transform.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.up, Space.Self);//Y+
@@ -107,7 +107,7 @@ public class CharMoveablePatch
         else
         {
             var speccamindex = FastMemberAccessor<CharController, int>.Get(charController, "speccamindex");
-            var trans = charController.manager.SpectatorCameraParrent.transform.GetChild(speccamindex);
+            var trans = charController.manager().SpectatorCameraParrent.transform.GetChild(speccamindex);
             if (Plugin.KeyViewForward.IsPressed())
                 trans.Translate(Plugin.FloatViewSpeed.Value * Time.deltaTime * Vector3.forward, Space.Self);
             if (Plugin.KeyViewBack.IsPressed())
@@ -141,24 +141,24 @@ public class CharMoveablePatch
             {
                 charController.transform.Rotate(-x * Vector3.forward, Space.Self);
             }
-            if (!charController.playerStats.Dead) charController._cinemachineTargetYaw += x;
+            if (!charController.playerStats().Dead) charController.AddYaw(x);
         }
-        else if (charController.playerStats.Dead && !Plugin.BooleanViewRemoveRotationLimit.Value)
+        else if (charController.playerStats().Dead && !Plugin.BooleanViewRemoveRotationLimit.Value)
         {
-            charController._cinemachineTargetYaw -= x;
+            charController.AddYaw(-x);
         }
         if (RotatePitch)
         {
             charController.transform.Rotate(y * Vector3.right, Space.Self);
-            if (!charController.playerStats.Dead) charController._cinemachineTargetPitch -= y;
+            if (!charController.playerStats().Dead) charController.AddPitch(-y);
         }
-        else if (charController.playerStats.Dead && !Plugin.BooleanViewRemoveRotationLimit.Value)
+        else if (charController.playerStats().Dead && !Plugin.BooleanViewRemoveRotationLimit.Value)
         {
-            charController._cinemachineTargetPitch += y;
+            charController.AddPitch(y);
         }
         var speccamindex = FastMemberAccessor<CharController, int>.Get(charController, "speccamindex");
-        var trans = charController.manager.SpectatorCameraParrent.transform.GetChild(speccamindex);
-        if (charController.playerStats.Dead && Plugin.BooleanViewRemoveRotationLimit.Value)
+        var trans = charController.manager().SpectatorCameraParrent.transform.GetChild(speccamindex);
+        if (charController.playerStats().Dead && Plugin.BooleanViewRemoveRotationLimit.Value)
         {
             var rz = (Plugin.KeyViewAnticlockwise.IsPressed() ? 2f : 0f) + (Plugin.KeyViewClockwise.IsPressed() ? -2f : 0f);
             trans.Rotate(new Vector3(-y, x, rz), Space.Self);
@@ -272,13 +272,13 @@ public class CharMoveablePatch
     private static Vector3 WalkBodyRotate(CharController charController, Vector3 d, float toYaw)
     {
         if (!Plugin.BooleanMoveFollowHead.Value) return d;
-        var yaw = charController._cinemachineTargetYaw;
+        var yaw = charController.GetYaw();
         var rotateAngle = (toYaw - yaw) / 5f;
         var newYaw = yaw + rotateAngle;
         if (Mathf.Abs(rotateAngle) > 1f)
         {
             charController.transform.Rotate(rotateAngle * Vector3.up, Space.Self);
-            charController._cinemachineTargetYaw = newYaw;
+            charController.SetYaw(newYaw);
             return (Quaternion.AngleAxis(-newYaw, Vector3.up) * d);
         }
         else if (rotateAngle != 0f)
@@ -286,7 +286,7 @@ public class CharMoveablePatch
             rotateAngle = toYaw - yaw;
             newYaw = yaw + rotateAngle;
             charController.transform.Rotate(rotateAngle * Vector3.up, Space.Self);
-            charController._cinemachineTargetYaw = newYaw;
+            charController.SetYaw(newYaw);
             return (Quaternion.AngleAxis(-newYaw, Vector3.up) * d);
         }
         else

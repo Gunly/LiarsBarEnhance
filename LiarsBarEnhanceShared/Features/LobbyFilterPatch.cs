@@ -26,7 +26,7 @@ public class LobbyFilterPatch
         }
     }
 
-    [HarmonyPatch(typeof(LobbyListManager), nameof(LobbyListManager.DisplayLobbies))]
+    [HarmonyPatch(typeof(LobbyListManager), "DisplayLobbies")]
     [HarmonyPostfix]
     public static void DisplayLobbiesPostfix(LobbyListManager __instance)
     {

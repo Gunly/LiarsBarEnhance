@@ -11,7 +11,7 @@ namespace LiarsBarEnhance.Features;
 public class ResetSettingsPatch
 {
     private static readonly string[] allowResetSettingsState = ["state_settings", "substate_display", "substate_gameplay", "substate_graphics", "substate_audiolanguages"];
-    [HarmonyPatch(typeof(ChangeSettings), nameof(ChangeSettings.Update))]
+    [HarmonyPatch(typeof(ChangeSettings), "Update")]
     [HarmonyPrefix]
     public static bool UpdatePrefix(ChangeSettings __instance)
     {
@@ -21,7 +21,7 @@ public class ResetSettingsPatch
             var name = stateManager.ActiveCanvas.gameObject.name;
             if (allowResetSettingsState.Contains(name))
             {
-                __instance.ResetSettings();
+                __instance.CallMethod("ResetSettings");
             }
         }
         return false;

@@ -7,29 +7,29 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class DicePatch
 {
-    [HarmonyPatch(typeof(Dice), nameof(Dice.Start))]
+    [HarmonyPatch(typeof(Dice), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(Dice __instance)
     {
-        __instance.Owned = __instance.transform.root.GetComponent<CharController>().isOwned;
+        __instance.Owned(__instance.transform.root.GetComponent<CharController>().isOwned);
         if (Manager.Instance != null)
         {
-            if (__instance.Owned)
+            if (__instance.Owned())
             {
-                __instance.renderer.material = Manager.Instance.zar1;
+                __instance.renderer().material = Manager.Instance.zar1;
             }
             else
             {
-                __instance.renderer.material = Manager.Instance.zar2;
+                __instance.renderer().material = Manager.Instance.zar2;
             }
         }
     }
 
-    [HarmonyPatch(typeof(Dice), nameof(Dice.Update))]
+    [HarmonyPatch(typeof(Dice), "Update")]
     [HarmonyPrefix]
     public static bool UpdatePrefix(Dice __instance)
     {
-        if (__instance.Owned)
+        if (__instance.Owned())
         {
             switch (__instance.Face)
             {

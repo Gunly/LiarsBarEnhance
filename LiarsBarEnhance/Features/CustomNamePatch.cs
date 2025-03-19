@@ -5,7 +5,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class CustomNamePatch
 {
-    [HarmonyPatch(typeof(PlayerObjectController), nameof(PlayerObjectController.OnStartAuthority))]
+    [HarmonyPatch(typeof(PlayerObjectController), "OnStartAuthority")]
     [HarmonyPrefix]
     public static bool OnStartAuthorityPrefix(PlayerObjectController __instance)
     {

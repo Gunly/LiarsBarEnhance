@@ -5,7 +5,7 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class DefaultSkinPatch
 {
-    [HarmonyPatch(typeof(PlayerObjectController), nameof(PlayerObjectController.Start))]
+    [HarmonyPatch(typeof(PlayerObjectController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(PlayerObjectController __instance)
     {

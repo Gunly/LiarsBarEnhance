@@ -12,7 +12,7 @@ public class BlorfCheatPatch
 {
     private static readonly Dictionary<Card, bool> cardFliped = [];
 
-    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.UpdateCall))]
+    [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
     [HarmonyPostfix]
     public static void UpdateCallPostfix(BlorfGamePlay __instance)
     {
@@ -98,7 +98,7 @@ public class BlorfCheatPatch
         }
     }
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPatch(typeof(CharController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {

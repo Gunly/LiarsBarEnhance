@@ -9,7 +9,7 @@ public class CharScalePatch
 {
     private static Vector3 initScale;
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPatch(typeof(CharController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {

@@ -19,7 +19,7 @@ public class HintPatch
     private static string on;
     private static string off;
 
-    [HarmonyPatch(typeof(CharController), nameof(CharController.Start))]
+    [HarmonyPatch(typeof(CharController), "Start")]
     [HarmonyPostfix]
     public static void StartPostfix(CharController __instance)
     {
@@ -64,13 +64,13 @@ public class HintPatch
 
     private static string HintTitle(CharController charController)
     {
-        var mode = $"<color=#F5E37B>{charController.manager.mode}</color>";
+        var mode = $"<color=#F5E37B>{charController.manager().mode}</color>";
         string ruleSet;
-        if (charController.manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
+        if (charController.manager().mode == CustomNetworkManager.GameMode.LiarsDeck)
         {
-            if (charController.playerStats.GetComponent<BlorfGamePlay>())
+            if (charController.playerStats().GetComponent<BlorfGamePlay>())
             {
-                if (charController.manager.BlorfGame.DeckMode == BlorfGamePlayManager.deckmode.Basic)
+                if (charController.manager().BlorfGame.DeckMode == BlorfGamePlayManager.deckmode.Basic)
                     ruleSet = $"<color=#3487AB>{BlorfGamePlayManager.deckmode.Basic}</color>";
                 else
                     ruleSet = $"<color=#CD2C48>{BlorfGamePlayManager.deckmode.Devil}</color>";
@@ -80,14 +80,14 @@ public class HintPatch
                 ruleSet = $"<color=#FFFF84>MatchMaking</color>";
             }
         }
-        else if (charController.manager.mode == CustomNetworkManager.GameMode.LiarsDice)
+        else if (charController.manager().mode == CustomNetworkManager.GameMode.LiarsDice)
         {
-            if (charController.manager.DiceGame.DiceMode == DiceGamePlayManager.dicemode.Basic)
+            if (charController.manager().DiceGame.DiceMode == DiceGamePlayManager.dicemode.Basic)
                 ruleSet = $"<color=#3487AB>{DiceGamePlayManager.dicemode.Basic}</color>";
             else
                 ruleSet = $"<color=#DFAF4A>{DiceGamePlayManager.dicemode.Traditional}</color>";
         }
-        else if (charController.manager.mode == CustomNetworkManager.GameMode.LiarsChaos)
+        else if (charController.manager().mode == CustomNetworkManager.GameMode.LiarsChaos)
         {
             return $"<color=#F5E37B>{CustomNetworkManager.GameMode.LiarsDeck}</color> - <color=#FF82FF>Chaos</color>";
         }
@@ -104,7 +104,7 @@ public class HintPatch
         if ((Plugin.HintTypeSelect.Value & HintType.TitleName) != HintType.None)
         {
             sb.AppendLine(hintTitle);
-            sb.AppendLine($"{charController.playerStats.PlayerName}{HintHealth()}");
+            sb.AppendLine($"{charController.playerStats().PlayerName}{HintHealth()}");
             sb.AppendLine();
         }
         if ((Plugin.HintTypeSelect.Value & HintType.HintKey) != HintType.None)
@@ -151,7 +151,7 @@ public class HintPatch
         {
             sb.AppendLine($"Position:  X: {charController.transform.localPosition.x:0.00}  Y: {charController.transform.localPosition.y:0.00}  Z: {charController.transform.localPosition.z:0.00}");
             sb.AppendLine($"Rotation:  X: {charController.transform.localEulerAngles.x:0.00}  Y: {charController.transform.localEulerAngles.y:0.00}  Z: {charController.transform.localEulerAngles.z:0.00}");
-            sb.AppendLine($"Pitch: {charController._cinemachineTargetPitch:0.00}  Yaw: {charController._cinemachineTargetYaw:0.00}  Roll: {RemoveHeadRotationlimitPatch.CinemachineTargetRoll:0.00}");
+            sb.AppendLine($"Pitch: {charController.GetPitch():0.00}  Yaw: {charController.GetYaw():0.00}  Roll: {RemoveHeadRotationlimitPatch.CinemachineTargetRoll:0.00}");
         }
 #if CHEATRELEASE
         CheatText(sb);
@@ -165,7 +165,7 @@ public class HintPatch
         if ((Plugin.HintTypeSelect.Value & HintType.TitleName) != HintType.None)
         {
             sb.AppendLine(hintTitle);
-            sb.AppendLine($"{charController.playerStats.PlayerName}{HintHealth()}");
+            sb.AppendLine($"{charController.playerStats().PlayerName}{HintHealth()}");
             sb.AppendLine();
         }
         if ((Plugin.HintTypeSelect.Value & HintType.HintKey) != HintType.None)
@@ -212,7 +212,7 @@ public class HintPatch
         {
             sb.AppendLine($"Position:  X: {charController.transform.localPosition.x:0.00}  Y: {charController.transform.localPosition.y:0.00}  Z: {charController.transform.localPosition.z:0.00}");
             sb.AppendLine($"Rotation:  X: {charController.transform.localEulerAngles.x:0.00}  Y: {charController.transform.localEulerAngles.y:0.00}  Z: {charController.transform.localEulerAngles.z:0.00}");
-            sb.AppendLine($"Pitch: {charController._cinemachineTargetPitch:0.00}  Yaw: {charController._cinemachineTargetYaw:0.00}  Roll: {RemoveHeadRotationlimitPatch.CinemachineTargetRoll:0.00}");
+            sb.AppendLine($"Pitch: {charController.GetPitch():0.00}  Yaw: {charController.GetYaw():0.00}  Roll: {RemoveHeadRotationlimitPatch.CinemachineTargetRoll:0.00}");
         }
 #if CHEATRELEASE
         CheatText(sb);
@@ -222,9 +222,9 @@ public class HintPatch
 
     private static string HintHealth()
     {
-        if (charController.manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
+        if (charController.manager().mode == CustomNetworkManager.GameMode.LiarsDeck)
         {
-            var blorfGame = charController.playerStats.GetComponent<BlorfGamePlay>();
+            var blorfGame = charController.playerStats().GetComponent<BlorfGamePlay>();
             if (blorfGame)
             {
 #if CHEATRELEASE
@@ -235,7 +235,7 @@ public class HintPatch
             }
             else
             {
-                var blorfGameMatchMaking = charController.playerStats.GetComponent<BlorfGamePlayMatchMaking>();
+                var blorfGameMatchMaking = charController.playerStats().GetComponent<BlorfGamePlayMatchMaking>();
 #if CHEATRELEASE
                 return $"({blorfGameMatchMaking.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? blorfGameMatchMaking.Networkrevolverbulllet + 1 : 6)})";
 #else
@@ -243,13 +243,13 @@ public class HintPatch
 #endif
             }
         }
-        else if (charController.manager.mode == CustomNetworkManager.GameMode.LiarsDice)
+        else if (charController.manager().mode == CustomNetworkManager.GameMode.LiarsDice)
         {
-            return $"({charController.playerStats.NetworkHealth}|2)";
+            return $"({charController.playerStats().NetworkHealth}|2)";
         }
-        else if (charController.manager.mode == CustomNetworkManager.GameMode.LiarsChaos)
+        else if (charController.manager().mode == CustomNetworkManager.GameMode.LiarsChaos)
         {
-            var chaosGame = charController.playerStats.GetComponent<ChaosGamePlay>();
+            var chaosGame = charController.playerStats().GetComponent<ChaosGamePlay>();
 #if CHEATRELEASE
             return $"({chaosGame.Networkcurrentrevoler}|{(Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatDeckHealth.Value ? chaosGame.Networkrevolverbulllet + 1 : 6)})";
 #else

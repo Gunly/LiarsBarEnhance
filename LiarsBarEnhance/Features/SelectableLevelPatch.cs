@@ -8,16 +8,16 @@ namespace LiarsBarEnhance.Features;
 [HarmonyPatch]
 public class SelectableLevelPatch
 {
-    [HarmonyPatch(typeof(Statsui), nameof(Statsui.Update))]
+    [HarmonyPatch(typeof(Statsui), "Update")]
     [HarmonyPostfix]
     public static void UpdatePostfix(Statsui __instance)
     {
-        if (Input.GetMouseButtonDown(1) && __instance.RankParrentTable.gameObject.activeInHierarchy)
+        if (Input.GetMouseButtonDown(1) && __instance.RankParrentTable().gameObject.activeInHierarchy)
         {
             (float distance, RectTransform rank) best = (float.PositiveInfinity, null);
-            for (var i = 0; i < __instance.RankParrentTable.childCount; i++)
+            for (var i = 0; i < __instance.RankParrentTable().childCount; i++)
             {
-                var rank = __instance.RankParrentTable.GetChild(i).GetComponent<RectTransform>();
+                var rank = __instance.RankParrentTable().GetChild(i).GetComponent<RectTransform>();
                 if (!RectTransformUtility.RectangleContainsScreenPoint(rank, Input.mousePosition) ||
                     !RectTransformUtility.ScreenPointToLocalPointInRectangle(rank, Input.mousePosition, null, out var localPos))
                     continue;
