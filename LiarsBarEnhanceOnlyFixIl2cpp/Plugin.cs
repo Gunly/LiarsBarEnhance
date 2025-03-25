@@ -1,23 +1,38 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using BepInEx.Unity.IL2CPP;
 
 using HarmonyLib;
 
 using LiarsBarEnhance.Features;
 
+using LiarsBarEnhanceOnlyFixIl2cpp;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using PluginInfo = LiarsBarEnhanceOnlyFix.PluginInfo;
-
 namespace LiarsBarEnhance;
 
-[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-public class Plugin : BaseUnityPlugin
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+public class Plugin : BasePlugin
 {
-    internal new static ManualLogSource Logger;
+    internal new static ManualLogSource Log;
     public static ConfigEntry<string> StringGameLobbyFilterWords;
+
+    public override void Load()
+    {
+        LiarsBarEnhanceBehaviour.Plugin = this;
+        IL2CPPChainloader.AddUnityComponent(typeof(LiarsBarEnhanceBehaviour));
+    }
+
+    private class LiarsBarEnhanceBehaviour : MonoBehaviour
+    {
+        internal static Plugin Plugin;
+
+        private void Start() => Plugin.Start();
+        private void Update() => Plugin.Update();
+    }
 
     public void Start()
     {
@@ -35,8 +50,8 @@ public class Plugin : BaseUnityPlugin
         StringGameLobbyFilterWords.SettingChanged += (_, _) => LobbyFilterPatch.GetFilterWords();
         LobbyFilterPatch.GetFilterWords();
 
-        Logger = base.Logger;
-        Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+        Log = base.Log;
+        Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
 
     private void Update()

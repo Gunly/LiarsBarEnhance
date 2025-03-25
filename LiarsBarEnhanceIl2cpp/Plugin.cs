@@ -1,11 +1,14 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using BepInEx.Unity.IL2CPP;
 
 using HarmonyLib;
 
 using LiarsBarEnhance.Features;
 using LiarsBarEnhance.Utils;
+
+using LiarsBarEnhanceIl2cpp;
 
 using System;
 using System.Linq;
@@ -17,10 +20,10 @@ using UnityEngine.SceneManagement;
 
 namespace LiarsBarEnhance;
 
-[BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-public class Plugin : BaseUnityPlugin
+[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+public class Plugin : BasePlugin
 {
-    internal new static ManualLogSource Logger;
+    internal new static ManualLogSource Log;
     private static bool bind = false, isChinese;
     public static ConfigEntry<int> IntPositionNum, IntAnimationNum, IntGammXP, IntHintPosX, IntHintPosY, IntDefaultSkin;
     public static ConfigEntry<KeyboardShortcut> KeyCustomBigMouth, KeyGameShowHint,
@@ -51,13 +54,38 @@ public class Plugin : BaseUnityPlugin
     public static ConfigEntry<RouletType> RouletAnimType;
 #endif
 
+    public override void Load()
+    {
+        LiarsBarEnhanceBehaviour.Plugin = this;
+        IL2CPPChainloader.AddUnityComponent(typeof(LiarsBarEnhanceBehaviour));
+    }
+    private class LiarsBarEnhanceBehaviour : MonoBehaviour
+    {
+        internal static Plugin Plugin;
+
+        private void Start() => Plugin.Start();
+        private void Update() => Plugin.Update();
+        //private void LateUpdate() => Plugin.LateUpdate();
+        private void OnGUI() => Plugin.OnGUI();
+    }
     private void Start()
     {
-        LocalizationSettings.SelectedLocaleChanged += SelectedLocaleChanged;
+        TomlTypeConverter.AddConverter(typeof(Vector3), new TypeConverter
+        {
+            ConvertToString = (o, type) => ((Vector3)o).ToString(),
+            ConvertToObject = (s, type) =>
+            {
+                var pattern = @"(-?\d+)(\.\d+)?";
+                var numbers = Regex.Matches(s, pattern).Select((m) => float.Parse(m.Value)).ToList();
+                if (numbers.Count < 3) return Vector3.zero;
+                return new Vector3(numbers[0], numbers[1], numbers[2]);
+            }
+        });
+        LocalizationSettings.add_SelectedLocaleChanged((Il2CppSystem.Action<UnityEngine.Localization.Locale>)SelectedLocaleChanged);
 
         PatchAll();
-        Logger = base.Logger;
-        Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+        Log = base.Log;
+        Log.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
 
     private void Update()
@@ -191,7 +219,7 @@ public class Plugin : BaseUnityPlugin
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "显示自身头顶信息");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("玩家缩放", new AcceptableValueRange<float>(0f, 1f)));
         DefaultSkin = Config.Bind("Custom", "DefaultSkin", SkinName.Scubby, "默认角色，进入房间时自动选择");
-        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("如果下拉框无法使用，用这个", new AcceptableValueRange<int>(0, Enum.GetValues(typeof(SkinName)).Length - 1)));
+        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("如果下拉框无法使用，用这个", new AcceptableValueRange<int>(0, Enum.GetValues<SkinName>().Length - 1)));
 
         KeyGameShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "启用提示");
         KeyMoveResetPosition = Config.Bind("Game", "ResetPosition", new KeyboardShortcut(KeyCode.R), "重置坐标");
@@ -204,7 +232,7 @@ public class Plugin : BaseUnityPlugin
         StringGameLobbyFilterWords = Config.Bind("Game", "LobbyFilterWords", "透视|改牌|透牌|修改|枪数|无敌|低价|稳定|免费|加q|加群|售后|看片|网址|国产|少妇|" +
             "@[Qq]\\d{5,}|@[a-zA-Z0-9]{3,}\\.[a-zA-Z]{2,}", "大厅过滤词");
         BooleanGameAutoReady = Config.Bind("Game", "AutoReady", false, "自动准备");
-        BooleanGameNoCooldown = Config.Bind("Game", "NoCooldown", false, "动作无CD");
+        BooleanGameNoCooldown= Config.Bind("Game", "NoCooldown", false, "动作无CD");
 
         BooleanMoveFollowHead = Config.Bind("Move", "MoveFollowHead", true, "移动方向跟随头部视角");
         KeyMoveFollowHeadShortcut = Config.Bind("Move", "MoveFollowHeadShortcut", new KeyboardShortcut(KeyCode.H), "切换移动方向跟随头部视角快捷键");
@@ -338,7 +366,7 @@ public class Plugin : BaseUnityPlugin
         BooleanCustomShowSelfInfo = Config.Bind("Custom", "ShowSelfInfo", true, "Display personal overhead information");
         FloatCustomPlayerScale = Config.Bind("Custom", "PlayerScale", 0.5f, new ConfigDescription("Player Scale", new AcceptableValueRange<float>(0f, 1f)));
         DefaultSkin = Config.Bind("Custom", "DefaultSkin", SkinName.Scubby, "Default role, automatically selected when entering the room");
-        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("If the dropdown menu cannot be used, use this", new AcceptableValueRange<int>(0, Enum.GetValues(typeof(SkinName)).Length - 1)));
+        IntDefaultSkin = Config.Bind("Custom", "DefaultSkinInt", 0, new ConfigDescription("If the dropdown menu cannot be used, use this", new AcceptableValueRange<int>(0, Enum.GetValues<SkinName>().Length - 1)));
 
         KeyGameShowHint = Config.Bind("Game", "HintShow", new KeyboardShortcut(KeyCode.Tab), "Enable prompt");
         KeyMoveResetPosition = Config.Bind("Game", "ResetPosition", new KeyboardShortcut(KeyCode.R), "Reset coordinates");

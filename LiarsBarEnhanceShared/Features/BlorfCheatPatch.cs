@@ -8,13 +8,13 @@ using UnityEngine;
 namespace LiarsBarEnhance.Features;
 
 [HarmonyPatch]
-public class BlorfMatchMakingCheatPatch
+public class BlorfCheatPatch
 {
     private static readonly Dictionary<Card, bool> cardFliped = [];
 
-    [HarmonyPatch(typeof(BlorfGamePlayMatchMaking), "UpdateCall")]
+    [HarmonyPatch(typeof(BlorfGamePlay), "UpdateCall")]
     [HarmonyPostfix]
-    public static void UpdateCallPostfix(BlorfGamePlayMatchMaking __instance)
+    public static void UpdateCallPostfix(BlorfGamePlay __instance)
     {
         if (!Plugin.BooleanCheatDeck.Value) return;
         if (__instance.isOwned)
@@ -23,7 +23,7 @@ public class BlorfMatchMakingCheatPatch
             {
                 var cardObject = __instance.Cards[i];
                 if (!cardObject.gameObject.activeSelf) continue;
-                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && __instance.manager.PluginControl())
+                if (Plugin.KeyCheatChangeCardDice[i].IsDown() && __instance.manager().PluginControl())
                 {
                     var card = cardObject.GetComponent<Card>();
                     if (card.Devil)
@@ -73,7 +73,7 @@ public class BlorfMatchMakingCheatPatch
                 {
                     card.GetComponent<MeshRenderer>().material = card.normal;
                 }
-                if (__instance.manager.PluginControl())
+                if (__instance.manager().PluginControl())
                 {
                     if (Plugin.KeyCheatBlorfFlip.IsPressed())
                     {
@@ -103,9 +103,9 @@ public class BlorfMatchMakingCheatPatch
     public static void StartPostfix(CharController __instance)
     {
         if (!__instance.isOwned) return;
-        if (__instance.manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
+        if (__instance.manager().mode == CustomNetworkManager.GameMode.LiarsDeck)
         {
-            var blorfGame = __instance.playerStats.GetComponent<BlorfGamePlayMatchMaking>();
+            var blorfGame = __instance.playerStats().GetComponent<BlorfGamePlay>();
             if (blorfGame != null)
             {
                 Plugin.IntCheatBlorfRevoler.Value = 0;
@@ -123,18 +123,18 @@ public class BlorfMatchMakingCheatPatch
         }
     }
 
-    [HarmonyPatch(typeof(BlorfGamePlayMatchMaking), nameof(BlorfGamePlayMatchMaking.Networkrevolverbulllet), MethodType.Setter)]
+    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.Networkrevolverbulllet), MethodType.Setter)]
     [HarmonyPostfix]
-    public static void NetworkrevolverbullletPostfix(BlorfGamePlayMatchMaking __instance)
+    public static void NetworkrevolverbullletPostfix(BlorfGamePlay __instance)
     {
         if (!__instance.isOwned) return;
         if (Plugin.IntCheatBlorfHealth.Value != __instance.Networkrevolverbulllet + 1)
             Plugin.IntCheatBlorfHealth.Value = __instance.Networkrevolverbulllet + 1;
     }
 
-    [HarmonyPatch(typeof(BlorfGamePlayMatchMaking), nameof(BlorfGamePlayMatchMaking.Networkcurrentrevoler), MethodType.Setter)]
+    [HarmonyPatch(typeof(BlorfGamePlay), nameof(BlorfGamePlay.Networkcurrentrevoler), MethodType.Setter)]
     [HarmonyPostfix]
-    public static void NetworkcurrentrevolerPostfix(BlorfGamePlayMatchMaking __instance)
+    public static void NetworkcurrentrevolerPostfix(BlorfGamePlay __instance)
     {
         if (!__instance.isOwned) return;
         if (Plugin.IntCheatBlorfRevoler.Value != __instance.Networkcurrentrevoler)

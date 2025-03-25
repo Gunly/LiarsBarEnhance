@@ -9,16 +9,27 @@
     <Import_RootNamespace>LiarsBarEnhance</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Features\ChatProPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Features\ChineseNameFixPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Features\DisableTmpWarningsPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Features\LobbyFilterPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Features\RemoveNameLengthLimitPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Features\ResetSettingsPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Features\ScrollViewPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Features\TestPatch.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UsefulExtension.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\FastMemberAccessor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\PlayerLevelHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\AnimationPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\AutoReadyPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\AutoRotatePatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\BigMouthPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\NoCooldownPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\BlorfCheatPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\BlorfMatchMakingCheatPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ChaosCheatPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\CharMoveablePatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\CharScalePatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\CrazyShakeHeadPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\CustomNamePatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\DefaultSkinPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\DiceCheatPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\DicePatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\FOVPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\GiraffePatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\HintPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\RemoveHeadRotationlimitPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\SelectableLevelPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ShowSelfTopInfoPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\TeleportPatch.cs" />
   </ItemGroup>
 </Project>

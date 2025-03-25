@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
 
-//using LiarsBarEnhanceOnlyFix;
-
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 

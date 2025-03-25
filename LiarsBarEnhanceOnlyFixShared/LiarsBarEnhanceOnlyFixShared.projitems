@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>eb3b7ce5-85b6-49eb-9d92-bafb8f6a636c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>LiarsBarEnhance</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ChatProPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ChineseNameFixPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\DisableTmpWarningsPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\LobbyFilterPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\RemoveNameLengthLimitPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ResetSettingsPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\ScrollViewPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Features\TestPatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UsefulExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\FastMemberAccessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\PlayerLevelHelper.cs" />
+  </ItemGroup>
+</Project>

@@ -43,7 +43,7 @@ public class AnimationPatch
                 if (Plugin.KeyAnimRoulet.IsUp())
                 {
 #if CHEATRELEASE
-                    var blorfGame = __instance.playerStats.GetComponent<BlorfGamePlay>();
+                    var blorfGame = __instance.playerStats().GetComponent<BlorfGamePlay>();
                     if (blorfGame)
                     {
                         if (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGame.Networkcurrentrevoler < blorfGame.Networkrevolverbulllet)
@@ -61,7 +61,7 @@ public class AnimationPatch
                     }
                     else
                     {
-                        var blorfGameMatchMaking = __instance.playerStats.GetComponent<BlorfGamePlayMatchMaking>();
+                        var blorfGameMatchMaking = __instance.playerStats().GetComponent<BlorfGamePlayMatchMaking>();
                         if (Plugin.RouletAnimType.Value == RouletType.Roulet && blorfGameMatchMaking.Networkcurrentrevoler < blorfGameMatchMaking.Networkrevolverbulllet)
                         {
                             blorfGameMatchMaking.Networkcurrentrevoler++;
@@ -91,15 +91,15 @@ public class AnimationPatch
                 if (Plugin.KeyAnimDrink.IsUp())
                 {
 #if CHEATRELEASE
-                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && __instance.playerStats.NetworkHealth == 2)
+                    if (Plugin.RouletAnimType.Value == RouletType.Roulet && __instance.playerStats().NetworkHealth == 2)
                     {
-                        __instance.playerStats.NetworkHealth = 1;
+                        __instance.playerStats().NetworkHealth = 1;
                     }
                     else if (Plugin.RouletAnimType.Value == RouletType.Suicide ||
-                        (Plugin.RouletAnimType.Value == RouletType.Roulet && __instance.playerStats.NetworkHealth == 1))
+                        (Plugin.RouletAnimType.Value == RouletType.Roulet && __instance.playerStats().NetworkHealth == 1))
                     {
-                        __instance.playerStats.NetworkHealth = 0;
-                        __instance.playerStats.NetworkDead = true;
+                        __instance.playerStats().NetworkHealth = 0;
+                        __instance.playerStats().NetworkDead = true;
                     }
 #endif
                     __instance.animator.SetBool("Drink", false);

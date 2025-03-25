@@ -9,6 +9,12 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LiarsBarEnhanceShared", "Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiarsBarEnhanceOnlyFix", "LiarsBarEnhanceOnlyFix\LiarsBarEnhanceOnlyFix.csproj", "{F2A253E1-7B5B-44E8-8D43-2DAE911A5F8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiarsBarEnhanceIl2cpp", "LiarsBarEnhanceIl2cpp\LiarsBarEnhanceIl2cpp.csproj", "{A3A6809F-0611-2B29-CD0E-03FCFAB4E300}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "LiarsBarEnhanceOnlyFixShared", "LiarsBarEnhanceOnlyFixShared\LiarsBarEnhanceOnlyFixShared.shproj", "{BDC130E3-DB4D-4B1A-8F11-4EA69245A030}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiarsBarEnhanceOnlyFixIl2cpp", "LiarsBarEnhanceOnlyFixIl2cpp\LiarsBarEnhanceOnlyFixIl2cpp.csproj", "{622276A6-FC6E-DADE-84D7-CC23FBB20B8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CheatRelease|Any CPU = CheatRelease|Any CPU
@@ -28,6 +34,18 @@ Global
 		{F2A253E1-7B5B-44E8-8D43-2DAE911A5F8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2A253E1-7B5B-44E8-8D43-2DAE911A5F8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2A253E1-7B5B-44E8-8D43-2DAE911A5F8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3A6809F-0611-2B29-CD0E-03FCFAB4E300}.CheatRelease|Any CPU.ActiveCfg = CheatRelease|Any CPU
+		{A3A6809F-0611-2B29-CD0E-03FCFAB4E300}.CheatRelease|Any CPU.Build.0 = CheatRelease|Any CPU
+		{A3A6809F-0611-2B29-CD0E-03FCFAB4E300}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3A6809F-0611-2B29-CD0E-03FCFAB4E300}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3A6809F-0611-2B29-CD0E-03FCFAB4E300}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3A6809F-0611-2B29-CD0E-03FCFAB4E300}.Release|Any CPU.Build.0 = Release|Any CPU
+		{622276A6-FC6E-DADE-84D7-CC23FBB20B8E}.CheatRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{622276A6-FC6E-DADE-84D7-CC23FBB20B8E}.CheatRelease|Any CPU.Build.0 = Release|Any CPU
+		{622276A6-FC6E-DADE-84D7-CC23FBB20B8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{622276A6-FC6E-DADE-84D7-CC23FBB20B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{622276A6-FC6E-DADE-84D7-CC23FBB20B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{622276A6-FC6E-DADE-84D7-CC23FBB20B8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,8 +54,13 @@ Global
 		SolutionGuid = {CD0BE7B8-6271-44F7-905E-8A3A8436384D}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		LiarsBarEnhanceOnlyFixShared\LiarsBarEnhanceOnlyFixShared.projitems*{318103a4-cdd7-4b11-a778-f8fede387761}*SharedItemsImports = 5
 		LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems*{318103a4-cdd7-4b11-a778-f8fede387761}*SharedItemsImports = 5
+		LiarsBarEnhanceOnlyFixShared\LiarsBarEnhanceOnlyFixShared.projitems*{622276a6-fc6e-dade-84d7-cc23fbb20b8e}*SharedItemsImports = 5
+		LiarsBarEnhanceOnlyFixShared\LiarsBarEnhanceOnlyFixShared.projitems*{a3a6809f-0611-2b29-cd0e-03fcfab4e300}*SharedItemsImports = 5
+		LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems*{a3a6809f-0611-2b29-cd0e-03fcfab4e300}*SharedItemsImports = 5
+		LiarsBarEnhanceOnlyFixShared\LiarsBarEnhanceOnlyFixShared.projitems*{bdc130e3-db4d-4b1a-8f11-4ea69245a030}*SharedItemsImports = 13
 		LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems*{eb3b7ce5-85b6-49eb-9d92-bafb8f6a636c}*SharedItemsImports = 13
-		LiarsBarEnhanceShared\LiarsBarEnhanceShared.projitems*{f2a253e1-7b5b-44e8-8d43-2dae911a5f8d}*SharedItemsImports = 5
+		LiarsBarEnhanceOnlyFixShared\LiarsBarEnhanceOnlyFixShared.projitems*{f2a253e1-7b5b-44e8-8d43-2dae911a5f8d}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

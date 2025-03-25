@@ -1,16 +1,11 @@
 ﻿using BepInEx.Configuration;
 
-using HarmonyLib;
-
-using LiarsBarEnhance.Utils;
-
 using System;
 using System.Linq;
 
 using TMPro;
 
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LiarsBarEnhance;
 
@@ -42,6 +37,7 @@ public static class LiarsBarEnhanceExtension
     public static PlayerStats playerStats(this CharController instance) => instance.GetField<CharController, PlayerStats>("playerStats");
     public static TextMeshPro RoundText<T>(this T instance) where T : CharController => instance.GetField<T, TextMeshPro>("RoundText");
     public static GameObject ZarKafaSprite(this DiceGamePlay instance) => instance.GetField<DiceGamePlay, GameObject>("ZarKafaSprite");
+    public static GameObject ZarText(this DiceGamePlay instance) => instance.GetField<DiceGamePlay, GameObject>("ZarText");
 
     public static float MinX(this CharController instance) => instance.GetField<CharController, float>("MinX");
     public static float MaxX(this CharController instance) => instance.GetField<CharController, float>("MaxX");

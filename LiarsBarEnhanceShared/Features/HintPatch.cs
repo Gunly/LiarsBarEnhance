@@ -72,8 +72,12 @@ public class HintPatch
             {
                 if (charController.manager().BlorfGame.DeckMode == BlorfGamePlayManager.deckmode.Basic)
                     ruleSet = $"<color=#3487AB>{BlorfGamePlayManager.deckmode.Basic}</color>";
-                else
+                else if (charController.manager().BlorfGame.DeckMode == BlorfGamePlayManager.deckmode.Devil)
                     ruleSet = $"<color=#CD2C48>{BlorfGamePlayManager.deckmode.Devil}</color>";
+                else if (charController.manager().BlorfGame.DeckMode == BlorfGamePlayManager.deckmode.Deck2)
+                    ruleSet = $"<color=#F5E37B>{BlorfGamePlayManager.deckmode.Deck2}</color>";
+                else
+                    ruleSet = $"<color=#FFFFFF>Unknow</color>";
             }
             else
             {
@@ -84,8 +88,10 @@ public class HintPatch
         {
             if (charController.manager().DiceGame.DiceMode == DiceGamePlayManager.dicemode.Basic)
                 ruleSet = $"<color=#3487AB>{DiceGamePlayManager.dicemode.Basic}</color>";
-            else
+            else if (charController.manager().DiceGame.DiceMode == DiceGamePlayManager.dicemode.Traditional)
                 ruleSet = $"<color=#DFAF4A>{DiceGamePlayManager.dicemode.Traditional}</color>";
+            else
+                ruleSet = $"<color=#FFFFFF>Unknow</color>";
         }
         else if (charController.manager().mode == CustomNetworkManager.GameMode.LiarsChaos)
         {
@@ -323,12 +329,12 @@ public class HintPatch
     private static void CheatText(StringBuilder sb)
     {
         sb.AppendLine();
-        if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController.manager.mode == CustomNetworkManager.GameMode.LiarsDeck)
+        if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController.manager().mode == CustomNetworkManager.GameMode.LiarsDeck)
         {
             var (LastRound, RoundCard) =
-            charController.playerStats.GetComponent<BlorfGamePlay>() ?
-            (charController.manager.BlorfGame.LastRound, charController.manager.BlorfGame.RoundCard) :
-            (charController.manager.BlorfGameMatchMaking.LastRound, charController.manager.BlorfGameMatchMaking.RoundCard);
+            charController.playerStats().GetComponent<BlorfGamePlay>() ?
+            (charController.manager().BlorfGame.LastRound, charController.manager().BlorfGame.RoundCard) :
+            (charController.manager().BlorfGameMatchMaking.LastRound, charController.manager().BlorfGameMatchMaking.RoundCard);
             foreach (var card in LastRound)
             {
                 var type = card switch
@@ -343,16 +349,16 @@ public class HintPatch
                 sb.AppendLine($"<color={(card == -1 || card == 4 || card == RoundCard ? "lime" : "red")}>{type}</color>");
             }
         }
-        if (Plugin.BooleanCheatDice.Value && Plugin.BooleanCheatDiceTotalDice.Value && charController.manager.mode == CustomNetworkManager.GameMode.LiarsDice)
+        if (Plugin.BooleanCheatDice.Value && Plugin.BooleanCheatDiceTotalDice.Value && charController.manager().mode == CustomNetworkManager.GameMode.LiarsDice)
         {
             for (var i = 0; i < 6; i++)
             {
                 sb.AppendLine($"{DiceCheatPatch.diceCounts[i],2}{(isChinese ? "个" : " of ")}{i + 1}");
             }
         }
-        if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController.manager.mode == CustomNetworkManager.GameMode.LiarsChaos)
+        if (Plugin.BooleanCheatDeck.Value && Plugin.BooleanCheatBlorfLastRoundCard.Value && charController.manager().mode == CustomNetworkManager.GameMode.LiarsChaos)
         {
-            foreach (var card in charController.manager.ChaosGame.LastRound)
+            foreach (var card in charController.manager().ChaosGame.LastRound)
             {
                 var type = card switch
                 {
@@ -362,7 +368,7 @@ public class HintPatch
                     4 => "Master",
                     _ => card.ToString()
                 };
-                sb.AppendLine($"<color={(card > 2 || card == charController.manager.ChaosGame.RoundCard ? "lime" : "red")}>{type}</color>");
+                sb.AppendLine($"<color={(card > 2 || card == charController.manager().ChaosGame.RoundCard ? "lime" : "red")}>{type}</color>");
             }
         }
     }
